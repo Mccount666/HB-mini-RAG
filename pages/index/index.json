@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "智能问答",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "chat-message": "/components/chat-message/chat-message"
+  }
+}

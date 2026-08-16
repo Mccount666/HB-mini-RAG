@@ -1,0 +1,142 @@
+[
+  {
+    "id": "LAB-AFP",
+    "category": "lab_reference",
+    "question": "甲胎蛋白(AFP)的参考范围与临床意义",
+    "answer": "甲胎蛋白（AFP）是肝母细胞瘤最重要的肿瘤标志物。成人参考区间通常 < 7–10 ng/mL（各实验室略有差异）。注意：新生儿和婴幼儿 AFP 呈生理性升高，出生后逐渐下降，1 岁左右接近成人水平；因此儿童尤其是婴幼儿需结合年龄判读。肝母细胞瘤患儿 AFP 多明显升高，治疗有效时下降，随访中若已下降的 AFP 再次升高需警惕残留或复发。解读务必以报告单标注的参考区间及就诊医院儿科标准为准。",
+    "source": "主流诊断标准参考区间（待导师核对具体实验室标准）",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "LAB-ALT",
+    "category": "lab_reference",
+    "question": "丙氨酸氨基转移酶(ALT)的参考范围与意义",
+    "answer": "丙氨酸氨基转移酶（ALT，旧称 GPT）主要存在于肝细胞，升高多提示肝细胞损伤。成人常见参考区间约 7–40 U/L 或 9–50 U/L（因性别、实验室而异）。轻度升高可见于肝炎、药物或化疗影响；明显升高需结合临床。以报告单标注区间为准。",
+    "source": "主流诊断标准参考区间（待导师核对具体实验室标准）",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "LAB-AST",
+    "category": "lab_reference",
+    "question": "天冬氨酸氨基转移酶(AST)的参考范围与意义",
+    "answer": "天冬氨酸氨基转移酶（AST，旧称 GOT）存在于肝、心肌、肌肉等，升高除肝脏外也可见于肌肉损伤。成人常见参考区间约 13–35 U/L 或 15–40 U/L。AST/ALT  together 辅助判断肝损伤。以报告单标注区间为准。",
+    "source": "主流诊断标准参考区间（待导师核对具体实验室标准）",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "LAB-ALP",
+    "category": "lab_reference",
+    "question": "碱性磷酸酶(ALP)的参考范围与意义",
+    "answer": "碱性磷酸酶（ALP）存在于肝脏与骨骼，儿童因骨骼生长其活性常高于成人，参考区间随年龄变化大，须按儿童/青少年年龄段判读。升高可见于胆道梗阻、骨代谢活跃等。以报告单标注的年龄别参考区间为准。",
+    "source": "主流诊断标准参考区间（待导师核对具体实验室标准）",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "LAB-GGT",
+    "category": "lab_reference",
+    "question": "γ-谷氨酰转移酶(GGT)的参考范围与意义",
+    "answer": "γ-谷氨酰转移酶（GGT）升高提示胆道系统异常（如胆汁淤积）或肝脏病变，对酒精/某些药物敏感。成人常见参考区间约 7–45 U/L（因实验室而异）。以报告单标注区间为准。",
+    "source": "主流诊断标准参考区间（待导师核对具体实验室标准）",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "LAB-TBIL",
+    "category": "lab_reference",
+    "question": "总胆红素(TBIL)与直接胆红素的参考范围与意义",
+    "answer": "总胆红素（TBIL）成人常见参考区间约 3.4–20.5 μmol/L（0.2–1.2 mg/dL）。直接胆红素（DBIL）升高为主多提示胆汁淤积或肝细胞性黄疸。肝母细胞瘤若压迫胆管可出现黄疸。以报告单标注区间为准。",
+    "source": "主流诊断标准参考区间（待导师核对具体实验室标准）",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "LAB-ALB",
+    "category": "lab_reference",
+    "question": "白蛋白(ALB)的参考范围与意义",
+    "answer": "白蛋白（ALB）由肝脏合成，反映肝脏合成功能与营养状态。成人常见参考区间约 40–55 g/L。降低可见于肝病合成不足、营养不良、蛋白丢失等。化疗期间可结合体重观察营养状况。以报告单标注区间为准。",
+    "source": "主流诊断标准参考区间（待导师核对具体实验室标准）",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "LAB-TP",
+    "category": "lab_reference",
+    "question": "总蛋白(TP)的参考范围与意义",
+    "answer": "总蛋白（TP）包括白蛋白与球蛋白，成人常见参考区间约 65–85 g/L。异常可反映肝脏合成、营养或免疫状态。以报告单标注区间为准。",
+    "source": "主流诊断标准参考区间（待导师核对具体实验室标准）",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "LAB-WBC",
+    "category": "lab_reference",
+    "question": "白细胞计数(WBC)的参考范围与意义",
+    "answer": "白细胞计数（WBC）儿童常见参考区间约 4.0–10.0 ×10^9/L（因年龄而异）。化疗后常降低（白细胞减少），显著增加感染风险；当中性粒细胞绝对值过低时为中性粒细胞减少症，需加强感染防护并及时就医。以报告单标注区间及年龄别标准为准。",
+    "source": "主流诊断标准参考区间（待导师核对具体实验室标准）",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "LAB-NEUT",
+    "category": "lab_reference",
+    "question": "中性粒细胞绝对值(ANC)的参考范围与意义",
+    "answer": "中性粒细胞绝对值（ANC）是判断感染风险的关键指标。儿童常见下限约 1.5 ×10^9/L 以上；ANC < 1.0 ×10^9/L 为中性粒细胞减少，< 0.5 ×10^9/L 为重度减少，感染风险高，须严格防护并遵医嘱处理。以报告单标注及儿科标准为准。",
+    "source": "主流诊断标准参考区间（待导师核对具体实验室标准）",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "LAB-HGB",
+    "category": "lab_reference",
+    "question": "血红蛋白(HGB)的参考范围与意义",
+    "answer": "血红蛋白（HGB）儿童常见参考区间约 110–160 g/L（因年龄、性别而异）。降低为贫血，化疗相关贫血较常见，可表现为乏力、面色苍白。明显或症状性贫血需由医生评估处理。以报告单标注的年龄别参考区间为准。",
+    "source": "主流诊断标准参考区间（待导师核对具体实验室标准）",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "LAB-PLT",
+    "category": "lab_reference",
+    "question": "血小板(PLT)的参考范围与意义",
+    "answer": "血小板（PLT）常见参考区间约 100–300 ×10^9/L。化疗后常降低（血小板减少），增加出血风险；过低时须避免磕碰、观察出血征象并遵医嘱。以报告单标注区间为准。",
+    "source": "主流诊断标准参考区间（待导师核对具体实验室标准）",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "LAB-INR",
+    "category": "lab_reference",
+    "question": "凝血酶原时间国际标准化比值(INR)的参考范围与意义",
+    "answer": "国际标准化比值（INR）反映外源性凝血功能，成人常见参考区间约 0.8–1.2。升高提示凝血功能受损，肝脏合成功能障碍（如严重肝病）或维生素 K 缺乏时可见。明显升高伴出血需及时就医。以报告单标注区间为准。",
+    "source": "主流诊断标准参考区间（待导师核对具体实验室标准）",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "LAB-CREA",
+    "category": "lab_reference",
+    "question": "肌酐(Cr)的参考范围与意义",
+    "answer": "肌酐（Cr）反映肾功能，儿童参考区间随年龄、肌肉量变化（如幼儿约 27–62 μmol/L，较大儿童接近成人上限）。升高提示肾功能受损，化疗肾毒性监测中常用。以报告单标注的年龄别参考区间为准。",
+    "source": "主流诊断标准参考区间（待导师核对具体实验室标准）",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  }
+]

@@ -1,0 +1,44 @@
+<view class="msg {{role === 'user' ? 'msg-user' : 'msg-bot'}}">
+  <view class="avatar">{{role === 'user' ? '我' : '医'}}</view>
+  <view class="bubble {{role === 'user' ? 'bubble-user' : 'bubble-bot'}}">
+
+    <!-- 用户侧：化验单缩略图 -->
+    <view wx:if="{{role === 'user' && type === 'ocr'}}" class="ocr-thumb" bindtap="previewImage" data-url="{{imagePath}}">
+      <image class="ocr-img" src="{{imagePath}}" mode="aspectFill" />
+      <view class="ocr-tag">化验单</view>
+    </view>
+
+    <!-- 加载态 -->
+    <view wx:if="{{loading}}" class="loading">
+      <view class="dot"></view><view class="dot"></view><view class="dot"></view>
+    </view>
+
+    <block wx:else>
+      <!-- 文本问答 -->
+      <text wx:if="{{type === 'text'}}" class="content" user-select="{{true}}" space="nbsp">{{content}}</text>
+
+      <!-- 化验单解读 -->
+      <block wx:if="{{type === 'ocr'}}">
+        <view class="ocr-label">📋 化验单解读</view>
+        <text class="content" user-select="{{true}}" space="nbsp">{{content}}</text>
+
+        <view wx:if="{{rawText}}" class="raw-box">
+          <view class="raw-toggle" bindtap="toggleRaw">{{showRaw ? '收起识别原文 ▲' : '查看识别原文 ▼'}}</view>
+          <text wx:if="{{showRaw}}" class="raw-text" user-select="{{true}}" space="nbsp">{{rawText}}</text>
+        </view>
+      </block>
+
+      <!-- 参考来源 -->
+      <view wx:if="{{sources.length}}" class="sources">
+        <view class="sources-title">参考来源</view>
+        <view
+          class="source-chip"
+          wx:for="{{sources}}"
+          wx:key="id"
+          bindtap="onSourceTap"
+          data-source="{{item}}"
+        >[{{item.id}}] {{item.title}}</view>
+      </view>
+    </block>
+  </view>
+</view>

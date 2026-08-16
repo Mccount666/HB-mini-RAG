@@ -1,0 +1,28 @@
+/* app.wxss - 全局样式 */
+page {
+  --brand: #07c160;
+  --brand-dark: #06a050;
+  --bg: #f5f6f8;
+  --text: #1f2329;
+  --text-sub: #8a9099;
+  --bot-bubble: #ffffff;
+  --user-bubble: #07c160;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", sans-serif;
+  font-size: 28rpx;
+}
+
+view, text, input, button {
+  box-sizing: border-box;
+}
+
+.btn-reset {
+  margin: 0;
+  padding: 0;
+  background: none;
+  line-height: normal;
+}
+.btn-reset::after {
+  border: none;
+}

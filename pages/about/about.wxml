@@ -1,0 +1,21 @@
+<scroll-view class="about" scroll-y>
+  <view class="block">
+    <view class="title">这是什么</view>
+    <view class="text">这是一个面向肝母细胞瘤患儿家长的智能问答助手。所有回答都基于我们整理的权威知识库，由检索增强生成（RAG）技术作答，并尽可能标注参考来源。</view>
+  </view>
+
+  <view class="block">
+    <view class="title">如何减少"胡说"</view>
+    <view class="text">1. 答案只来自知识库，不靠模型自由发挥；\n2. 知识库找不到相关内容时，会直接说明"暂未收录"，绝不编造；\n3. 每条回答尽量标注来源编号，可点击查看出处；\n4. 大模型与向量库均由开发团队自主接入，便于持续校准。</view>
+  </view>
+
+  <view class="block warn">
+    <view class="title">重要免责声明</view>
+    <view class="text">本工具不能替代医生的诊断和医嘱。涉及用药、剂量、手术方案等，请务必以您的主治医生和医院意见为准。如遇急症，请立即就医。</view>
+  </view>
+
+  <view class="block">
+    <view class="title">知识库说明</view>
+    <view class="text">知识库内容需由儿科肿瘤专业医生审核后方可正式发布。当前示例数据仅供演示，请勿作为诊疗依据。如发现内容有误，请在"智能问答"页反馈。</view>
+  </view>
+</scroll-view>

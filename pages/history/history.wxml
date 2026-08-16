@@ -1,0 +1,9 @@
+<view class="history">
+  <view wx:if="{{list.length === 0}}" class="empty">暂无历史问答</view>
+  <view class="card" wx:for="{{list}}" wx:key="id" bindtap="onTap" data-item="{{item}}">
+    <view class="q">{{item.question}}</view>
+    <view class="a">{{item.answer}}</view>
+    <view class="meta">{{item.timeText}} · {{item.sources.length}} 个来源</view>
+  </view>
+  <view wx:if="{{list.length}}" class="clear" bindtap="onClear">清空历史</view>
+</view>

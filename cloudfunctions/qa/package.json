@@ -1,0 +1,13 @@
+{
+  "name": "qa-cloudfunction",
+  "version": "1.0.0",
+  "description": "肝母细胞瘤 RAG 问答 + 化验单 OCR 解读云函数（复用 backend/src/rag、src/ocr）",
+  "main": "index.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3",
+    "tencentcloud-sdk-nodejs-ocr": "~4.0.0"
+  }
+}

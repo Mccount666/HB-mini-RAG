@@ -1,0 +1,43 @@
+<view class="chat-container">
+  <view class="disclaimer" wx:if="{{showDisclaimer}}">
+    <text>⚠️ 本助手仅基于权威知识库作答，不能替代主治医生诊断。急症请立即就医。</text>
+    <text class="disclaimer-close" bindtap="dismissDisclaimer">收起</text>
+  </view>
+
+  <scroll-view class="msg-list" scroll-y scroll-into-view="{{scrollTarget}}" scroll-with-animation>
+    <view wx:if="{{messages.length === 0}}" class="empty">
+      <view class="empty-title">您好，我是肝母细胞瘤问答助手</view>
+      <view class="empty-sub">您可以问我关于疾病、治疗、护理、随访的问题。</view>
+      <view class="quick-list">
+        <view class="quick-item" wx:for="{{quickQuestions}}" wx:key="*this" bindtap="onQuickTap" data-q="{{item}}">{{item}}</view>
+      </view>
+    </view>
+
+    <block wx:for="{{messages}}" wx:key="id">
+      <chat-message
+        id="msg-{{item.id}}"
+        role="{{item.role}}"
+        type="{{item.type}}"
+        content="{{item.content}}"
+        imagePath="{{item.imagePath}}"
+        rawText="{{item.rawText}}"
+        sources="{{item.sources}}"
+        loading="{{item.loading}}"
+      />
+    </block>
+  </scroll-view>
+
+  <view class="input-bar">
+    <view class="upload-btn {{sending ? 'disabled' : ''}}" bindtap="onUpload">＋化验单</view>
+    <input
+      class="input"
+      value="{{inputValue}}"
+      bindinput="onInput"
+      confirm-type="send"
+      bindconfirm="onSend"
+      placeholder="输入您的问题…"
+      disabled="{{sending}}"
+    />
+    <button class="send-btn {{sending ? 'disabled' : ''}}" bindtap="onSend" disabled="{{sending}}">发送</button>
+  </view>
+</view>

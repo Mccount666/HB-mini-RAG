@@ -1,0 +1,41 @@
+.history {
+  padding: 24rpx;
+}
+.empty {
+  text-align: center;
+  color: #8a9099;
+  margin-top: 120rpx;
+  font-size: 28rpx;
+}
+.card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+.q {
+  font-size: 28rpx;
+  font-weight: 600;
+  margin-bottom: 12rpx;
+}
+.a {
+  font-size: 26rpx;
+  color: #4a5057;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+.meta {
+  margin-top: 14rpx;
+  font-size: 22rpx;
+  color: #b0b5bd;
+}
+.clear {
+  text-align: center;
+  color: #e54d42;
+  font-size: 26rpx;
+  margin-top: 20rpx;
+  padding: 20rpx;
+}
