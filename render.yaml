@@ -1,0 +1,20 @@
+# render.yaml - Render 一键部署配置（后端 AI 服务）
+# 用法：登录 render.com → New → Blueprint → 选择本仓库 → Apply，
+# 然后在 Environment 里填 LLM_API_KEY（DeepSeek Key）即可。
+services:
+  - type: web
+    name: hb-qa-backend
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      # 知识库向量索引随仓库分发；如后续修改知识库，重新 npm run ingest 并提交
+      - key: EMBEDDING_PROVIDER
+        value: local
+      - key: LLM_API_KEY
+        sync: false # 在 Render 控制台填写，绝不入库

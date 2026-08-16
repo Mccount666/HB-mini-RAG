@@ -124,7 +124,19 @@ curl -X POST http://localhost:3000/api/chat -H 'Content-Type: application/json' 
 cd backend && npm test          # 11 项单元测试：同义词/BM25/门控分隔/护栏/追问
 node tools/eval.js              # 检索评测：范围内命中率、出范围拦截、阈值建议
 node tools/smoke.js             # 端到端冒烟（需先 npm run ingest）：mock 大模型跑全链路
+node tools/qa-live-test.js      # 实机测试（需 backend/.env 配好 LLM_API_KEY 并启动服务）
 ```
+
+## 网页测试版（v0.0.2）
+
+供身边人体验反馈的网页版，部署在 GitHub Pages：
+**https://mccount666.github.io/HB-mini-RAG/**（手机/电脑均可打开）
+
+- `web/` 目录为网页源码；`rag-client.js` 是后端防幻觉逻辑的浏览器移植版（改后端需同步）
+- 默认**演示模式**：检索、门控、拒答在访客浏览器本地完成，直接展示知识库原文（零生成）
+- 连接免费后端（render.yaml 一键部署，Key 只存后端环境变量）后即为 **AI 模式**
+- 每条回答带 👍/👎 反馈按钮（访客本地 + 后端 `/api/feedback` 双路收集）
+- 发布/更新：`node tools/deploy-pages.js`（详见 `docs/DEPLOY-WEB.md`）
 
 ## 知识库审核工作流（上线前必做）
 

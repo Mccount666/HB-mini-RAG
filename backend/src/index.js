@@ -4,6 +4,7 @@ const cors = require('cors');
 const config = require('./config');
 const chatRouter = require('./routes/chat');
 const authRouter = require('./routes/auth');
+const feedbackRouter = require('./routes/feedback');
 
 const app = express();
 app.use(cors());
@@ -12,6 +13,7 @@ app.use(express.json());
 app.get('/health', (req, res) => res.json({ ok: true }));
 app.use('/api', authRouter);
 app.use('/api', chatRouter);
+app.use('/api', feedbackRouter);
 
 app.listen(config.port, () => {
   console.log(`肝母细胞瘤 RAG 后端已启动: http://localhost:${config.port}`);
