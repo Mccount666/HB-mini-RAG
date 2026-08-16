@@ -11,12 +11,33 @@
     "minified": true,
     "newFeature": true,
     "bigPackageSizeSupport": true,
-    "urlCheck": true
+    "urlCheck": true,
+    "compileWorklet": false,
+    "uglifyFileName": false,
+    "uploadWithSourceMap": true,
+    "packNpmManually": false,
+    "packNpmRelationList": [],
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "localPlugins": false,
+    "disableUseStrict": false,
+    "useCompilerPlugins": false,
+    "condition": false,
+    "swc": false,
+    "disableSWC": true,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    }
   },
   "compileType": "miniprogram",
   "libVersion": "3.5.0",
-  "appid": "touristappid",
+  "appid": "wx92ba1d52a0eb2e43",
   "projectname": "hepatoblastoma-qa-miniprogram",
   "cloudfunctionRoot": "cloudfunctions/",
-  "condition": {}
+  "condition": {},
+  "simulatorPluginLibVersion": {},
+  "editorSetting": {},
+  "cloudfunctionTemplateRoot": "cloudfunctionTemplate/"
 }

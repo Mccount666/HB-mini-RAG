@@ -130,9 +130,10 @@ async function handleHttp(event) {
     return httpJson({ error: '请求体必须是合法 JSON' }, 400);
   }
 
-  // 按云接入路径路由：/api/feedback → 反馈；其余（/api/chat）→ 问答
+  // 路由：按路径或请求体特征区分（body 带 rating 一律视为反馈，与网关路径改写无关）
   const p = String(event.path || '');
-  if (p.includes('feedback')) {
+  const isFeedback = p.includes('feedback') || (data && data.rating);
+  if (isFeedback) {
     return httpJson(await handleFeedback(data));
   }
   const result = await handleCall(data);
