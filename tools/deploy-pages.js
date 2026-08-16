@@ -10,11 +10,13 @@ const root = path.join(__dirname, '..');
 const webDir = path.join(root, 'web');
 const tmp = path.join(root, '.gh-pages-tmp');
 
-function run(cmd, cwd = root) {
-  return execSync(cmd, { cwd, encoding: 'utf-8', stdio: ['ignore', 'pipe', 'pipe'] });
+function run(cmd) {
+  // 注意：不传 cwd，让命令跟随 process.chdir 的当前目录（曾在默认参数里固定 root，
+  // 导致 git rm 在主仓库执行、误删工作区文件——已修复并加防护，勿改回）
+  return execSync(cmd, { encoding: 'utf-8', stdio: ['ignore', 'pipe', 'pipe'] });
 }
-function tryRun(cmd, cwd = root) {
-  try { run(cmd, cwd); return true; } catch (e) { return false; }
+function tryRun(cmd) {
+  try { run(cmd); return true; } catch (e) { return false; }
 }
 
 // 可选：更新默认后端地址
@@ -36,6 +38,8 @@ run(`git worktree add --detach "${tmp}" HEAD`);
 
 try {
   process.chdir(tmp);
+  // 安全护栏：后续的 git rm 只允许发生在临时 worktree 里
+  if (process.cwd() !== tmp) throw new Error('worktree 目录切换失败，中止');
   tryRun('git branch -D gh-pages');
   run('git checkout --orphan gh-pages');
   tryRun('git rm -rf -q .');
@@ -55,6 +59,7 @@ try {
   run('git -c credential.helper="!gh auth git-credential" push -f origin gh-pages');
   console.log('✓ gh-pages 分支已推送。');
 } finally {
+  // 无论如何都回到主仓库再清理 worktree
   process.chdir(root);
   tryRun(`git worktree remove --force "${tmp}"`);
 }
