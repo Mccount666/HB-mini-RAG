@@ -1,8 +1,13 @@
 // cloudfunctions/qa/index.js - 微信云开发云函数入口
 // 复用 backend/src/rag 的同一套 RAG 管线（防幻觉逻辑单一来源）。
-// 支持两种调用：
-//   type 缺省/'chat' : { message, history } → 文本问答
-//   type:'ocr'       : { fileID }          → 化验单 OCR 识别 + 解读
+// 支持三种调用：
+//   1. 小程序直调  wx.cloud.callFunction({name:'qa'})
+//      · 文本问答 : { message, history }
+//      · 化验单   : { type:'ocr', fileID }
+//   2. HTTP 访问服务（云接入）——供网页版（GitHub Pages / 静态托管）跨域调用：
+//      POST /api/chat     body {"message": "...", "history": []}
+//      POST /api/feedback body {"q": "...", "rating": "good|bad", "comment": "..."}
+//      GET  任意路径 → 健康检查；OPTIONS → CORS 预检
 // 部署前运行 tools/sync-cloudfunction.js，把 rag / ocr 模块与 config 同步进本目录。
 const path = require('path');
 
@@ -14,19 +19,25 @@ const { ocrFromFile } = require('./src/ocr/ocr');
 const { interpretLabReport } = require('./src/ocr/interpret');
 
 let cloudInited = false;
-// 从云存储下载图片到临时文件（仅在 OCR 分支调用，wx-server-sdk 懒加载以避免本地缺包报错）
-async function downloadFromCloud(fileID) {
+function getCloud() {
   const cloud = require('wx-server-sdk');
   if (!cloudInited) {
     cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
     cloudInited = true;
   }
+  return cloud;
+}
+
+// 从云存储下载图片到临时文件（仅在 OCR 分支调用，wx-server-sdk 懒加载以避免本地缺包报错）
+async function downloadFromCloud(fileID) {
+  const cloud = getCloud();
   const res = await cloud.downloadFile({ fileID });
   if (res.statusCode !== 200) throw new Error('下载图片失败: ' + res.statusCode);
   return res.tempFilePath;
 }
 
-exports.main = async (event = {}, context = {}) => {
+// ===== 业务处理（小程序直调事件） =====
+async function handleCall(event = {}) {
   const { type, message, history, fileID } = event || {};
 
   // ===== OCR 化验单解读分支 =====
@@ -55,4 +66,88 @@ exports.main = async (event = {}, context = {}) => {
     console.error('[qa] error:', err);
     return { answer: '', sources: [], error: err.message };
   }
+}
+
+// ===== 网页版反馈入库（写入云开发数据库 feedback 集合，控制台可直接查看） =====
+async function handleFeedback(data = {}) {
+  const rec = {
+    q: String(data.q || '').slice(0, 300),
+    rating: data.rating === 'good' ? 'good' : 'bad',
+    comment: String(data.comment || '').slice(0, 500),
+    mode: data.mode === 'ai' ? 'ai' : 'demo',
+    ts: new Date().toISOString(),
+  };
+  try {
+    const db = getCloud().database();
+    await db.collection('feedback').add({ data: rec });
+  } catch (err) {
+    // 集合不存在或数据库异常时：记录日志并照样返回成功（访客浏览器本地还有一份）
+    console.warn('[qa.feedback] 入库失败（可在云开发控制台创建 feedback 集合）:', err.message);
+  }
+  console.log('[feedback]', JSON.stringify(rec));
+  return { ok: true };
+}
+
+// ===== HTTP 访问服务（云接入）适配层 =====
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+};
+
+function httpJson(obj, statusCode = 200) {
+  return {
+    statusCode,
+    headers: { ...CORS_HEADERS, 'Content-Type': 'application/json; charset=utf-8' },
+    body: JSON.stringify(obj),
+  };
+}
+
+function parseHttpBody(event) {
+  if (!event.body) return {};
+  let raw = event.body;
+  if (event.isBase64Encoded) raw = Buffer.from(raw, 'base64').toString('utf-8');
+  return typeof raw === 'string' ? JSON.parse(raw) : raw;
+}
+
+async function handleHttp(event) {
+  // CORS 预检
+  if (event.httpMethod === 'OPTIONS') {
+    return { statusCode: 204, headers: CORS_HEADERS, body: '' };
+  }
+  // 健康检查（浏览器打开网址即可验证服务在线）
+  if (event.httpMethod === 'GET') {
+    return httpJson({ ok: true, service: 'hb-qa', time: new Date().toISOString() });
+  }
+  if (event.httpMethod !== 'POST') {
+    return httpJson({ error: '仅支持 POST' }, 405);
+  }
+
+  let data;
+  try {
+    data = parseHttpBody(event);
+  } catch (e) {
+    return httpJson({ error: '请求体必须是合法 JSON' }, 400);
+  }
+
+  // 按云接入路径路由：/api/feedback → 反馈；其余（/api/chat）→ 问答
+  const p = String(event.path || '');
+  if (p.includes('feedback')) {
+    return httpJson(await handleFeedback(data));
+  }
+  const result = await handleCall(data);
+  return httpJson(result);
+}
+
+exports.main = async (event = {}, context = {}) => {
+  // 云接入事件带 httpMethod/body；小程序直调事件是业务数据本身
+  if (event && event.httpMethod) {
+    try {
+      return await handleHttp(event);
+    } catch (err) {
+      console.error('[qa.http] error:', err);
+      return httpJson({ answer: '', sources: [], error: '服务内部错误：' + err.message }, 500);
+    }
+  }
+  return handleCall(event);
 };
