@@ -36,10 +36,11 @@ module.exports = {
     weightVector: parseFloat(process.env.RETRIEVAL_WEIGHT_VECTOR || '0.5'),
     weightBm25: parseFloat(process.env.RETRIEVAL_WEIGHT_BM25 || '0.5'),
     // 融合分阈值：低于此值视为"知识库无相关内容"，直接拒答不调模型。
-    // local 向量化默认 0.35、api 向量化默认 0.45；改配置或换 embedding 后
+    // local 向量化默认 0.50（2026-08-30 知识库扩至 107 条后实测校准：范围内最低 0.551、
+    // 出范围漏拦最高 0.449，0.50 居中）、api 向量化默认 0.45；改配置或换 embedding 后
     // 务必用 `node tools/eval.js` 实测校准（输出在/出范围分数分布与建议阈值）。
     threshold: parseFloat(
-      process.env.RETRIEVAL_THRESHOLD || (embeddingProvider === 'local' ? '0.35' : '0.45')
+      process.env.RETRIEVAL_THRESHOLD || (embeddingProvider === 'local' ? '0.50' : '0.45')
     ),
     // 覆盖率门控（可选，默认关闭=0）：问题关键词在语料中的 IDF 加权覆盖率。
     // 注意：口语化提问（"出院后多久复查一次"）的日常用词同样查不到，覆盖率天然偏低，

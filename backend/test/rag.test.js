@@ -71,7 +71,10 @@ test('混合检索：同义词问题（AFP）能命中甲胎蛋白条目 top3', 
   const stats = buildDocStats(items);
   const { top } = await scoreItems(items, stats, localEmbed('AFP 是什么？为什么要查？'), 'AFP 是什么？为什么要查？', { topK: 3 });
   const ids = top.map((t) => t.id);
-  assert.ok(ids.includes('LAB-AFP') || ids.includes('HB-110'), `top3 应含 AFP 相关条目，实测 ${ids}`);
+  assert.ok(
+    ids.includes('LAB-AFP') || ids.includes('HB-110') || ids.includes('HB-216') || ids.includes('HB-217'),
+    `top3 应含 AFP 相关条目，实测 ${ids}`
+  );
 });
 
 // ---- 护栏：引用校验 ----
