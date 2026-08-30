@@ -1,7 +1,16 @@
 {
   "description": "肝母细胞瘤智能问答 RAG 小程序",
   "packOptions": {
-    "ignore": [],
+    "ignore": [
+      { "type": "folder", "value": "backend" },
+      { "type": "folder", "value": "web" },
+      { "type": "folder", "value": "docs" },
+      { "type": "folder", "value": "tools" },
+      { "type": "file", "value": "preview.html" },
+      { "type": "file", "value": "OVERVIEW.md" },
+      { "type": "file", "value": "README.md" },
+      { "type": "file", "value": "render.yaml" }
+    ],
     "include": []
   },
   "setting": {
