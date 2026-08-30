@@ -10,6 +10,8 @@
 //      GET  任意路径 → 健康检查；OPTIONS → CORS 预检
 // 部署前运行 tools/sync-cloudfunction.js，把 rag / ocr 模块与 config 同步进本目录。
 const path = require('path');
+const fs = require('fs');
+const os = require('os');
 
 // 云函数自带 data/index.json；优先级：环境变量 INDEX_FILE > 本目录 data/index.json
 process.env.INDEX_FILE = process.env.INDEX_FILE || path.join(__dirname, 'data', 'index.json');
@@ -29,11 +31,16 @@ function getCloud() {
 }
 
 // 从云存储下载图片到临时文件（仅在 OCR 分支调用，wx-server-sdk 懒加载以避免本地缺包报错）
+// 注意：wx-server-sdk 的 downloadFile 返回 fileContent（Buffer），没有小程序端的 tempFilePath，
+// 必须落盘成临时文件再交给 OCR（tencentOcr 内部按路径 readFileSync）。
 async function downloadFromCloud(fileID) {
   const cloud = getCloud();
   const res = await cloud.downloadFile({ fileID });
   if (res.statusCode !== 200) throw new Error('下载图片失败: ' + res.statusCode);
-  return res.tempFilePath;
+  const ext = path.extname(String(fileID).split('?')[0]) || '.png';
+  const tmp = path.join(os.tmpdir(), 'ocr-' + Date.now() + ext);
+  fs.writeFileSync(tmp, res.fileContent);
+  return tmp;
 }
 
 // ===== 业务处理（小程序直调事件） =====
