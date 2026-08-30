@@ -61,6 +61,31 @@
   padding: 6rpx 14rpx;
   margin: 0 10rpx 10rpx 0;
 }
+.rate-bar {
+  margin-top: 16rpx;
+  padding-top: 14rpx;
+  border-top: 1rpx solid #eef0f2;
+}
+.rate-ask {
+  font-size: 22rpx;
+  color: #8a9099;
+  margin-right: 12rpx;
+}
+.rate-btns {
+  display: inline-flex;
+  gap: 12rpx;
+}
+.rate-btn {
+  font-size: 22rpx;
+  color: #5a6068;
+  background: #f2f4f6;
+  border-radius: 8rpx;
+  padding: 8rpx 16rpx;
+}
+.rate-done {
+  font-size: 22rpx;
+  color: #06a050;
+}
 .loading {
   display: flex;
   gap: 8rpx;

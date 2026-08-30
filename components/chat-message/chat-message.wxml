@@ -39,6 +39,18 @@
           data-source="{{item}}"
         >[{{item.id}}] {{item.title}}</view>
       </view>
+
+      <!-- 回答评价（仅助手消息） -->
+      <view wx:if="{{role === 'assistant' && content}}" class="rate-bar">
+        <block wx:if="{{!rating}}">
+          <text class="rate-ask">这个回答有帮助吗？</text>
+          <view class="rate-btns">
+            <view class="rate-btn" bindtap="onRate" data-rating="good">👍 有帮助</view>
+            <view class="rate-btn" bindtap="onRate" data-rating="bad">👎 没帮助</view>
+          </view>
+        </block>
+        <text wx:else class="rate-done">{{rating === 'good' ? '谢谢你的反馈 👍' : '收到，我们会改进 👎'}}</text>
+      </view>
     </block>
   </view>
 </view>

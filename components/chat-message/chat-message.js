@@ -8,11 +8,17 @@ Component({
     rawText: { type: String, value: '' },             // 化验单 OCR 识别原文
     sources: { type: Array, value: [] },              // [{id, title, excerpt, source}]
     loading: { type: Boolean, value: false },
+    rating: { type: String, value: '' },              // 用户评价：'' | 'good' | 'bad'
   },
   data: {
     showRaw: false,
   },
   methods: {
+    onRate(e) {
+      if (this.data.rating) return; // 已评价过，不再触发
+      const rating = e.currentTarget.dataset.rating === 'good' ? 'good' : 'bad';
+      this.triggerEvent('rate', { rating });
+    },
     toggleRaw() {
       this.setData({ showRaw: !this.data.showRaw });
     },

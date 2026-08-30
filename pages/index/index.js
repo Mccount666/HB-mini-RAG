@@ -140,6 +140,36 @@ Page({
     });
   },
 
+  // 评价回答 👍/👎：找到对应问题后提交云数据库 feedback 集合
+  onRate(e) {
+    const id = e.currentTarget.dataset.id;
+    const rating = e.detail && e.detail.rating;
+    if (!id || !rating) return;
+    const idx = this.data.messages.findIndex((m) => m.id === id);
+    if (idx === -1) return;
+    const msg = this.data.messages[idx];
+    if (msg.rating) return; // 已评价
+
+    // 向前找最近一条用户消息作为被评价的问题
+    let q = '';
+    for (let i = idx - 1; i >= 0; i--) {
+      const m = this.data.messages[i];
+      if (m.role === 'user') {
+        q = m.type === 'ocr' ? '[化验单解读]' : m.content || '';
+        break;
+      }
+    }
+
+    this.setData({ [`messages[${idx}].rating`]: rating });
+    chat
+      .sendFeedback({ q, rating })
+      .catch(() => {
+        // 提交失败时回滚，允许用户重试
+        this.setData({ [`messages[${idx}].rating`]: '' });
+        wx.showToast({ title: '反馈失败，请重试', icon: 'none' });
+      });
+  },
+
   saveHistory(userMsg, botMsg) {
     const history = wx.getStorageSync('chat_history') || [];
     history.unshift({

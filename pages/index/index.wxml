@@ -23,6 +23,9 @@
         rawText="{{item.rawText}}"
         sources="{{item.sources}}"
         loading="{{item.loading}}"
+        rating="{{item.rating}}"
+        data-id="{{item.id}}"
+        bindrate="onRate"
       />
     </block>
   </scroll-view>

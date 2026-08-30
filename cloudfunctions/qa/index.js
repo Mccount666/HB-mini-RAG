@@ -4,6 +4,7 @@
 //   1. 小程序直调  wx.cloud.callFunction({name:'qa'})
 //      · 文本问答 : { message, history }
 //      · 化验单   : { type:'ocr', fileID }
+//      · 反馈     : { type:'feedback', q, rating:'good'|'bad', comment }
 //   2. HTTP 访问服务（云接入）——供网页版（GitHub Pages / 静态托管）跨域调用：
 //      POST /api/chat     body {"message": "...", "history": []}
 //      POST /api/feedback body {"q": "...", "rating": "good|bad", "comment": "..."}
@@ -46,6 +47,12 @@ async function downloadFromCloud(fileID) {
 // ===== 业务处理（小程序直调事件） =====
 async function handleCall(event = {}) {
   const { type, message, history, fileID } = event || {};
+
+  // ===== 反馈分支（小程序直调）：{ type:'feedback', q, rating:'good'|'bad', comment } =====
+  // 与网页版共用 handleFeedback，写入云数据库 feedback 集合
+  if (type === 'feedback') {
+    return handleFeedback(event);
+  }
 
   // ===== OCR 化验单解读分支 =====
   if (type === 'ocr') {

@@ -61,4 +61,28 @@ const analyzeReport = (fileID) => {
   });
 };
 
-module.exports = { ask, analyzeReport };
+// 对某条回答评价 👍/👎：写入云数据库 feedback 集合（与网页版同表）
+// data: { q: 用户问题, rating: 'good'|'bad', comment?: '' }
+const sendFeedback = (data) => {
+  return new Promise((resolve, reject) => {
+    if (!wx.cloud) {
+      reject(new Error('云能力未初始化，请确认已开通云开发'));
+      return;
+    }
+    wx.cloud.callFunction({
+      name: 'qa',
+      data: { type: 'feedback', comment: '', mode: 'ai', ...data },
+      success: (res) => {
+        const result = res.result || {};
+        if (result.ok) {
+          resolve(result);
+        } else {
+          reject(new Error(result.error || '反馈提交失败'));
+        }
+      },
+      fail: (err) => reject(err),
+    });
+  });
+};
+
+module.exports = { ask, analyzeReport, sendFeedback };
