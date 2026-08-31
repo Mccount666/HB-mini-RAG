@@ -43,9 +43,8 @@
 
   <!-- 底部输入区：白色圆角托板 -->
   <view class="input-area">
-    <view class="upload-pill {{sending ? 'disabled' : ''}}" bindtap="onUpload">
+    <view class="upload-circle {{sending ? 'disabled' : ''}}" bindtap="onUpload">
       <text class="plus-icon">＋</text>
-      <text>化验单</text>
     </view>
     <input
       class="main-input"

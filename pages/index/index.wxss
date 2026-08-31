@@ -127,21 +127,19 @@
   z-index: 10;
 }
 
-.upload-pill {
+.upload-circle {
+  width: 80rpx;
   height: 80rpx;
-  padding: 0 30rpx;
   background: var(--brand-soft);
   color: var(--brand-deep);
-  font-size: 26rpx;
-  border-radius: 40rpx;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 20rpx;
-  font-weight: 500;
 }
-.upload-pill.disabled { opacity: 0.5; }
-.plus-icon { font-size: 32rpx; margin-right: 8rpx; font-weight: normal; margin-top: -4rpx; }
+.upload-circle.disabled { opacity: 0.5; }
+.plus-icon { font-size: 40rpx; font-weight: normal; margin-top: -4rpx; }
 
 .main-input {
   flex: 1;
