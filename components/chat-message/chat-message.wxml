@@ -61,14 +61,20 @@
         </view>
       </view>
 
-      <!-- 评价 -->
+      <!-- 评价（内嵌，不再绝对定位） -->
       <view wx:if="{{role === 'assistant' && content}}" class="feedback-area">
         <block wx:if="{{!rating}}">
-          <view class="rate-btn" bindtap="onRate" data-rating="good">
-            <image class="heart-ico" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23DEA068' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'%3E%3C/path%3E%3C/svg%3E"/>
+          <view class="rate-row">
+            <view class="rate-btn" bindtap="onRate" data-rating="good">
+              <image class="heart-ico" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23DEA068' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'%3E%3C/path%3E%3C/svg%3E"/>
+            </view>
+            <view class="rate-btn rate-btn-bad" bindtap="onRate" data-rating="bad">
+              <text class="bad-ico">✗</text>
+            </view>
+            <text class="rate-hint">有帮助吗？</text>
           </view>
         </block>
-        <text wx:else class="rate-done">{{rating === 'good' ? '❤️ 感谢支持' : '改进中...'}}</text>
+        <text wx:else class="rate-done">{{rating === 'good' ? '❤️ 感谢支持' : '📝 已记录，会改进'}}</text>
       </view>
     </block>
   </view>

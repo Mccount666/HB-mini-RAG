@@ -17,9 +17,9 @@
     "backgroundColor": "#ffffff",
     "borderStyle": "white",
     "list": [
-      { "pagePath": "pages/index/index", "text": "智能问答" },
-      { "pagePath": "pages/history/history", "text": "历史记录" },
-      { "pagePath": "pages/about/about", "text": "使用须知" }
+      { "pagePath": "pages/index/index", "text": "智能问答", "iconPath": "assets/icons/chat.png", "selectedIconPath": "assets/icons/chat-sel.png" },
+      { "pagePath": "pages/history/history", "text": "历史记录", "iconPath": "assets/icons/clock.png", "selectedIconPath": "assets/icons/clock-sel.png" },
+      { "pagePath": "pages/about/about", "text": "使用须知", "iconPath": "assets/icons/info.png", "selectedIconPath": "assets/icons/info-sel.png" }
     ]
   },
   "sitemapLocation": "sitemap.json",

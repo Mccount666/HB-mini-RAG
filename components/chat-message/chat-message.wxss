@@ -137,15 +137,20 @@
   margin-right: 8rpx;
 }
 
-/* 底部评价点赞 */
+/* 底部评价点赞（内嵌，去掉绝对定位） */
 .feedback-area {
-  position: absolute;
-  bottom: 15rpx;
-  left: -50rpx;
+  margin-top: 20rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx dashed var(--brand-soft);
+}
+.rate-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
 }
 .rate-btn {
-  width: 44rpx;
-  height: 44rpx;
+  width: 48rpx;
+  height: 48rpx;
   border-radius: 50%;
   background: var(--brand-soft);
   display: flex;
@@ -153,16 +158,24 @@
   justify-content: center;
   box-shadow: 0 2rpx 6rpx rgba(222, 160, 104, 0.1);
 }
+.rate-btn-bad {
+  background: #FBF0F0;
+}
 .heart-ico {
-  width: 24rpx;
-  height: 24rpx;
+  width: 26rpx;
+  height: 26rpx;
+}
+.bad-ico {
+  font-size: 26rpx;
+  color: #D36C6C;
+  line-height: 1;
+}
+.rate-hint {
+  font-size: 22rpx;
+  color: var(--text-sub);
 }
 .rate-done {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  white-space: nowrap;
-  font-size: 20rpx;
+  font-size: 22rpx;
   color: var(--brand-deep);
 }
 

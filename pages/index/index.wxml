@@ -15,7 +15,10 @@
       <view class="empty-title">您好，我是肝芽小助手</view>
       <view class="empty-sub">您可以问我关于疾病、治疗、护理、随访的问题。</view>
       <view class="quick-list">
-        <view class="quick-item" wx:for="{{quickQuestions}}" wx:key="*this" bindtap="onQuickTap" data-q="{{item}}">{{item}}</view>
+        <view class="quick-item" wx:for="{{quickQuestions}}" wx:key="*this" bindtap="onQuickTap" data-q="{{item}}">
+          <text class="quick-text">{{item}}</text>
+          <text class="quick-arrow">›</text>
+        </view>
       </view>
     </view>
 
