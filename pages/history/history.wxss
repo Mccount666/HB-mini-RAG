@@ -1,26 +1,30 @@
 .history {
   padding: 24rpx;
+  background-color: var(--bg);
+  min-height: 100vh;
 }
 .empty {
   text-align: center;
-  color: #8a9099;
+  color: var(--text-sub);
   margin-top: 120rpx;
   font-size: 28rpx;
 }
 .card {
-  background: #fff;
-  border-radius: 16rpx;
-  padding: 24rpx;
-  margin-bottom: 20rpx;
+  background: var(--card);
+  border-radius: 24rpx;
+  padding: 28rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 12rpx rgba(222, 160, 104, 0.05); /* 统一弱暖影 */
 }
 .q {
-  font-size: 28rpx;
+  font-size: 30rpx;
   font-weight: 600;
-  margin-bottom: 12rpx;
+  color: var(--text);
+  margin-bottom: 16rpx;
 }
 .a {
   font-size: 26rpx;
-  color: #4a5057;
+  color: var(--text-sub);
   line-height: 1.6;
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -28,14 +32,14 @@
   overflow: hidden;
 }
 .meta {
-  margin-top: 14rpx;
+  margin-top: 20rpx;
   font-size: 22rpx;
-  color: #b0b5bd;
+  color: #C4B5AC;
 }
 .clear {
   text-align: center;
-  color: #e54d42;
+  color: #D36C6C;
   font-size: 26rpx;
-  margin-top: 20rpx;
+  margin-top: 40rpx;
   padding: 20rpx;
 }

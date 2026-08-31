@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "智能问答",
+  "navigationBarTitleText": "肝芽守护",
   "enablePullDownRefresh": false,
   "usingComponents": {
     "chat-message": "/components/chat-message/chat-message"

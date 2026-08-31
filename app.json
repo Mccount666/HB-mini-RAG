@@ -5,17 +5,17 @@
     "pages/about/about"
   ],
   "window": {
-    "navigationBarBackgroundColor": "#07c160",
-    "navigationBarTitleText": "肝母细胞瘤智能问答",
-    "navigationBarTextStyle": "white",
-    "backgroundColor": "#f5f6f8",
+    "navigationBarBackgroundColor": "#FFF7F0",
+    "navigationBarTitleText": "肝芽守护",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#FFF7F0",
     "enablePullDownRefresh": false
   },
   "tabBar": {
-    "color": "#9aa0a6",
-    "selectedColor": "#07c160",
+    "color": "#9B8E85",
+    "selectedColor": "#DEA068",
     "backgroundColor": "#ffffff",
-    "borderStyle": "black",
+    "borderStyle": "white",
     "list": [
       { "pagePath": "pages/index/index", "text": "智能问答" },
       { "pagePath": "pages/history/history", "text": "历史记录" },

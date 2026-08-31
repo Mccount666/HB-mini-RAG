@@ -1,75 +1,74 @@
-<view class="msg {{role === 'user' ? 'msg-user' : 'msg-bot'}}">
-  <view class="avatar">{{role === 'user' ? '我' : '医'}}</view>
-  <view class="bubble {{role === 'user' ? 'bubble-user' : 'bubble-bot'}}">
+<!-- components/chat-message/chat-message.wxml -->
+<view class="msg-row {{role === 'user' ? 'row-user' : 'row-bot'}}">
+  
+  <!-- AI 助手头像 -->
+  <view wx:if="{{role === 'assistant'}}" class="bot-avatar-wrap">
+    <view class="bot-avatar">
+      <!-- 手绘感心电图爱心 SVG -->
+      <image class="heart-icon" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C98A54' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'%3E%3C/path%3E%3Cpolyline points='4 12 8 12 10 8 14 16 16 12 20 12'%3E%3C/polyline%3E%3C/svg%3E"/>
+    </view>
+  </view>
 
-    <!-- 用户侧：化验单缩略图 -->
+  <view class="bubble {{role === 'user' ? 'bubble-user' : 'bubble-bot'}}">
+    
+    <!-- 图片缩略图 -->
     <view wx:if="{{role === 'user' && type === 'ocr'}}" class="ocr-thumb" bindtap="previewImage" data-url="{{imagePath}}">
       <image class="ocr-img" src="{{imagePath}}" mode="aspectFill" />
-      <view class="ocr-tag">化验单</view>
     </view>
 
-    <!-- 加载态 -->
-    <view wx:if="{{loading}}" class="loading">
+    <!-- 加载中 -->
+    <view wx:if="{{loading}}" class="loading-box">
       <view class="dot"></view><view class="dot"></view><view class="dot"></view>
     </view>
 
     <block wx:else>
-      <!-- 文本问答 -->
-      <text wx:if="{{type === 'text'}}" class="content" user-select="{{true}}" space="nbsp">{{content}}</text>
+      <view wx:if="{{type === 'text'}}" class="content-box user-select" space="nbsp"><text>{{content}}</text></view>
 
-      <!-- 化验单解读 -->
-      <block wx:if="{{type === 'ocr'}}">
-        <!-- 第一段：识别文字待确认 -->
-        <view wx:if="{{ocrStage === 'confirm'}}" class="ocr-confirm">
-          <view class="ocr-label">📋 已识别化验单文字，请核对或修正</view>
+      <!-- OCR 两段式 -->
+      <view wx:if="{{type === 'ocr'}}" class="ocr-box">
+        <view wx:if="{{ocrStage === 'confirm'}}" class="ocr-confirm-box">
+          <view class="ocr-title">📋 请核对识别文字</view>
           <textarea
             class="ocr-confirm-input"
             value="{{editText}}"
             bindinput="onConfirmInput"
             auto-height
             maxlength="2000"
-            placeholder="识别文字将显示在这里，可修改后确认"
+            placeholder="识别文字将显示在这里..."
           />
-          <view class="ocr-confirm-btns">
-            <view class="ocr-btn ocr-btn-primary" bindtap="onConfirmOcr">确认并解读</view>
-            <view class="ocr-btn" bindtap="onRetakeOcr">重新上传</view>
+          <view class="ocr-actions">
+            <view class="btn-plain" bindtap="onRetakeOcr">重新上传</view>
+            <view class="btn-solid" bindtap="onConfirmOcr">确认并解读</view>
           </view>
         </view>
-
-        <!-- 第二段：解读结果 -->
-        <block wx:else>
-          <view class="ocr-label">📋 化验单解读</view>
-          <text class="content" user-select="{{true}}" space="nbsp">{{content}}</text>
-
+        <view wx:else>
+          <view class="ocr-title">📋 报告解读</view>
+          <view class="content-box user-select" space="nbsp"><text>{{content}}</text></view>
           <view wx:if="{{rawText}}" class="raw-box">
-            <view class="raw-toggle" bindtap="toggleRaw">{{showRaw ? '收起识别原文 ▲' : '查看识别原文 ▼'}}</view>
-            <text wx:if="{{showRaw}}" class="raw-text" user-select="{{true}}" space="nbsp">{{rawText}}</text>
+            <view class="raw-toggle" bindtap="toggleRaw">{{showRaw ? '收起原文 ▲' : '查阅原文 ▼'}}</view>
+            <view wx:if="{{showRaw}}" class="raw-text user-select">{{rawText}}</view>
           </view>
-        </block>
-      </block>
-
-      <!-- 参考来源 -->
-      <view wx:if="{{sources.length}}" class="sources">
-        <view class="sources-title">参考来源</view>
-        <view
-          class="source-chip"
-          wx:for="{{sources}}"
-          wx:key="id"
-          bindtap="onSourceTap"
-          data-source="{{item}}"
-        >[{{item.id}}] {{item.title}}</view>
+        </view>
       </view>
 
-      <!-- 回答评价（仅助手消息） -->
-      <view wx:if="{{role === 'assistant' && content}}" class="rate-bar">
+      <!-- 引用标签 (书籍图标) -->
+      <view wx:if="{{sources.length}}" class="source-area">
+        <view class="source-list">
+          <view class="source-tag" wx:for="{{sources}}" wx:key="id" bindtap="onSourceTap" data-source="{{item}}">
+            <image class="book-ico" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C98A54' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 19.5A2.5 2.5 0 0 1 6.5 17H20'%3E%3C/path%3E%3Cpath d='M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z'%3E%3C/path%3E%3C/svg%3E"/>
+            <text>{{item.title}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 评价 -->
+      <view wx:if="{{role === 'assistant' && content}}" class="feedback-area">
         <block wx:if="{{!rating}}">
-          <text class="rate-ask">这个回答有帮助吗？</text>
-          <view class="rate-btns">
-            <view class="rate-btn" bindtap="onRate" data-rating="good">👍 有帮助</view>
-            <view class="rate-btn" bindtap="onRate" data-rating="bad">👎 没帮助</view>
+          <view class="rate-btn" bindtap="onRate" data-rating="good">
+            <image class="heart-ico" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23DEA068' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'%3E%3C/path%3E%3C/svg%3E"/>
           </view>
         </block>
-        <text wx:else class="rate-done">{{rating === 'good' ? '谢谢你的反馈 👍' : '收到，我们会改进 👎'}}</text>
+        <text wx:else class="rate-done">{{rating === 'good' ? '❤️ 感谢支持' : '改进中...'}}</text>
       </view>
     </block>
   </view>

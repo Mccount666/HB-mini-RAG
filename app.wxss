@@ -1,19 +1,21 @@
-/* app.wxss - 全局样式 */
+/* app.wxss - 全局样式（温暖奶油系 · 肝芽守护） */
 page {
-  --brand: #07c160;
-  --brand-dark: #06a050;
-  --bg: #f5f6f8;
-  --text: #1f2329;
-  --text-sub: #8a9099;
+  --brand: #DEA068;          /* 主色：暖橘 */
+  --brand-deep: #C98A54;     /* 深一号暖橘 */
+  --brand-soft: #FBE9DA;     /* 浅橘底 */
+  --bg: #FFF7F0;             /* 奶油色页面底 */
+  --text: #4A3E39;           /* 深咖正文（不用死黑） */
+  --text-sub: #9B8E85;       /* 次级文字 */
+  --card: #ffffff;
   --bot-bubble: #ffffff;
-  --user-bubble: #07c160;
+  --user-bubble: #DEA068;
   background: var(--bg);
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", sans-serif;
   font-size: 28rpx;
 }
 
-view, text, input, button {
+view, text, input, button, textarea {
   box-sizing: border-box;
 }
 
