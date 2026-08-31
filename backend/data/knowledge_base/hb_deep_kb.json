@@ -1,0 +1,602 @@
+[
+  {
+    "id": "HB-264",
+    "category": "疾病科普",
+    "question": "肝母细胞瘤的发病率近几年在上升吗？",
+    "answer": "是的。全球范围内肝母细胞瘤的发病率以每年约 4%~5% 的速度增长；美国从 1975—1983 年的约 0.8/100 万，上升到 2020 年的约 2.3/100 万，翻了一倍多。上升的一部分原因被认为与早产、极低出生体重儿存活率提高有关——这类孩子本身风险更高，另一部分可能与诊断技术进步、检出率提高有关。",
+    "source": "NCI PDQ; Orphanet; PMC12468388",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-265",
+    "category": "疾病科普",
+    "question": "男孩和女孩，谁更容易得肝母细胞瘤？",
+    "answer": "男孩略多，男女比例大约在 1.5:1 到 2:1 之间。也就是说每 1 到 2 个女孩患儿，大约对应 2 到 3 个男孩患儿，但差别不算悬殊，家长不必因性别过度担心。",
+    "source": "Orphanet; Radiopaedia",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-266",
+    "category": "疾病科普",
+    "question": "肿瘤一般长在肝脏的哪个位置？",
+    "answer": "肝母细胞瘤多位于肝右叶；约一半的孩子肿瘤会同时侵犯两个肝叶，或是多中心型（肝内同时有多处病灶）。所以确诊后医生一定会用影像把整个肝脏和大血管都看仔细，判断肿瘤的范围和能否手术。",
+    "source": "Radiopaedia; 腾讯医典·肝母细胞瘤",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-267",
+    "category": "疾病科普",
+    "question": "肝母细胞瘤在儿童肿瘤里占多大比例？",
+    "answer": "它约占所有儿童肿瘤的 0.5%~2%，但在儿童肝脏原发性恶性肿瘤中约占 2/3（约 62%~80%），是儿童期最常见的肝脏恶性肿瘤。换句话说，孩子肝上长恶性肿瘤，首先要想到的就是它，但它在所有儿童肿瘤里仍属于罕见病。",
+    "source": "Orphanet; Radiopaedia; 腾讯医典·肝母细胞瘤",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-268",
+    "category": "遗传",
+    "question": "Beckwith-Wiedemann综合征的孩子得肝母细胞瘤的风险到底高多少？",
+    "answer": "比普通孩子高约 1000~10000 倍，是风险最明确的高危人群之一。其中基因型为 11p15 父源单亲二体（UPD）的孩子患病率约 4.7%，两类印记调控区改变者低于 1%。正因为风险高，这类孩子出生后就要按医生要求定期查 AFP 和腹部超声，目的就是早发现、早处理。",
+    "source": "NCI PDQ; Orphanet",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-269",
+    "category": "遗传",
+    "question": "半侧身体肥大（hemihypertrophy）要重视吗？",
+    "answer": "要重视。约 2% 的肝母细胞瘤患儿伴发半侧身体肥大（身体左右两侧不对称生长），这类孩子风险升高，医生通常建议定期查 AFP 和腹部超声做早期筛查。发现孩子身体两侧明显不对称时，可以在儿保时提一句，由医生评估。",
+    "source": "Radiopaedia; NCI PDQ",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-270",
+    "category": "遗传",
+    "question": "除了常见综合征，还有哪些病和肝母细胞瘤风险相关？",
+    "answer": "还有糖原贮积病（I—IV 型）、Aicardi 综合征、Simpson-Golabi-Behmel 综合征、Noonan 综合征、脆性 X、Sotos 综合征、Prader-Willi 综合征、Prune belly、神经纤维瘤病 1 型、Goldenhar 综合征等。这些大多很罕见，是否与孩子相关由医生结合家族史评估，家长不必自行对号入座、过度恐慌。",
+    "source": "Orphanet; NCI PDQ",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-271",
+    "category": "遗传",
+    "question": "母亲怀孕期间的情况会影响孩子得肝母细胞瘤吗？",
+    "answer": "部分观察性研究发现，母体子痫前期、羊水过多或过少、孕前高体重、不孕治疗，以及父母双方吸烟、金属暴露等，与儿童肝母细胞瘤风险轻度升高有相关性。但这些都是相关性而非确定的因果关系，绝不代表家长有任何过错，请放下自责，把精力放在当下的治疗上。",
+    "source": "PMC39308612; Orphanet",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-272",
+    "category": "疾病科普",
+    "question": "肝母细胞瘤为什么几乎都有基因异常？最关键的通路是什么？",
+    "answer": "约 90% 的肝母细胞瘤存在 Wnt/β-catenin 信号通路的异常，这是最核心的驱动机制。最常见的体细胞突变是 CTNNB1 基因（编码 β-catenin 蛋白），报告突变率从 60% 到 90% 不等，是儿童肿瘤中突变率最高的基因之一。理解这些有助于医生判断风险和研究新药。",
+    "source": "Orphanet; MDPI Cancers 2022; NCI PDQ",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-273",
+    "category": "疾病科普",
+    "question": "免疫组化报告里的 β-catenin 阳性是什么意思？",
+    "answer": "表示 Wnt 信号通路被激活，β-catenin 蛋白异常地聚集到了细胞核里，通常和 CTNNB1 基因突变有关，是支持肝母细胞瘤诊断的参考依据之一。医生会结合甲胎蛋白（AFP）水平和病理形态一起判断，家长不需要自己去解读，有疑问直接问主治医生即可。",
+    "source": "Encyclopaedia of Paediatric Surgery; PMC11593527",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-274",
+    "category": "疾病科普",
+    "question": "有些孩子查出 NFE2L2 基因突变，要紧吗？",
+    "answer": "NFE2L2（也叫 NRF2）突变见于约 4%~6% 的肝母细胞瘤，它会让细胞的抗氧化、应激通路持续激活，与化疗耐药和更差的生存相关。查到这类突变的孩子，医生通常会安排更密切的监测、更谨慎地评估疗效，这属于个体化治疗的一部分。",
+    "source": "NCI PDQ; PMC6826653",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-275",
+    "category": "疾病科普",
+    "question": "TERT、TP53 这些常见癌症基因在肝母细胞瘤里常见吗？",
+    "answer": "在儿童肝母细胞瘤中少见。但如果查到 TERT 突变，孩子的诊断年龄往往明显偏大（中位约 10 岁，对比一般约 1.4 岁），肿瘤也更具侵袭性，需要特别关注。TP53 突变同样罕见。正因为这些基因在儿童里不常见，做基因检测反而能提示某些特殊情况。",
+    "source": "NCI PDQ",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-276",
+    "category": "疾病科普",
+    "question": "医生为什么还要看 11p15、IGF2 这些？",
+    "answer": "约 30%~40% 的肝母细胞瘤存在 11p15 号染色体区域的等位基因失衡（LOH/UPD），会导致 IGF2 基因过度表达。IGF2 是促进生长、促进肿瘤的关键因子，也把部分肿瘤和 Beckwith-Wiedemann 综合征的机制联系起来。这些检测帮助医生理解肿瘤的生物学特点，通常不会改变家长日常要做的事。",
+    "source": "NCI PDQ; Radiology Key",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-277",
+    "category": "疾病科普",
+    "question": "听说肝母细胞瘤的基因突变数量很少，是真的吗？",
+    "answer": "是真的。全外显子测序显示，儿童肝母细胞瘤平均每个肿瘤只有约 3 个体细胞突变，是儿童癌症中突变率最低的类型之一。突变少不等于病情轻，而是提示它主要由少数几个关键驱动事件（如 Wnt 通路异常）引起，这也为寻找针对性药物提供了方向。",
+    "source": "NCI PDQ",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-278",
+    "category": "疾病科普",
+    "question": "什么是 C1 和 C2 表达亚型？",
+    "answer": "科学家用基因表达特征把肝母细胞瘤分成两类：C1 型较多保留胎儿肝细胞的分化特征（如 GLUL、CYP2E1 等），预后较好；C2 型更像肝祖细胞/干细胞，AFP、IGF2、DLK1 等表达高，转移率高、预后较差。亚型可帮助医生预测风险，但目前主要在科研层面使用。",
+    "source": "NCI PDQ; PMC6826653",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-279",
+    "category": "疾病科普",
+    "question": "医生说的“胎儿样”“胚胎样”亚型是什么意思？",
+    "answer": "这是更前沿的单细胞研究划分：肿瘤里可以同时存在“胎儿样”和“胚胎样”两种细胞。初步研究发现，胎儿样细胞对 EGFR 抑制剂敏感，胚胎样细胞对 FGFR 抑制剂敏感，两类都对 HDAC 抑制剂敏感。这为未来个体化用药提供了候选方向，但目前还处于研究阶段，不能替代现行标准治疗。",
+    "source": "PMC11579375 (2024)",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-280",
+    "category": "病理",
+    "question": "病理报告上的“纯胎儿型”好在哪里？",
+    "answer": "纯胎儿型（高分化胎儿型）约占肝母细胞瘤的 4%，是预后最好的类型：如果肿瘤被完整切除，3~5 年生存率可达到约 100%，可以只做手术、少用甚至不用化疗。医生会根据纯胎儿型这一诊断和孩子的情况，尽量为“可只手术不化疗”的孩子争取低强度的方案。",
+    "source": "NCI PDQ; COG INT0098 / P9645",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-281",
+    "category": "病理",
+    "question": "混合上皮-间叶型是不是更麻烦？",
+    "answer": "这类肝母细胞瘤除了上皮成分，还含有骨样、软骨、肌肉、鳞状等间叶成分；其中间叶成分（尤其骨样成分）往往提示病程更具侵袭性，需要更积极的治疗和更密切的监测。但“更具侵袭性”不等于没希望，现代方案对多数孩子仍有良好效果。",
+    "source": "PMC11593527",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-282",
+    "category": "病理",
+    "question": "小细胞未分化型和 SMARCB1 是什么关系？",
+    "answer": "现在诊断小细胞未分化型（SCU）必须加做 SMARCB1 免疫组化：结果是阳性的，才属于肝母细胞瘤的 SCU 亚型；结果是阴性的，属于“肝横纹肌样肿瘤”，是另一种预后很差的病。把两者区分开非常重要，否则会误判治疗和预后。",
+    "source": "Medscape; NCI PDQ (COG AHEP0731 要求 SMARCB1 IHC)",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-283",
+    "category": "病理",
+    "question": "肝母细胞瘤大体上长什么样？",
+    "answer": "多为单发、边界清楚、分叶状，约半数有包膜，直径 5~25 厘米，切面棕褐至灰白色，可伴出血、坏死、钙化。很关键的一点是：它大多数长在原本健康的肝脏上，不像成人肝癌那样多在慢性肝病背景下发生——这也是两者的重要区别。",
+    "source": "腾讯医典·肝母细胞瘤",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-284",
+    "category": "诊断",
+    "question": "AFP 升高说明什么？所有孩子都会高吗？",
+    "answer": "约 84%~91%（甚至达 90%）的肝母细胞瘤患儿甲胎蛋白（AFP）升高，它是诊断、评估疗效、监测复发最重要的标志物。但要注意：少数（尤其小细胞未分化型）AFP 不高甚至很低，所以 AFP 正常并不能排除肝母细胞瘤，一切以医生的综合判断为准。",
+    "source": "Clinical Tree; Radiopaedia; NCI PDQ",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-285",
+    "category": "诊断",
+    "question": "AFP 术后多久应该降到正常？",
+    "answer": "AFP 的半衰期约 5~7 天，完全切除后通常约 2 个月内会降到正常。如果术后持续不降，要警惕残余肿瘤或肝再生；随访过程中 AFP 再升高，常常比影像更早提示局部复发或远处转移。所以医生会反复抽血看它的动态变化。",
+    "source": "Abdominal Key; Radiology Key; NCI PDQ",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-286",
+    "category": "诊断",
+    "question": "新生儿的 AFP 本来就很高，怎么判断？",
+    "answer": "婴儿出生时 AFP 本来就高：早产儿可达约 10 万 ng/mL，足月儿约 1 万~10 万 ng/mL，2 月龄多降到 100~1000 ng/mL，6 月龄应低于 100，1 岁应低于 10。所以解读 AFP 必须按年龄校正，绝不能拿成人标准套在小宝宝身上，这正是医生反复强调年龄对照的原因。",
+    "source": "NCI PDQ; Abdominal Key; Radiology Key",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-287",
+    "category": "诊断",
+    "question": "AFP 特别低反而不好吗？",
+    "answer": "对肝母细胞瘤来说，AFP 极低（低于 100 ng/mL）反而是不良预后因素，常对应小细胞未分化型或横纹肌样肿瘤，与病变更广泛、化疗反应差、生存更差相关。所以“AFP 高=病重、AFP 低=没事”并不成立，一切要交给医生结合病理和影像综合判断。",
+    "source": "NCI PDQ; Clinical Tree (SIOPEL 1–3); PMC36262102",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-288",
+    "category": "诊断",
+    "question": "查 β-hCG 有什么用？",
+    "answer": "部分肝母细胞瘤会分泌 β-hCG（人绒毛膜促性腺激素），导致男孩出现“同性性早熟”（约 2.3% 的患儿）。如果孩子出现性早熟表现、同时肝脏有占位，医生会查这个指标协助判断肿瘤性质。它也能和 AFP 一样，作为个别病例的疗效参考。",
+    "source": "腾讯医典·肝母细胞瘤; NCI PDQ; PMC39308612",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-289",
+    "category": "诊断",
+    "question": "为什么首选 B 超做筛查？",
+    "answer": "超声是首选初筛手段：没有辐射、方便快捷、不用镇静，能看清包块形态和内部成分（坏死、钙化、纤维间隔），还能初步评估肝静脉、下腔静脉有没有瘤栓。门诊初筛和长期随访都用它很合适，之后再根据情况选择磁共振或 CT 做更精细的评估。",
+    "source": "PMC39308612; Radiopaedia",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-290",
+    "category": "诊断",
+    "question": "磁共振和 CT 各有什么优势？",
+    "answer": "磁共振（MRI）软组织分辨好、没有电离辐射、可用肝脏特异性对比剂，是评估肿瘤与大血管、胆道关系以及多发病灶的首选；CT 成像快、空间分辨高、能一次看肺有没有转移，约 40%~50% 的肝母细胞瘤在 CT 上可见钙化。医生会根据孩子情况选择或组合使用。",
+    "source": "PMC39308612; Radiology Key; Radiopaedia",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-291",
+    "category": "诊断",
+    "question": "PET-CT 一定要做吗？",
+    "answer": "不一定。PET-CT 主要用于怀疑复发或转移时的进一步检查，对小于 6~10 毫米的病灶并不可靠，也不作为常规初筛手段。是否需要做、什么时候做，由主治医生根据孩子的具体情况安排，家长不必主动要求加做。",
+    "source": "Radiology Key; Abdominal Key",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-292",
+    "category": "分期",
+    "question": "PRETEXT 的四个分区具体怎么分？",
+    "answer": "医生把肝脏按解剖分成 4 个区：右前区、右后区、左内区、左外区。PRETEXT I 是 3 个相邻区没有肿瘤，II 是 2 个相邻区没有肿瘤，III 是仅 1 个区没有肿瘤，IV 是 4 个区都有肿瘤。分级越高，说明肿瘤在肝内占的范围越大。",
+    "source": "NCI PDQ; Medscape; IntechOpen",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-293",
+    "category": "分期",
+    "question": "国际上 CHIC 风险分层是什么？怎么分？",
+    "answer": "CHIC 风险分层是国际上统一的肝母细胞瘤预后分层方法，整合了 SIOPEL、COG、GPOH、JPLT 四个协作组、8 项临床试验、共 1605 例患儿的数据。关键的不良因素包括：PRETEXT 分级高、带 V/P/E/F/R/M+ 注解、AFP 不超过 100、年龄偏大（PRETEXT I—III 的孩子 ≥8 岁，PRETEXT IV 的孩子 ≥3 岁）。医生据此把患儿分入不同风险组。",
+    "source": "Czauderna et al., Eur J Cancer 2016 [PMID: 26718429]; NCI PDQ",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-294",
+    "category": "分期",
+    "question": "按 PRETEXT 分级，5 年生存率大概是多少？",
+    "answer": "在暂不考虑其他因素的情况下：PRETEXT I 约 90%、II 约 83%、III 约 73%、IV 约 52%。如果单独看有血管/肝外侵犯等注解（V/P/E/F/R/M+）的，生存率会明显下降（约 40%~53%）。这些数字是群体统计，每个孩子都不一样，主要让家长对“分期意义”有个概念。",
+    "source": "NCI PDQ (Spanish version)",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-295",
+    "category": "治疗-手术",
+    "question": "手术最多能切掉多少肝脏？剩下的够用吗？",
+    "answer": "因为肝母细胞瘤大多不伴肝硬化、多为单发且包膜完整，切除量可以很大，极限可达到全肝的约 75%（左或右三叶切除）。肝脏再生能力很强，剩余的健康部分会逐渐长大、承担功能，所以医生评估“能切干净”时会尽量争取彻底切除。",
+    "source": "腾讯医典·肝母细胞瘤",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-296",
+    "category": "治疗-化疗",
+    "question": "为什么很多孩子确诊时不能马上手术？",
+    "answer": "约 70%~80% 的孩子发现时肿瘤太大，或紧贴肝静脉、门静脉等重要血管，直接手术风险高、可能切不干净。所以需要先做几程化疗把肿瘤缩小（这叫新辅助化疗），再重新评估能否手术。这也是“先化疗、再手术”这一常规路径的原因。",
+    "source": "NCI PDQ; PMC36262102",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-297",
+    "category": "治疗-化疗",
+    "question": "SIOPEL-3 研究告诉了我们什么？",
+    "answer": "对标准危险度的肝母细胞瘤患儿，顺铂单药和顺铂+阿霉素的疗效相当，而单药方案的毒性更低。它的意义是：并不是药加得越多越好，关键是给孩子“恰到好处”的强度——该减的要减，避免不必要的副作用，这也是风险分层治疗的核心思想。",
+    "source": "Medscape (SIOPEL-3)",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-298",
+    "category": "治疗-化疗",
+    "question": "SIOPEL-4 的高危方案效果如何？",
+    "answer": "高危组使用剂量密集的顺铂+阿霉素（必要时加卡铂），3 年无事件生存率约 76%、总生存率约 83%。代价是几乎全部孩子会出现 3~4 级血液毒性、约半数有中重度耳毒性，所以需要非常强的支持护理和听力监测。这也提醒我们：高危方案有效，但副作用管理同样重要。",
+    "source": "Medscape (SIOPEL-4)",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-299",
+    "category": "治疗-化疗",
+    "question": "顺铂伤耳朵，现在有什么保护办法？",
+    "answer": "有。在顺铂输注后 6 小时静脉给予硫代硫酸钠（STS），能明显减少铂类药引起的高频听力损失（听力损失从 63% 降到 33%，降幅约一半），而且不影响疗效。该方案已被美国 FDA 批准用于 1 月龄以上患儿，家长可以在治疗前向医生了解是否需要并评估适用性。",
+    "source": "Medscape (SIOPEL-6 / COG ACCL0431)",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-300",
+    "category": "治疗-化疗",
+    "question": "美国 COG AHEP0731 是怎么分层治疗的？",
+    "answer": "它按风险分层：极低危（纯胎儿型且已切除）只做手术；低危（已切除）用减量的 C5V 方案 2 程，5 年无事件生存率约 88%、总生存率约 91%，并把顺铂累积剂量从传统的 480 mg/m² 降到 200 mg/m²，明显减少耳毒性；中危（不可切除）用 C5VD；高危（转移或 AFP<100）用 VI 窗口后加 C5VD，3 年无事件生存率约 49%、总生存率约 62%。具体方案由主治团队决定。",
+    "source": "Medscape; NCI PDQ; 中文化疗策略综述",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-301",
+    "category": "治疗-移植",
+    "question": "肝移植前必须满足什么条件？",
+    "answer": "基本前提是没有远处或区域转移，或者转移已经被化疗、手术清除；肺转移的孩子在影像确认清除后仍然可以移植。也就是说，“先把肿瘤控制在肝内”是移植能否进行的关键。医生会做完整的术前评估，包括肿瘤控制和排除肝外转移。",
+    "source": "Medscape; NCI PDQ",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-302",
+    "category": "治疗-移植",
+    "question": "为什么强调“第一次治疗就要评估移植”？",
+    "answer": "因为补救性移植（先按常规治疗失败后再做）的结局，明显差于初治阶段就评估、按计划完成的移植。所以对可能切不掉的患儿，医生一开始就会请移植中心参与评估，把移植纳入整体方案，而不是拖到最后才考虑。这关系到孩子的长期结局。",
+    "source": "ResearchGate Varvoglis et al., Hepatoma Res 2022",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-303",
+    "category": "治疗",
+    "question": "TACE、TARE 是什么治疗？",
+    "answer": "TACE（经动脉化疗栓塞）和 TARE（经动脉放射栓塞）是通过一根导管，把化疗药或带放射性物质的微球送到肿瘤的供血动脉，直接作用于肿瘤。它们常用于缩小肿瘤、提高手术切除的可行性，或控制肿瘤破裂出血，属于局部治疗手段，由介入科医生评估是否适合。",
+    "source": "NCI PDQ; 腾讯医典·小儿肝肿瘤",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-304",
+    "category": "治疗",
+    "question": "肿瘤破裂还能治好吗？",
+    "answer": "能。肿瘤破裂属于急症，需要先急诊处理（如经动脉栓塞止血、纠正贫血、对症支持），稳定病情后继续化疗+手术，仍可能获得良好结局。研究指出肿瘤破裂本身并不预示没有希望，关键是第一时间规范处理。",
+    "source": "PMC39308612; NCI PDQ",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-305",
+    "category": "预后",
+    "question": "影响肝母细胞瘤预后最强的因素是什么？",
+    "answer": "是能不能把肿瘤完全切除（包括通过肝移植实现）。研究显示手术时机的掌握对生存有显著影响（P<.001）。能切干净并配合规范治疗的孩子，长期生存率很高。这也是为什么整个治疗过程都在为“安全、彻底地切除”做铺垫。",
+    "source": "PMC36262102; Ovid IJPAM",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-306",
+    "category": "预后",
+    "question": "化疗后 AFP 快速下降是不是好兆头？",
+    "answer": "是。化疗后 AFP 早期大幅下降（下降 1~2 个对数以上）是生存的独立预测因子，说明肿瘤对化疗很敏感，通常意味着更好的疗效和结局。医生会特别关注 AFP 曲线的斜率，家长配合按时抽血复查就是最好的支持。",
+    "source": "Clinical Tree / Abdominal Key",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-307",
+    "category": "预后",
+    "question": "能切干净的肝母细胞瘤长期生存能到多少？",
+    "answer": "单中心 20 年经验显示：5 年总生存率约 88.9%、无病生存率约 80.8%，新生儿与 5 岁以下的孩子结局相当。总体来看，肝母细胞瘤 5 年总生存率约 70%，低危组规范治疗下可超过 90%。它是治愈率较高的儿童实体瘤之一。",
+    "source": "PMC36262102; NCI PDQ; 中文化疗策略综述",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-308",
+    "category": "诊断",
+    "question": "孩子肝上长东西，除了肝母细胞瘤还可能是哪些病？",
+    "answer": "还可能是：血管瘤/婴儿型血管内皮瘤、肝间叶性错构瘤、局灶性结节增生、儿童肝细胞癌、未分化胚胎性肉瘤、横纹肌肉瘤、肝横纹肌样瘤、肝腺瘤、神经母细胞瘤肝转移等。医生会结合孩子年龄、AFP 水平、影像特点和病理结果来鉴别，家长不需要自己判断。",
+    "source": "Orphanet; Radiopaedia; 腾讯医典·小儿肝肿瘤",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-309",
+    "category": "诊断",
+    "question": "肝母细胞瘤和儿童肝癌怎么区分？",
+    "answer": "肝母细胞瘤多见于婴幼儿，且大多不伴肝硬化；儿童肝细胞癌多见于较大的儿童和青少年，常与乙肝等慢性肝病史相关。结合 AFP 的数值模式、发病年龄和临床背景，多数情况可以区分，必要时靠病理确诊。两者治疗方案不同，所以分清楚很重要。",
+    "source": "Orphanet; Radiopaedia; NCI PDQ",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-310",
+    "category": "治疗",
+    "question": "现在有获批的肝母细胞瘤靶向药吗？",
+    "answer": "目前还没有获批的肝母细胞瘤靶向药，标准治疗仍是铂类化疗加手术（必要时移植）。但因为复发率不低（3 年无复发生存率约 34%）、化疗远期毒性明显（耳毒、心毒），全球都在积极研究靶向治疗，家长可以在主治医生指导下关注临床试验信息。",
+    "source": "Abril Fornaguera 2024 thesis; Wang 2024 scoping review",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-311",
+    "category": "治疗",
+    "question": "为什么科学家最想攻克 β-catenin 这个靶点？",
+    "answer": "因为约九成肝母细胞瘤存在 Wnt/β-catenin 通路异常，它是最核心、最常见的驱动机制，也是最值得攻击的靶点。但 β-catenin 蛋白本身“成药性差”（分子表面缺少适合小分子药物结合的口袋），直接开发抑制剂很困难。目前靠类器官和小鼠模型筛选能抑制该通路的小分子，属于前沿研究。",
+    "source": "Abril Fornaguera 2024 thesis; PMC11579375",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-312",
+    "category": "治疗",
+    "question": "免疫治疗对肝母细胞瘤管用吗？",
+    "answer": "目前证据有限、并不乐观。肝母细胞瘤的 Wnt/β-catenin 激活常伴随“免疫荒漠”：CCL5 下调、树突细胞功能受损、NKG2D 配体下调，理论上对 PD-1/PD-L1 检查点抑制剂反应较差。目前没有获批的免疫治疗用于肝母细胞瘤，相关证据主要从肝癌研究外推，需谨慎看待网上的“免疫治疗有效”说法。",
+    "source": "Abril Fornaguera 2024 thesis",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-313",
+    "category": "治疗",
+    "question": "类器官筛选药物靠谱吗？",
+    "answer": "患者来源的肝母细胞瘤类器官研究显示：胎儿样细胞对 EGFR 抑制剂敏感、胚胎样细胞对 FGFR 抑制剂敏感，两类都对 HDAC 抑制剂敏感，为未来个体化用药提供了有希望的候选方向。但目前仍处于研究阶段，不能替代现行标准治疗，参与相关试验需由主治团队评估。",
+    "source": "PMC11579375 (2024)",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-314",
+    "category": "随访",
+    "question": "随访为什么要一直查胸部？",
+    "answer": "因为肺是最常见的转移和复发部位，约 10%~20% 的孩子在诊断时就有肺转移。所以胸部检查（X 线或 CT）是随访的必查项目，不能省。复查时“只查肚子”是不够的，家长要按医生的方案完成胸腹影像和 AFP 的整套检查。",
+    "source": "Radiology Key; 腾讯医典·小儿肝肿瘤",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-315",
+    "category": "随访",
+    "question": "典型的复查节奏是怎样的？",
+    "answer": "综合指南的建议大致是：第 1 年每月查 AFP、每 3 个月做一次影像（胸部+腹部）；第 2~3 年每 6 个月；第 3~5 年每年。具体间隔、项目和时长，以主治医生为孩子制定的个体化随访方案为准，家长照单执行即可。",
+    "source": "腾讯医典·小儿肝肿瘤（随访方案）",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-316",
+    "category": "疾病科普",
+    "question": "家长怎么“一图读懂”肝母细胞瘤？",
+    "answer": "一句话：肝母细胞瘤是儿童最常见的肝脏恶性肿瘤，多数是 3 岁前的宝宝得的“胚胎性”肿瘤，来源于肝脏早期发育的细胞异常增生；它不是传染病、不是家长照顾不周。规范治疗下，低危孩子 5 年生存率可超过 90%，整体约七成能长期存活。请把力气放在配合治疗上。",
+    "source": "Orphanet; NCI PDQ; 中文化疗策略综述",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-317",
+    "category": "疾病科普",
+    "question": "为什么说肝母细胞瘤是“手术优先”的肿瘤？",
+    "answer": "因为能否把肿瘤彻底切掉，是决定生存的最重要因素；化疗（尤其顺铂）主要是为手术铺路，把肿瘤缩小到能安全切除。即使化疗反应很好，最终目标仍是手术切除或肝移植。所以“先化疗再手术”不是拖延，而是为了让手术更安全、更彻底。",
+    "source": "PMC36262102; NCI PDQ",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-318",
+    "category": "治疗-副作用",
+    "question": "化疗后为什么不能碰冷水冷饮？",
+    "answer": "顺铂等铂类药物有神经毒性，遇冷会加重手脚发麻、刺痛等神经症状。化疗期间和之后一段时间，要让孩子避免接触冷水冷饮、注意保暖，能明显减轻这类不适。这也是化疗居家照护里很实用的一条，具体注意事项可以请护士列个清单。",
+    "source": "腾讯医典·小儿肝肿瘤（化疗注意事项）",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-319",
+    "category": "居家护理",
+    "question": "肝移植的孩子回家要注意什么？",
+    "answer": "移植后要终身服用抗排异药（免疫抑制剂），需要定期回移植科调整药量、查肝功能，绝不能自行停药。同时要加强感染防护：少去人多的地方、勤洗手、注意体温，出现发烧、黄疸等情况要及时就医。长期看，移植是这类孩子的有效治愈手段。",
+    "source": "ResearchGate Varvoglis et al.; NCI PDQ",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-320",
+    "category": "随访",
+    "question": "家长怎么记录 AFP 的变化？",
+    "answer": "建议把每次 AFP 的数值记在一个本子上，按时间画成一条曲线。相比单次数值，曲线的趋势更有判断价值：持续下降是好现象，拐头上升要立刻联系医生。把 AFP 数值、检查日期、用药情况放在一起记录，复查时也能帮医生快速把握全貌。",
+    "source": "腾讯医典·小儿肝肿瘤（随访方案）",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-321",
+    "category": "急症信号",
+    "question": "哪些情况属于必须立刻急诊？",
+    "answer": "这些情况要立刻急诊：肚子突然剧痛、呕吐、脸色苍白甚至休克（警惕肿瘤破裂）；化疗后高烧、身上有出血点、呼吸困难（警惕粒细胞缺乏感染）；复查发现 AFP 不降反升；咳嗽咯血、骨痛（警惕肺或骨转移）；移植后发烧伴黄疸（警惕排斥或感染）。遇到就拿不准的，宁可多跑一趟。",
+    "source": "NCI PDQ; PMC39308612; 腾讯医典·小儿肝肿瘤",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-322",
+    "category": "遗传",
+    "question": "单纯肝母细胞瘤（没有综合征）的二胎需要特别检查吗？",
+    "answer": "一般不需要特殊筛查，因为绝大多数肝母细胞瘤是散发的（没有家族史也会得），只有约 20% 与遗传综合征相关。但如果患儿合并 Beckwith-Wiedemann、FAP、半侧肥大等综合征，建议做遗传咨询，评估二胎风险，并让兄弟姐妹定期查 AFP 和腹部超声。",
+    "source": "NCI PDQ; Orphanet",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  },
+  {
+    "id": "HB-323",
+    "category": "心理支持",
+    "question": "家长怎么给自己撑住这漫长的治疗过程？",
+    "answer": "三件实用的事：一是找一个“病历管家”（可以是你自己或家人），专门记录检查、用药、复查日期，把脑力留给陪伴孩子；二是进一个靠谱的患儿家长群互相支持，但一切以主治医生的意见为准，别被偏方带偏；三是必要时寻求医院社工或心理科的帮助。家长稳住，孩子才有依靠。",
+    "source": "NCI PDQ (家庭支持相关章节)；综合临床实务",
+    "reviewed": false,
+    "reviewedBy": "",
+    "reviewedAt": ""
+  }
+]
