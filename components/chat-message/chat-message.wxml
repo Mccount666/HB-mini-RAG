@@ -19,13 +19,33 @@
 
       <!-- 化验单解读 -->
       <block wx:if="{{type === 'ocr'}}">
-        <view class="ocr-label">📋 化验单解读</view>
-        <text class="content" user-select="{{true}}" space="nbsp">{{content}}</text>
-
-        <view wx:if="{{rawText}}" class="raw-box">
-          <view class="raw-toggle" bindtap="toggleRaw">{{showRaw ? '收起识别原文 ▲' : '查看识别原文 ▼'}}</view>
-          <text wx:if="{{showRaw}}" class="raw-text" user-select="{{true}}" space="nbsp">{{rawText}}</text>
+        <!-- 第一段：识别文字待确认 -->
+        <view wx:if="{{ocrStage === 'confirm'}}" class="ocr-confirm">
+          <view class="ocr-label">📋 已识别化验单文字，请核对或修正</view>
+          <textarea
+            class="ocr-confirm-input"
+            value="{{editText}}"
+            bindinput="onConfirmInput"
+            auto-height
+            maxlength="2000"
+            placeholder="识别文字将显示在这里，可修改后确认"
+          />
+          <view class="ocr-confirm-btns">
+            <view class="ocr-btn ocr-btn-primary" bindtap="onConfirmOcr">确认并解读</view>
+            <view class="ocr-btn" bindtap="onRetakeOcr">重新上传</view>
+          </view>
         </view>
+
+        <!-- 第二段：解读结果 -->
+        <block wx:else>
+          <view class="ocr-label">📋 化验单解读</view>
+          <text class="content" user-select="{{true}}" space="nbsp">{{content}}</text>
+
+          <view wx:if="{{rawText}}" class="raw-box">
+            <view class="raw-toggle" bindtap="toggleRaw">{{showRaw ? '收起识别原文 ▲' : '查看识别原文 ▼'}}</view>
+            <text wx:if="{{showRaw}}" class="raw-text" user-select="{{true}}" space="nbsp">{{rawText}}</text>
+          </view>
+        </block>
       </block>
 
       <!-- 参考来源 -->

@@ -24,8 +24,11 @@
         sources="{{item.sources}}"
         loading="{{item.loading}}"
         rating="{{item.rating}}"
+        ocrStage="{{item.ocrStage}}"
         data-id="{{item.id}}"
         bindrate="onRate"
+        bindconfirmocr="onConfirmOcr"
+        bindretakeocr="onRetakeOcr"
       />
     </block>
   </scroll-view>

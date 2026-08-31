@@ -65,7 +65,9 @@ Page({
     }
   },
 
-  // 拍照 / 相册上传化验单 → 云存储 → 云函数 OCR 解读
+  // 拍照 / 相册上传化验单 → 云存储 → 云函数 OCR 两段式：
+  // 第一段：只识别提取文字（extract）→ 展示给用户核对/修正；
+  // 第二段：用户确认文字后（interpret）再严格解读，最大限度避免 OCR 误判。
   onUpload() {
     if (this.data.sending) return;
     wx.chooseMedia({
@@ -89,6 +91,7 @@ Page({
           content: '',
           rawText: '',
           sources: [],
+          ocrStage: 'confirm', // 识别文字待用户确认
           loading: true,
         };
         this.setData({
@@ -99,22 +102,15 @@ Page({
 
         try {
           const up = await this.uploadToCloud(file.tempFilePath);
-          const result = await chat.analyzeReport(up.fileID);
+          const { rawText } = await chat.extractReport(up.fileID);
 
-          const finalBot = {
-            ...botMsg,
-            content: result.interpretation,
-            rawText: result.rawText,
-            sources: result.sources || [],
-            loading: false,
-          };
+          const finalBot = { ...botMsg, rawText: rawText || '', loading: false };
           const messages = this.data.messages.map((m) => (m.id === botMsg.id ? finalBot : m));
           this.setData({ messages, sending: false, scrollTarget: `msg-${botMsg.id}` });
-          this.saveHistory(userMsg, finalBot);
         } catch (err) {
           const messages = this.data.messages.map((m) =>
             m.id === botMsg.id
-              ? { ...m, content: '化验单处理失败，请重试或咨询医护。', rawText: '', sources: [], loading: false }
+              ? { ...m, content: '化验单识别失败，请重试或咨询医护。', rawText: '', sources: [], ocrStage: 'done', loading: false }
               : m
           );
           this.setData({ messages, sending: false });
@@ -126,6 +122,68 @@ Page({
         }
       },
     });
+  },
+
+  // 用户确认识别文字 → 第二段：严格解读
+  async onConfirmOcr(e) {
+    if (this.data.sending) return;
+    const id = e.currentTarget.dataset.id;
+    const text = ((e.detail && e.detail.text) || '').trim();
+    const idx = this.data.messages.findIndex((m) => m.id === id);
+    if (idx === -1) return;
+    const botMsg = this.data.messages[idx];
+    if (!text) {
+      wx.showToast({ title: '识别文字为空，请重新上传', icon: 'none' });
+      return;
+    }
+
+    // 向前找最近一条用户消息作为被解读的对象（历史记录用）
+    let userMsg = null;
+    for (let i = idx - 1; i >= 0; i--) {
+      if (this.data.messages[i].role === 'user') { userMsg = this.data.messages[i]; break; }
+    }
+
+    this.setData({ sending: true, [`messages[${idx}].loading`]: true });
+    try {
+      const result = await chat.interpretReport(text);
+      const finalBot = {
+        ...botMsg,
+        content: result.interpretation,
+        rawText: text,
+        sources: result.sources || [],
+        ocrStage: 'done',
+        loading: false,
+      };
+      const messages = this.data.messages.map((m) => (m.id === botMsg.id ? finalBot : m));
+      this.setData({ messages, sending: false, scrollTarget: `msg-${botMsg.id}` });
+      this.saveHistory(userMsg, finalBot);
+    } catch (err) {
+      const messages = this.data.messages.map((m) =>
+        m.id === botMsg.id
+          ? { ...m, content: '化验单解读失败，请重试或咨询医护。', sources: [], ocrStage: 'done', loading: false }
+          : m
+      );
+      this.setData({ messages, sending: false });
+    }
+  },
+
+  // 用户要求重新上传 → 移除待确认消息，重新走拍照/相册
+  onRetakeOcr(e) {
+    if (this.data.sending) return;
+    const id = e.currentTarget.dataset.id;
+    let messages = this.data.messages;
+    const idx = messages.findIndex((m) => m.id === id);
+    if (idx !== -1) {
+      // 移除这条待确认消息（连同它前面的用户上传图），保持会话干净
+      const userIdx = idx - 1;
+      const drop = new Set([id]);
+      if (messages[userIdx] && messages[userIdx].role === 'user' && messages[userIdx].type === 'ocr') {
+        drop.add(messages[userIdx].id);
+      }
+      messages = messages.filter((m) => !drop.has(m.id));
+    }
+    this.setData({ messages });
+    this.onUpload();
   },
 
   uploadToCloud(tempFilePath) {

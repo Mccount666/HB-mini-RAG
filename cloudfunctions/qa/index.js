@@ -54,17 +54,26 @@ async function handleCall(event = {}) {
     return handleFeedback(event);
   }
 
-  // ===== OCR 化验单解读分支 =====
+  // ===== OCR 化验单解读分支（两段式：先提取文字 → 前端确认 → 再解读） =====
+  // 第一段 step='extract'：下载图片 → OCR 只提取文字返回，不解读。
+  // 第二段 step='interpret'：接收用户确认/修正后的 text → 严格解读。
   if (type === 'ocr') {
+    const step = event.step || 'extract';
     try {
+      if (step === 'interpret') {
+        const text = String(event.text || '').trim();
+        if (!text) return { type: 'ocr', step: 'interpret', error: 'text 不能为空（请先提取或输入化验单文字）' };
+        const { interpretation, sources } = await interpretLabReport(text, history || []);
+        return { type: 'ocr', step: 'interpret', rawText: text, interpretation, sources };
+      }
+      // extract（默认）
       if (!fileID) return { type: 'ocr', error: 'fileID 不能为空' };
       const tempFilePath = await downloadFromCloud(fileID);
       const rawText = await ocrFromFile(tempFilePath);
-      const { interpretation, sources } = await interpretLabReport(rawText, history || []);
-      return { type: 'ocr', rawText, interpretation, sources };
+      return { type: 'ocr', step: 'extract', rawText, interpretation: '', sources: [] };
     } catch (err) {
       console.error('[qa.ocr] error:', err);
-      return { type: 'ocr', rawText: '', interpretation: '化验单处理失败，请重试或咨询医护。', sources: [], error: err.message };
+      return { type: 'ocr', step, rawText: '', interpretation: '化验单处理失败，请重试或咨询医护。', sources: [], error: err.message };
     }
   }
 
@@ -73,12 +82,36 @@ async function handleCall(event = {}) {
     return { answer: '', sources: [], error: 'message 不能为空' };
   }
   try {
-    // 全流程（混合检索 → 门控 → 严格提示词 → 大模型 → 生成后护栏）见 src/rag/answer.js
+    // 全流程（混合检索 → 机械命中或 LLM 语义判定 → 严格提示词 → 大模型 → 生成后护栏）
+    // 见 src/rag/answer.js；相关但知识库未收录时返回 learning:true + learnQuestion
     const result = await answerQuestion(String(message), history || []);
+    if (result.learning && result.learnQuestion) {
+      await pushLearnQueue(result.learnQuestion, 'text');
+    }
     return result;
   } catch (err) {
     console.error('[qa] error:', err);
     return { answer: '', sources: [], error: err.message };
+  }
+}
+
+// ===== 知识积累队列：相关但未收录的问题 → 写入 learn_queue 集合 =====
+// 供后端/导师定期查看，按问题补充知识库条目，实现迭代积累。
+// 集合不存在时降级为日志输出（可在云开发控制台创建 learn_queue 集合）。
+async function pushLearnQueue(question, mode = 'text') {
+  const rec = {
+    question: String(question || '').slice(0, 500),
+    mode, // text=问答追问 | ocr=化验单相关疑问（预留）
+    status: 'pending', // pending → 已收录后可置 done
+    ts: new Date().toISOString(),
+  };
+  try {
+    const db = getCloud().database();
+    await db.collection('learn_queue').add({ data: rec });
+    console.log('[learn_queue] 已入队', JSON.stringify(rec));
+  } catch (err) {
+    // 集合未创建或数据库异常：记录日志并照样返回（不影响问答主流程）
+    console.warn('[learn_queue] 入队失败（可在云开发控制台创建 learn_queue 集合）:', err.message);
   }
 }
 

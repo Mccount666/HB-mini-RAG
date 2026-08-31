@@ -9,7 +9,7 @@ const path = require('path');
 
 const router = express.Router();
 const memory = [];
-const FEEDBACK_FILE = path.join(__dirname, '..', 'data', 'feedback.json');
+const FEEDBACK_FILE = path.join(__dirname, '..', '..', 'data', 'feedback.json');
 
 router.post('/feedback', (req, res) => {
   const { q, rating, comment, mode } = req.body || {};

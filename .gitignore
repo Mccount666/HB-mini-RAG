@@ -10,6 +10,10 @@ backend/.env
 # generated vector index (rebuild via npm run ingest)
 backend/data/index.json
 
+# runtime data (self-hosted backend best-effort local mirror; cloud uses DB collections)
+backend/data/learn_queue.jsonl
+backend/data/feedback.json
+
 # logs
 logs/
 *.log

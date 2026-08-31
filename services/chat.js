@@ -23,6 +23,8 @@ const ask = (message, history = []) => {
           answer: result.answer,
           sources: result.sources || [],
           confidence: result.confidence,
+          learning: !!result.learning,          // 相关但未收录 → 已推送学习队列
+          learnQuestion: result.learnQuestion || '',
         });
       },
       fail: (err) => reject(err),
@@ -30,8 +32,10 @@ const ask = (message, history = []) => {
   });
 };
 
-// 化验单 OCR 解读：上传到云存储后得到 fileID，调用云函数 qa（type:'ocr'）
-const analyzeReport = (fileID) => {
+// 化验单 OCR 识别（两段式，最大限度避免误判）：
+//   extractReport(fileID)  第一段：上传图片 → 云端 OCR 只提取文字，返回 { rawText }
+//   interpretReport(text)  第二段：用户确认/修正文字后 → 云端严格解读，返回 { interpretation, sources }
+const extractReport = (fileID) => {
   return new Promise((resolve, reject) => {
     if (!fileID) {
       reject(new Error('fileID 不能为空'));
@@ -43,7 +47,33 @@ const analyzeReport = (fileID) => {
     }
     wx.cloud.callFunction({
       name: 'qa',
-      data: { type: 'ocr', fileID },
+      data: { type: 'ocr', step: 'extract', fileID },
+      success: (res) => {
+        const result = res.result || {};
+        if (result.error) {
+          reject(new Error(result.error));
+          return;
+        }
+        resolve({ rawText: result.rawText || '' });
+      },
+      fail: (err) => reject(err),
+    });
+  });
+};
+
+const interpretReport = (text) => {
+  return new Promise((resolve, reject) => {
+    if (!text || !text.trim()) {
+      reject(new Error('化验单文字不能为空'));
+      return;
+    }
+    if (!wx.cloud) {
+      reject(new Error('云能力未初始化，请确认已开通云开发'));
+      return;
+    }
+    wx.cloud.callFunction({
+      name: 'qa',
+      data: { type: 'ocr', step: 'interpret', text },
       success: (res) => {
         const result = res.result || {};
         if (result.error) {
@@ -85,4 +115,4 @@ const sendFeedback = (data) => {
   });
 };
 
-module.exports = { ask, analyzeReport, sendFeedback };
+module.exports = { ask, extractReport, interpretReport, sendFeedback };

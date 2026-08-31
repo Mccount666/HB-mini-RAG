@@ -123,6 +123,20 @@ test('guardAnswer：数字无出处直接拒答（不可重试），无引用可
   assert.equal(g3.ok, true);
 });
 
+// ---- 语义判定（LLM 判定提问是否命中） ----
+const { parseVerdict, JUDGE_FALLBACK } = require('../src/rag/judge');
+// 注意：judgeRelatedness 调用真实 LLM，单测只覆盖纯函数 parseVerdict（不触网）。
+test('parseVerdict 解析 LLM 返回的 JSON 判定（含花括号容错）', () => {
+  assert.deepEqual(parseVerdict('{"related": true, "answerable": true}'), { related: true, answerable: true });
+  assert.deepEqual(parseVerdict('好，判定如下：{"related": false, "answerable": false} 完毕'), {
+    related: false,
+    answerable: false,
+  });
+  // 非严格 JSON / 空 → 回退宽松默认（视为"相关但不可答"，进学习回路而非机械拒答）
+  assert.deepEqual(parseVerdict(''), JUDGE_FALLBACK);
+  assert.deepEqual(parseVerdict('模型胡言乱语没有JSON'), JUDGE_FALLBACK);
+});
+
 // ---- 追问查询构建 ----
 test('buildRetrievalQuery 对短追问拼接上轮问题，独立问题不拼接', () => {
   const history = [
