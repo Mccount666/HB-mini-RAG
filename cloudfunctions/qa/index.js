@@ -6,19 +6,23 @@
 //      · 化验单   : { type:'ocr', fileID }
 //      · 反馈     : { type:'feedback', q, rating:'good'|'bad', comment }
 //   2. HTTP 访问服务（云接入）——供网页版（GitHub Pages / 静态托管）跨域调用：
-//      POST /api/chat     body {"message": "...", "history": []}
+//      POST /api/chat     body {"message": "...", "history": []}   头部 x-hb-secret（若配置）
 //      POST /api/feedback body {"q": "...", "rating": "good|bad", "comment": "..."}
 //      GET  任意路径 → 健康检查；OPTIONS → CORS 预检
 // 部署前运行 tools/sync-cloudfunction.js，把 rag / ocr 模块与 config 同步进本目录。
+//
+// ===== HTTP 端点防护（云开发控制台配置环境变量）=====
+//   HTTP_SHARED_SECRET : 共享密钥；配置后 POST 必须带 x-hb-secret 头（网页版已带），空 = 不校验
+//   HTTP_RATE_LIMIT    : 每 IP 每分钟 POST 上限（默认 20），超出返回 429
+//   HTTP_CORS_ORIGINS  : 允许跨域的网页版来源（逗号分隔）；未配置 = 全放行（仅限演示期）
 const path = require('path');
-const fs = require('fs');
-const os = require('os');
+const crypto = require('crypto');
 
 // 云函数自带 data/index.json；优先级：环境变量 INDEX_FILE > 本目录 data/index.json
 process.env.INDEX_FILE = process.env.INDEX_FILE || path.join(__dirname, 'data', 'index.json');
 
 const { answerQuestion } = require('./src/rag/answer');
-const { ocrFromFile } = require('./src/ocr/ocr');
+const { ocrFromBuffer } = require('./src/ocr/ocr');
 const { interpretLabReport } = require('./src/ocr/interpret');
 
 let cloudInited = false;
@@ -29,19 +33,6 @@ function getCloud() {
     cloudInited = true;
   }
   return cloud;
-}
-
-// 从云存储下载图片到临时文件（仅在 OCR 分支调用，wx-server-sdk 懒加载以避免本地缺包报错）
-// 注意：wx-server-sdk 的 downloadFile 返回 fileContent（Buffer），没有小程序端的 tempFilePath，
-// 必须落盘成临时文件再交给 OCR（tencentOcr 内部按路径 readFileSync）。
-async function downloadFromCloud(fileID) {
-  const cloud = getCloud();
-  const res = await cloud.downloadFile({ fileID });
-  if (res.statusCode !== 200) throw new Error('下载图片失败: ' + res.statusCode);
-  const ext = path.extname(String(fileID).split('?')[0]) || '.png';
-  const tmp = path.join(os.tmpdir(), 'ocr-' + Date.now() + ext);
-  fs.writeFileSync(tmp, res.fileContent);
-  return tmp;
 }
 
 // ===== 业务处理（小程序直调事件） =====
@@ -66,10 +57,12 @@ async function handleCall(event = {}) {
         const { interpretation, sources } = await interpretLabReport(text, history || []);
         return { type: 'ocr', step: 'interpret', rawText: text, interpretation, sources };
       }
-      // extract（默认）
+      // extract（默认）：云存储图片下载到内存 Buffer，OCR 全程不落盘
       if (!fileID) return { type: 'ocr', error: 'fileID 不能为空' };
-      const tempFilePath = await downloadFromCloud(fileID);
-      const rawText = await ocrFromFile(tempFilePath);
+      const cloud = getCloud();
+      const res = await cloud.downloadFile({ fileID });
+      if (res.statusCode !== 200) throw new Error('下载图片失败: ' + res.statusCode);
+      const rawText = await ocrFromBuffer(res.fileContent);
       return { type: 'ocr', step: 'extract', rawText, interpretation: '', sources: [] };
     } catch (err) {
       console.error('[qa.ocr] error:', err);
@@ -136,16 +129,81 @@ async function handleFeedback(data = {}) {
 }
 
 // ===== HTTP 访问服务（云接入）适配层 =====
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
+const CORS_BASE = {
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Allow-Headers': 'Content-Type, x-hb-secret',
 };
 
-function httpJson(obj, statusCode = 200) {
+// CORS：配置 HTTP_CORS_ORIGINS 白名单后仅回显允许的来源；未配置时全放行（仅限演示期）
+function corsHeaders(origin) {
+  const list = String(process.env.HTTP_CORS_ORIGINS || process.env.ALLOWED_ORIGINS || '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (!list.length) return { ...CORS_BASE, 'Access-Control-Allow-Origin': '*' };
+  if (origin && list.includes(origin)) {
+    return { ...CORS_BASE, 'Access-Control-Allow-Origin': origin, Vary: 'Origin' };
+  }
+  return {}; // 非白名单来源：不带 CORS 头，浏览器将拦截响应
+}
+
+// 取请求头（云接入 headers 键可能为小写，统一小写查找）
+function getHeader(event, name) {
+  const headers = event.headers || {};
+  const lower = String(name).toLowerCase();
+  for (const k of Object.keys(headers)) {
+    if (k.toLowerCase() === lower) return String(headers[k] || '');
+  }
+  return '';
+}
+
+// 提取调用方 IP（云接入 requestContext.http.sourceIp 优先，回退 x-forwarded-for）
+function getSourceIp(event) {
+  const rc = event.requestContext || {};
+  const ip = rc.http && rc.http.sourceIp;
+  if (ip) return String(ip);
+  const fwd = getHeader(event, 'x-forwarded-for');
+  return fwd ? fwd.split(',')[0].trim() : 'unknown';
+}
+
+// 共享密钥校验：配置 HTTP_SHARED_SECRET 后生效（timingSafeEqual 防时序攻击）
+function secretOk(event) {
+  const secret = process.env.HTTP_SHARED_SECRET;
+  if (!secret) return true;
+  const got = getHeader(event, 'x-hb-secret');
+  if (got.length !== secret.length) return false;
+  try {
+    return crypto.timingSafeEqual(Buffer.from(got), Buffer.from(secret));
+  } catch (e) {
+    return false;
+  }
+}
+
+// 每 IP 每分钟 POST 限速（实例内存计数；实例回收即清零，属尽力而为的防刷）
+const rateBuckets = new Map(); // ip -> { count, ts }
+function rateLimited(ip) {
+  const limit = parseInt(process.env.HTTP_RATE_LIMIT || '20', 10);
+  if (!(limit > 0)) return false;
+  const now = Date.now();
+  const b = rateBuckets.get(ip);
+  if (!b || now - b.ts > 60000) {
+    if (rateBuckets.size > 5000) {
+      for (const [k, v] of rateBuckets) if (now - v.ts > 60000) rateBuckets.delete(k);
+    }
+    rateBuckets.set(ip, { count: 1, ts: now });
+    return false;
+  }
+  b.count += 1;
+  return b.count > limit;
+}
+
+function httpJson(obj, statusCode = 200, cors = null) {
   return {
     statusCode,
-    headers: { ...CORS_HEADERS, 'Content-Type': 'application/json; charset=utf-8' },
+    headers: {
+      ...(cors !== null ? cors : corsHeaders('')),
+      'Content-Type': 'application/json; charset=utf-8',
+    },
     body: JSON.stringify(obj),
   };
 }
@@ -158,33 +216,49 @@ function parseHttpBody(event) {
 }
 
 async function handleHttp(event) {
+  const origin = getHeader(event, 'origin');
+  const cors = corsHeaders(origin);
+
   // CORS 预检
   if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 204, headers: CORS_HEADERS, body: '' };
+    return { statusCode: 204, headers: cors, body: '' };
   }
-  // 健康检查（浏览器打开网址即可验证服务在线）
+  // 健康检查（浏览器打开网址即可验证服务在线；无敏感信息，不需要密钥）
   if (event.httpMethod === 'GET') {
-    return httpJson({ ok: true, service: 'hb-qa', time: new Date().toISOString() });
+    return httpJson({ ok: true, service: 'hb-qa', time: new Date().toISOString() }, 200, cors);
   }
   if (event.httpMethod !== 'POST') {
-    return httpJson({ error: '仅支持 POST' }, 405);
+    return httpJson({ error: '仅支持 POST' }, 405, cors);
+  }
+
+  // 共享密钥：未带或不匹配 → 401（不区分两种情况，避免给攻击者提示）
+  if (!secretOk(event)) {
+    console.warn('[qa.http] 拒绝请求：x-hb-secret 缺失或不匹配', getSourceIp(event));
+    return httpJson({ error: '未授权' }, 401, cors);
+  }
+
+  // 每 IP 限速 → 429
+  const ip = getSourceIp(event);
+  if (rateLimited(ip)) {
+    console.warn('[qa.http] 限速触发：', ip);
+    return httpJson({ error: '请求太频繁，请稍后再试' }, 429, cors);
   }
 
   let data;
   try {
     data = parseHttpBody(event);
   } catch (e) {
-    return httpJson({ error: '请求体必须是合法 JSON' }, 400);
+    return httpJson({ error: '请求体必须是合法 JSON' }, 400, cors);
   }
 
   // 路由：按路径或请求体特征区分（body 带 rating 一律视为反馈，与网关路径改写无关）
   const p = String(event.path || '');
   const isFeedback = p.includes('feedback') || (data && data.rating);
   if (isFeedback) {
-    return httpJson(await handleFeedback(data));
+    return httpJson(await handleFeedback(data), 200, cors);
   }
   const result = await handleCall(data);
-  return httpJson(result);
+  return httpJson(result, 200, cors);
 }
 
 exports.main = async (event = {}, context = {}) => {
@@ -194,7 +268,8 @@ exports.main = async (event = {}, context = {}) => {
       return await handleHttp(event);
     } catch (err) {
       console.error('[qa.http] error:', err);
-      return httpJson({ answer: '', sources: [], error: '服务内部错误：' + err.message }, 500);
+      // 不向客户端泄露内部错误细节（堆栈/依赖路径等）
+      return httpJson({ answer: '', sources: [], error: '服务内部错误，请稍后重试' }, 500, corsHeaders(getHeader(event, 'origin')));
     }
   }
   return handleCall(event);
