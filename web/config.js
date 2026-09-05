@@ -7,7 +7,7 @@ window.WEB_CONFIG = {
   // 与云函数环境变量 HTTP_SHARED_SECRET 一致（云开发控制台配置后填到这里）。
   // 说明：网页是静态公开的，密钥可被看到，属"防匿名批量刷量"的软防护；
   // 真正的拦截靠服务端每 IP 限速（HTTP_RATE_LIMIT）。留空 = 服务端未启用密钥校验。
-  HTTP_SHARED_SECRET: '',
+  HTTP_SHARED_SECRET: '9d986cbe35c10b15844fabe2fc50810690543fef9f906425',
   SITE_NAME: '肝母细胞瘤智能问答',
   SITE_BADGE: '网页测试版',
 };
