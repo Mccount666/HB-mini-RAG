@@ -24,14 +24,18 @@
 - [ ] `source` 可追溯（规范/文献/共识，而非"网上说的"）
 - [ ] 通过后在 JSON 中把 `reviewed` 改为 `true`，并填 `reviewedBy` / `reviewedAt`
 
-## lab_reference 参考标准例外（2026-09-04）
+## lab_reference 参考标准（2026-09-05 更新）
 
 lab_reference.json 的 14 条（LAB-AFP~LAB-CREA）是**客观检验参考区间标准数据**，
-仅供 OCR 化验单解读检索使用，不属于面向家长的科普问答。为使上线门控
-（`KB_ONLY_REVIEWED=true`）不破坏 OCR 解读管线，这 14 条已标注
-`reviewed=true / reviewedBy=参考标准入库`。**注意**：其 source 字段仍保留
-「待导师核对具体实验室标准」，导师复核各实验室标准后方可视为完全终审。
-其余分类（疾病科普/治疗/随访等）的条目**不适用本例外**，仍须导师逐条终审。
+仅供 OCR 化验单解读检索使用，不属于面向家长的科普问答。这 14 条已标注
+`reviewed=true / reviewedBy=参考标准入库`，通过终审双条件进入上线门控库。
+**注意**：其 source 字段仍保留「待导师核对具体实验室标准」，导师复核各实验室
+标准后方可视为完全终审。
+
+**2026-09-05 变更**：代码中曾存在的「lab_reference 分类无条件保留」白名单例外
+已删除——lab_reference 与其他分类一样，必须通过 `reviewed===true 且 reviewedBy
+非空` 的终审双条件才能进入门控库。今后**向 lab_reference.json 新增条目时，
+必须同样填写 reviewed/reviewedBy/reviewedAt**，否则不会被收录进检索索引。
 
 ## 审核状态查询
 ```bash
