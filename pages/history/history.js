@@ -17,11 +17,24 @@ Page({
 
   onTap(e) {
     const item = e.currentTarget.dataset.item;
+    // 完整回答在详情页展示（可滚动），避免弹窗内容被截断
+    wx.setStorageSync('history_detail', item);
+    wx.navigateTo({ url: '/pages/history/detail' });
+  },
+
+  onDelete(e) {
+    const id = e.currentTarget.dataset.id;
     wx.showModal({
-      title: item.question,
-      content: item.answer + (item.sources && item.sources.length ? `\n\n参考来源：${item.sources.map((s) => s.title).join('、')}` : ''),
-      showCancel: false,
-      confirmText: '知道了',
+      title: '删除这条记录？',
+      content: '仅删除本条问答历史，不可恢复。',
+      confirmText: '删除',
+      confirmColor: '#D36C6C',
+      success: (r) => {
+        if (!r.confirm) return;
+        const rest = (wx.getStorageSync('chat_history') || []).filter((it) => it.id !== id);
+        wx.setStorageSync('chat_history', rest);
+        this.setData({ list: rest.map((it) => ({ ...it, timeText: fmtTime(it.time) })) });
+      },
     });
   },
 

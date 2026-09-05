@@ -106,6 +106,36 @@ test('checkGroundedNumbers 发现知识库外的数字', () => {
   assert.ok(bad.ungrounded.includes('500'));
 });
 
+test('checkGroundedNumbers 边界：命中文本以数字开头时带单位数字可溯源', () => {
+  // 回归：旧实现前导边界组为空时 after 偏移多跳 1 字符，"500mg" 被误判无出处
+  const hits = [{ text: '500mg 为单次最大剂量。' }];
+  const ok = checkGroundedNumbers('单次最大 500mg [来源1]。', hits);
+  assert.equal(ok.ungrounded.length, 0);
+});
+
+test('checkGroundedNumbers 边界：小数点不作为正则通配符', () => {
+  // 回归：num 未转义时 "2.5" 的 `.` 可匹配 "×"，导致知识库 "2×5" 误为 "2.5" 的出处（无单位数字直接放行）
+  const hits = [{ text: '需连续 2×5 天观察。' }];
+  const bad = checkGroundedNumbers('共需 2.5 个疗程 [来源1]。', hits);
+  assert.ok(bad.ungrounded.includes('2.5'));
+});
+
+test('checkGroundedNumbers 边界：相邻数字各自溯源（不吞分隔字符）', () => {
+  // 回归：旧实现消费边界字符，"5岁5mg" 中前一个匹配吃掉 "岁"，"5mg" 漏检为无出处
+  const hits = [{ text: '5岁5mg 起始。' }];
+  const ok = checkGroundedNumbers('5岁5mg [来源1]。', hits);
+  assert.equal(ok.ungrounded.length, 0);
+});
+
+test('checkGroundedNumbers 边界：单位大小写不敏感（5ml 可溯源 5mL），假单位不误放行', () => {
+  const hits = [{ text: '每次口服 5mL。' }];
+  const ok = checkGroundedNumbers('每次口服 5ml [来源1]。', hits);
+  assert.equal(ok.ungrounded.length, 0);
+  // "500mug" 不在知识库：单位 'ug' 不匹配 "mug" 前缀，必须判无出处
+  const bad = checkGroundedNumbers('每次口服 500mug [来源1]。', hits);
+  assert.ok(bad.ungrounded.includes('500'));
+});
+
 test('guardAnswer：数字无出处直接拒答（不可重试），无引用可重试，正常回答放行', () => {
   const hits = [{ text: '常见转移部位为肺。' }, { text: '五年生存率与分期相关。' }];
   // 数字无出处

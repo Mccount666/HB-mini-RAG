@@ -2,7 +2,7 @@
 
 本目录存放 RAG 检索用的全部知识条目。`npm run ingest` 会读取本目录下**所有 `.json`** 并向量化生成 `../index.json`。
 
-> ⚠️ 当前所有条目 `reviewed:false`，均为**待导师审核的草稿**。上线前必须由儿科肿瘤专业医生（导师）逐条核对，通过后在 JSON 把 `reviewed` 改为 `true` 并填 `reviewedBy`/`reviewedAt`，最后在 `.env` 设 `KB_ONLY_REVIEWED=true` 重跑 `ingest`。
+> 📌 审核状态（2026-09-04）：`web_collected.json` 63 条已由用户审核（2026-08-30）；`lab_reference.json` 14 条已按「参考标准入库」标注（详见 REVIEW.md 例外说明）；`ganya_articles.json`(18)、`sample.json`(12)、`hb_deep_kb.json`(60) 仍为**待导师终审草稿**——`KB_ONLY_REVIEWED=true` 时不进检索库。终审通过后在 JSON 把 `reviewed` 改为 `true` 并填 `reviewedBy`/`reviewedAt`，重跑 `ingest` + `sync` 即可回归。
 
 ## 文件与分工
 

@@ -3,7 +3,10 @@
   <view class="card" wx:for="{{list}}" wx:key="id" bindtap="onTap" data-item="{{item}}">
     <view class="q">{{item.question}}</view>
     <view class="a">{{item.answer}}</view>
-    <view class="meta">{{item.timeText}} · {{item.sources.length}} 个来源</view>
+    <view class="meta-row">
+      <view class="meta">{{item.timeText}} · {{item.sources.length}} 个来源</view>
+      <view class="del" catchtap="onDelete" data-id="{{item.id}}">删除</view>
+    </view>
   </view>
   <view wx:if="{{list.length}}" class="clear" bindtap="onClear">清空历史</view>
 </view>

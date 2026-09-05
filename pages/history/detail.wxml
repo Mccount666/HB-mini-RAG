@@ -1,0 +1,11 @@
+<scroll-view class="detail" scroll-y wx:if="{{item}}">
+  <view class="question">{{item.question}}</view>
+  <view class="time">{{item.timeText}}</view>
+  <view class="answer">{{item.answer}}</view>
+  <view wx:if="{{item.sources.length}}" class="sources">
+    <view class="sources-title">参考来源</view>
+    <view class="source" wx:for="{{item.sources}}" wx:key="id" wx:for-item="s">
+      [{{s.id}}] {{s.title}}
+    </view>
+  </view>
+</scroll-view>

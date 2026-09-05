@@ -66,7 +66,8 @@ async function handleCall(event = {}) {
       return { type: 'ocr', step: 'extract', rawText, interpretation: '', sources: [] };
     } catch (err) {
       console.error('[qa.ocr] error:', err);
-      return { type: 'ocr', step, rawText: '', interpretation: '化验单处理失败，请重试或咨询医护。', sources: [], error: err.message };
+      // 不向客户端回传 err.message（可能含上游接口/存储细节）；用户可见文案已含在 interpretation
+      return { type: 'ocr', step, rawText: '', interpretation: '化验单处理失败，请重试或咨询医护。', sources: [], error: 'OCR_PROCESS_FAILED' };
     }
   }
 
@@ -84,7 +85,8 @@ async function handleCall(event = {}) {
     return result;
   } catch (err) {
     console.error('[qa] error:', err);
-    return { answer: '', sources: [], error: err.message };
+    // 不向客户端回传 err.message（LLM 错误原文/路径等内部细节）；前端本就展示固定兜底文案
+    return { answer: '', sources: [], error: '服务繁忙，请稍后重试' };
   }
 }
 

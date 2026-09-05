@@ -31,10 +31,20 @@
   -webkit-line-clamp: 3;
   overflow: hidden;
 }
-.meta {
+.meta-row {
   margin-top: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.meta {
   font-size: 22rpx;
   color: #C4B5AC;
+}
+.del {
+  font-size: 22rpx;
+  color: #D36C6C;
+  padding: 8rpx 20rpx;
 }
 .clear {
   text-align: center;

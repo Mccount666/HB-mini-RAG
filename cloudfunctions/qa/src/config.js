@@ -29,6 +29,9 @@ module.exports = {
       process.env.EMBEDDING_DIM || (embeddingProvider === 'local' ? '512' : '1536'),
       10
     ),
+    // 超时与重试（api provider 用，与 llm 同款策略：429/5xx/网络错误重试 1 次）
+    timeoutMs: parseInt(process.env.EMBEDDING_TIMEOUT_MS || '30000', 10),
+    maxRetries: parseInt(process.env.EMBEDDING_MAX_RETRIES || '1', 10),
   },
   retrieval: {
     topK: parseInt(process.env.RETRIEVAL_TOP_K || '6', 10),

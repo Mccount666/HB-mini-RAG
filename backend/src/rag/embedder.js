@@ -4,6 +4,8 @@
 //                   对中文按「单字 + 相邻二字」分词，TF 加权并 L2 归一化，足以支撑
 //                   检索优先 + 阈值门控的防幻觉逻辑。生产如需更高质量再切 API embedding。
 const config = require('../config');
+// 复用 llm.js 的 node:http/https 直连 + 超时 + 可重试错误判定（云函数 Node16 无全局 fetch）
+const { postJson, isRetryable } = require('./llm');
 
 const LOCAL_DIM = config.embedding.dim;
 
@@ -41,21 +43,42 @@ function localEmbed(text) {
   return vec;
 }
 
-async function apiEmbed(text) {
-  const res = await fetch(`${config.embedding.baseUrl}/embeddings`, {
-    method: 'POST',
-    headers: {
+async function apiEmbedOnce(text) {
+  const res = await postJson(
+    `${config.embedding.baseUrl}/embeddings`,
+    {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${config.embedding.apiKey}`,
     },
-    body: JSON.stringify({ input: text, model: config.embedding.model }),
-  });
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Embedding API ${res.status}: ${err}`);
+    JSON.stringify({ input: text, model: config.embedding.model }),
+    config.embedding.timeoutMs
+  );
+  if (res.status < 200 || res.status >= 300) {
+    const err = new Error(`Embedding API ${res.status}: ${res.text.slice(0, 300)}`);
+    err.status = res.status;
+    throw err;
   }
-  const data = await res.json();
-  return data.data[0].embedding;
+  const data = JSON.parse(res.text);
+  const vec = data.data && data.data[0] && data.data[0].embedding;
+  if (!Array.isArray(vec)) throw new Error('Embedding API 返回格式异常');
+  return vec;
+}
+
+async function apiEmbed(text) {
+  let lastErr;
+  for (let attempt = 0; attempt <= config.embedding.maxRetries; attempt++) {
+    try {
+      return await apiEmbedOnce(text);
+    } catch (err) {
+      lastErr = err;
+      if (attempt < config.embedding.maxRetries && isRetryable(err)) {
+        await new Promise((r) => setTimeout(r, 800 * (attempt + 1))); // 指数退避
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw lastErr;
 }
 
 async function embed(text) {

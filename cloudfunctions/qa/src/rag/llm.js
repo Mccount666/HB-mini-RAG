@@ -100,4 +100,4 @@ async function chat(messages) {
   throw lastErr;
 }
 
-module.exports = { chat };
+module.exports = { chat, postJson, isRetryable };

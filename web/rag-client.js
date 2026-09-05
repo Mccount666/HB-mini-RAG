@@ -13,7 +13,7 @@
   const CFG = {
     dim: 512,
     topK: 6,
-    threshold: 0.35,
+    threshold: 0.5, // 2026-08-30 知识库扩至 107 条后实测校准值（与 backend/.env RETRIEVAL_THRESHOLD 一致）
     weightVector: 0.5,
     weightBm25: 0.5,
     historyTurns: 6,

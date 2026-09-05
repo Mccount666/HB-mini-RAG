@@ -24,3 +24,9 @@ Thumbs.db
 
 # WeChat devtools local
 project.private.config.json
+
+# local tool artifacts
+.mimosa/
+backend/.mimosa/
+.v2c/
+.workbuddy/

@@ -7,6 +7,12 @@ const config = require('../config');
 const { buildDocStats, bm25Scores, saturate, coverage } = require('./bm25');
 
 function cosine(a, b) {
+  if (a.length !== b.length) {
+    throw new Error(
+      `向量维度不一致：${a.length} vs ${b.length}。索引与查询必须同维度，` +
+        '请检查 EMBEDDING_DIM 配置并重新 npm run ingest。'
+    );
+  }
   let dot = 0, na = 0, nb = 0;
   for (let i = 0; i < a.length; i++) {
     dot += a[i] * b[i];
@@ -23,7 +29,21 @@ async function loadIndex() {
   const file = process.env.INDEX_FILE || config.paths.indexFile;
   const mtime = fs.statSync(file).mtimeMs;
   if (cache && cache.mtime === mtime) return cache;
-  const items = JSON.parse(fs.readFileSync(file, 'utf-8')).items;
+  const index = JSON.parse(fs.readFileSync(file, 'utf-8'));
+  const items = index.items;
+  // 维度一致性校验：索引构建时的 dim 与当前配置不一致 → 直接抛错而非静默错算
+  if (typeof index.dim === 'number' && index.dim !== config.embedding.dim) {
+    throw new Error(
+      `索引维度 ${index.dim} 与配置 EMBEDDING_DIM=${config.embedding.dim} 不一致。` +
+        '换 embedding 配置后必须重新 npm run ingest 再部署。'
+    );
+  }
+  const bad = items.find((it) => !it.embedding || it.embedding.length !== config.embedding.dim);
+  if (bad) {
+    throw new Error(
+      `索引条目 ${bad.id} 维度异常（${bad.embedding ? bad.embedding.length : '缺失'}）。请重新 npm run ingest。`
+    );
+  }
   cache = { mtime, items, docStats: buildDocStats(items) };
   return cache;
 }

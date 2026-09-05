@@ -27,10 +27,25 @@ function validateCitations(answer, hitCount) {
 // —— 数字溯源 ——
 // 判定一个数字是否"关键"：带医学单位 / 含小数 / 数值大于 20（剂量、百分比、日数、计数等）。
 // 纯列表序号（"1. 2. 3."）与短整数不检查，避免格式性误报导致过度拒答。
-const UNIT_AFTER_RE =
-  /^\s*(%|‰|mg|ug|μg|g|kg|ml|mL|cm|mm|nm|ng|iu|u\/|U\/|×10|x10|万|亿|岁|个月|月|年|天|日|周|次|例|分|度|周期|疗程)/i;
 
-function extractCriticalNumbers(text) {
+// 提取关键数字及紧随其后的医学单位（若有）。
+// 返回 [{ num, unit }]：unit 为数字后跟的单位（如 '%'、'mg'、'岁'），无单位时为空串。
+// 带单位记录供 checkGroundedNumbers 做「数字+单位」整体溯源，避免裸数字子串误判
+//（如回答 "500ml" 撞知识库 "500mg"、回答 "5岁" 撞 "5"）。
+function consumeUnit(rest) {
+  // 多字符单位优先匹配，避免 "500ug" 只吃到 "u" 被当无单位
+  const units = [
+    'μg', 'u/', 'U/', '×10', 'x10', 'ug', 'mg', 'kg', 'g', 'ml', 'mL', 'cm', 'mm', 'nm', 'ng', 'iu', 'IU',
+    '%', '‰', '万', '亿', '岁', '个月', '月', '年', '天', '日', '周', '次', '例', '分', '度', '周期', '疗程',
+  ];
+  const s = rest.replace(/^\s+/, ''); // 数字与单位间允许空白（"每天 3 次"）
+  for (const u of units) {
+    if (s.startsWith(u)) return u;
+  }
+  return '';
+}
+
+function extractCriticalNumbersDetailed(text) {
   const critical = [];
   // 先按行处理，跳过行首列表序号（(?!\d) 避免误吞 "2.5mg" 这类行首小数）
   const lines = text.split(/\n+/);
@@ -45,19 +60,53 @@ function extractCriticalNumbers(text) {
     const numStr = m[0];
     const rest = masked.slice(m.index + numStr.length, m.index + numStr.length + 6);
     const value = parseFloat(numStr);
-    const isCritical =
-      UNIT_AFTER_RE.test(rest) || numStr.includes('.') || value > 20;
-    if (isCritical) critical.push(numStr);
+    const unit = consumeUnit(rest);
+    const isCritical = !!unit || numStr.includes('.') || value > 20;
+    if (isCritical) critical.push({ num: numStr, unit });
   }
   return critical;
 }
 
-// 关键数字必须逐字出现在知识库命中文本中（模型被要求禁止换算，因此可逐字比对）
+// 兼容旧接口：仅返回数字字符串数组（单测与外部工具复用）
+function extractCriticalNumbers(text) {
+  return extractCriticalNumbersDetailed(text).map((c) => c.num);
+}
+
+// 关键数字必须能在知识库命中文本中找到出处。
+// 匹配规则（环视词边界，避免正则单位歧义）：
+//   · 数字必须以词边界出现：前面不是数字、后面不是数字（"150 万" 不会撞 "50"，"50mg" 不会撞 "5"）
+//   · 带单位数字：数字后紧跟（允许空格）同一单位（不区分大小写），且单位后首字符不是字母
+//     （"500ug" 不会命中 "500mg"/"500mug"）
+//   · 匹配不消费边界字符："5岁5mg" 两个相邻数字都能各自找到出处
 function checkGroundedNumbers(answer, hits) {
   const context = hits.map((h) => h.text || '').join('\n');
-  const critical = extractCriticalNumbers(answer);
-  const ungrounded = [...new Set(critical)].filter((n) => !context.includes(n));
-  return { ungrounded };
+  const critical = extractCriticalNumbersDetailed(answer);
+  const ungrounded = [];
+
+  function foundInContext(c) {
+    // 用前后环视（lookaround）做数字词边界：只匹配数字本身，不消费边界字符——
+    // 否则 "5岁5mg" 中前一个匹配吃掉 "岁"，后一个数字找不到前导边界而漏检。
+    // num 中的小数点必须转义：未转义时 "2.5" 会误匹配 "2×5"（`.` 通配任意字符）。
+    const numPattern = c.num.replace(/\./g, '\\.');
+    const numRe = new RegExp(`(?<!\\d)${numPattern}(?!\\d)`, 'g');
+    let m;
+    while ((m = numRe.exec(context)) !== null) {
+      const after = context.slice(m.index + c.num.length); // 环视不消费字符，数字后即目标位置
+      if (!c.unit) return true; // 无单位：词边界出现即可
+      // 允许数字与单位之间有一个空格（"5 岁以下"）；单位不区分大小写（"5ml" 可溯源 "5mL"）
+      const s = after.startsWith(' ') ? after.slice(1) : after;
+      if (s.slice(0, c.unit.length).toLowerCase() === c.unit.toLowerCase()) {
+        const restAfterUnit = s.slice(c.unit.length);
+        if (!restAfterUnit || !/[a-zA-Z%‰μgml×x]/.test(restAfterUnit[0])) return true;
+      }
+    }
+    return false;
+  }
+
+  for (const c of critical) {
+    if (!foundInContext(c)) ungrounded.push(c.num);
+  }
+  return { ungrounded: [...new Set(ungrounded)] };
 }
 
 // —— 护栏总入口 ——
@@ -85,4 +134,4 @@ function guardAnswer(rawAnswer, hits, opts = {}) {
   return { ok: true, answer, citationCount, ungrounded: [] };
 }
 
-module.exports = { validateCitations, extractCriticalNumbers, checkGroundedNumbers, guardAnswer };
+module.exports = { validateCitations, extractCriticalNumbers, extractCriticalNumbersDetailed, checkGroundedNumbers, guardAnswer };

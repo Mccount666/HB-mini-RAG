@@ -2,6 +2,7 @@
   "pages": [
     "pages/index/index",
     "pages/history/history",
+    "pages/history/detail",
     "pages/about/about"
   ],
   "window": {

@@ -126,9 +126,14 @@
 
     try {
       if (LIVE) {
+        // HTTP_SHARED_SECRET 配置在服务端环境变量时，网页需带 x-hb-secret 头（值由部署者写入本文件配置）
+        const secret = (window.WEB_CONFIG && window.WEB_CONFIG.HTTP_SHARED_SECRET) || '';
         const res = await fetch(API_BASE + '/api/chat', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            ...(secret ? { 'x-hb-secret': secret } : {}),
+          },
           body: JSON.stringify({ message: text, history }),
         });
         const data = await res.json();

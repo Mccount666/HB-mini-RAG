@@ -1,0 +1,40 @@
+.detail {
+  padding: 32rpx;
+  background-color: var(--bg);
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+.question {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.5;
+}
+.time {
+  margin: 16rpx 0 28rpx;
+  font-size: 22rpx;
+  color: #C4B5AC;
+}
+.answer {
+  font-size: 28rpx;
+  color: var(--text);
+  line-height: 1.8;
+}
+.sources {
+  margin-top: 40rpx;
+  padding: 24rpx;
+  background: var(--card);
+  border-radius: 20rpx;
+}
+.sources-title {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 12rpx;
+}
+.source {
+  font-size: 24rpx;
+  color: var(--text-sub);
+  line-height: 1.6;
+  margin-bottom: 8rpx;
+}

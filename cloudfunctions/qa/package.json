@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "wx-server-sdk": "~2.6.3",
-    "tencentcloud-sdk-nodejs-ocr": "~4.0.0"
+    "tencentcloud-sdk-nodejs-ocr": "~4.0.0",
+    "dotenv": "^16.4.5"
   }
 }
