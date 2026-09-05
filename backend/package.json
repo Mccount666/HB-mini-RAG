@@ -18,5 +18,8 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "tencentcloud-sdk-nodejs-ocr": "~4.0.0"
+  },
+  "overrides": {
+    "qs": "^6.16.0"
   }
 }
