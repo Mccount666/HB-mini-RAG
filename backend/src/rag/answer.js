@@ -12,6 +12,7 @@ const { buildMessages } = require('./prompt');
 const { buildRetrievalQuery } = require('./query');
 const { guardAnswer } = require('./guard');
 const { judgeRelatedness } = require('./judge');
+const { sanitizeMessage, sanitizeHistory } = require('./sanitize');
 
 // 知识库无相关内容 / 护栏拦截时的兜底话术（不调或不用模型输出，零幻觉）
 const FALLBACK =
@@ -74,8 +75,21 @@ function learningResult(question, bestScore) {
 }
 
 async function answerQuestion(message, history = []) {
+  const cleanMessage = sanitizeMessage(message);
+  const cleanHistory = sanitizeHistory(history);
+  if (!cleanMessage) {
+    return {
+      answer: FALLBACK,
+      sources: [],
+      confidence: 0,
+      retrieved: 0,
+      refused: true,
+      error: 'message 不能为空',
+    };
+  }
+
   // 1) 构建检索查询（追问场景拼接上轮问题），混合检索（向量 + BM25）
-  const retrievalQuery = buildRetrievalQuery(message, history);
+  const retrievalQuery = buildRetrievalQuery(cleanMessage, cleanHistory);
   const queryEmbedding = await embed(retrievalQuery);
   const { hits, top, bestScore } = await retrieve(queryEmbedding, {
     queryText: retrievalQuery,
@@ -83,17 +97,17 @@ async function answerQuestion(message, history = []) {
 
   // 2) 机械命中 → 直接生成（高频正常路径，不额外花费一次 LLM 判定）
   if (hits.length > 0) {
-    const res = await generateGrounded(message, hits, history, bestScore);
+    const res = await generateGrounded(cleanMessage, hits, cleanHistory, bestScore);
     // 机械命中但生成被护栏/模型拒答：说明知识库对该问题的覆盖仍不足 →
     // 转入学习回路（既不给错答，也把问题记入 learn_queue 供补充）
     if (!res.refused) return res;
-    return learningResult(message, bestScore);
+    return learningResult(cleanMessage, bestScore);
   }
 
   // 3) 机械未命中 → LLM 语义判定：是"相关可答 / 相关待学习 / 不相关"
   let verdict;
   try {
-    verdict = await judgeRelatedness(message, top);
+    verdict = await judgeRelatedness(cleanMessage, top);
   } catch (e) {
     console.warn('[judge] LLM 语义判定失败，降级为机械拒答：', e.message);
     return {
@@ -110,15 +124,15 @@ async function answerQuestion(message, history = []) {
   if (verdict.related && verdict.answerable) {
     const candidates = top.slice(0, config.retrieval.topK);
     if (candidates.length) {
-      const res = await generateGrounded(message, candidates, history, bestScore);
+      const res = await generateGrounded(cleanMessage, candidates, cleanHistory, bestScore);
       if (!res.refused) return res;
-      return learningResult(message, bestScore);
+      return learningResult(cleanMessage, bestScore);
     }
   }
 
   // 3b) 相关但知识库不足 → 学习话术 + 推送队列
   if (verdict.related) {
-    return learningResult(message, bestScore);
+    return learningResult(cleanMessage, bestScore);
   }
 
   // 3c) 不相关 → 拒答

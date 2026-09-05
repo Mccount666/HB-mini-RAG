@@ -8,10 +8,10 @@
     "start": "node src/index.js",
     "ingest": "node src/kb/ingest.js",
     "test": "node --test",
-    "eval": "node tools/eval.js",
-    "check:sync": "node tools/check-sync.js",
-    "sync": "node tools/sync-cloudfunction.js",
-    "predeploy": "node tools/sync-cloudfunction.js && node tools/check-sync.js"
+    "eval": "node ../tools/eval.js",
+    "check:sync": "node ../tools/check-sync.js",
+    "sync": "node ../tools/sync-cloudfunction.js",
+    "predeploy": "node ../tools/sync-cloudfunction.js && node ../tools/check-sync.js"
   },
   "dependencies": {
     "express": "^4.19.2",

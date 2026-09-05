@@ -45,10 +45,14 @@ if (!SECRET) {
   console.error('web/config.js 未配置 HTTP_SHARED_SECRET，服务端也应为空（否则网页 AI 模式不可用）');
   process.exit(2);
 }
-const OK_ORIGIN = (cfgText.match(/API_BASE:\s*'([^']+)-(\d+)\.ap-shanghai/) || []);
-const SITE_ORIGIN = OK_ORIGIN.length
-  ? `https://${OK_ORIGIN[1]}-${OK_ORIGIN[2]}.tcloudbaseapp.com`
-  : 'https://unknown-origin.example.com';
+// 静态站点 Origin：由网关主机名推导（cloud1-xxx-<uin>.ap-shanghai.app.tcloudbase.com
+// → https://cloud1-xxx-<uin>.tcloudbaseapp.com），与云函数 HTTP_CORS_ORIGINS 白名单一致
+let SITE_ORIGIN = 'https://unknown-origin.example.com';
+try {
+  const host = new URL(apiBase).hostname;
+  const m = host.match(/^(.+)\.ap-shanghai\.app\.tcloudbase\.com$/);
+  if (m) SITE_ORIGIN = `https://${m[1]}.tcloudbaseapp.com`;
+} catch (e) { /* apiBase 已过白名单校验，此处不会触发 */ }
 const BAD_ORIGIN = 'https://evil.example.com';
 
 const results = [];

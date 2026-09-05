@@ -22,6 +22,7 @@ const crypto = require('crypto');
 process.env.INDEX_FILE = process.env.INDEX_FILE || path.join(__dirname, 'data', 'index.json');
 
 const { answerQuestion } = require('./src/rag/answer');
+const { sanitizeMessage, sanitizeHistory } = require('./src/rag/sanitize');
 const { ocrFromBuffer } = require('./src/ocr/ocr');
 const { interpretLabReport } = require('./src/ocr/interpret');
 
@@ -36,7 +37,19 @@ function getCloud() {
 }
 
 // ===== 业务处理（小程序直调事件） =====
-async function handleCall(event = {}) {
+function callIdentity(event = {}, context = {}) {
+  const wxContext = context && context.OPENID ? context : (getCloud().getWXContext ? getCloud().getWXContext() : {});
+  return wxContext.OPENID || event.openid || 'anonymous';
+}
+
+function validCloudFileID(fileID) {
+  const s = String(fileID || '');
+  // 小程序上传入口固定使用 lab-reports/<timestamp>-<rand>.jpg；直调只允许读取这类临时化验单图片，
+  // 防止传入环境内其他云存储 fileID 让云函数以 admin 身份越权下载。
+  return /^cloud:\/\/[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\/lab-reports\/[0-9]{10,}-[0-9]{1,6}\.(?:jpg|jpeg|png)$/i.test(s);
+}
+
+async function handleCall(event = {}, context = {}) {
   const { type, message, history, fileID } = event || {};
 
   // ===== 反馈分支（小程序直调）：{ type:'feedback', q, rating:'good'|'bad', comment } =====
@@ -59,6 +72,7 @@ async function handleCall(event = {}) {
       }
       // extract（默认）：云存储图片下载到内存 Buffer，OCR 全程不落盘
       if (!fileID) return { type: 'ocr', error: 'fileID 不能为空' };
+      if (!validCloudFileID(fileID)) return { type: 'ocr', error: 'fileID 格式非法' };
       const cloud = getCloud();
       const res = await cloud.downloadFile({ fileID });
       if (res.statusCode !== 200) throw new Error('下载图片失败: ' + res.statusCode);
@@ -78,7 +92,7 @@ async function handleCall(event = {}) {
   try {
     // 全流程（混合检索 → 机械命中或 LLM 语义判定 → 严格提示词 → 大模型 → 生成后护栏）
     // 见 src/rag/answer.js；相关但知识库未收录时返回 learning:true + learnQuestion
-    const result = await answerQuestion(String(message), history || []);
+    const result = await answerQuestion(sanitizeMessage(message), sanitizeHistory(history));
     if (result.learning && result.learnQuestion) {
       await pushLearnQueue(result.learnQuestion, 'text');
     }
@@ -274,5 +288,9 @@ exports.main = async (event = {}, context = {}) => {
       return httpJson({ answer: '', sources: [], error: '服务内部错误，请稍后重试' }, 500, corsHeaders(getHeader(event, 'origin')));
     }
   }
-  return handleCall(event);
+  const id = callIdentity(event, context);
+  if (rateLimited('call:' + id)) {
+    return { answer: '', sources: [], error: '请求太频繁，请稍后再试' };
+  }
+  return handleCall(event, context);
 };

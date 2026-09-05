@@ -19,9 +19,9 @@ function loadKnowledge({ onlyReviewed = config.kb.onlyReviewed } = {}) {
     const arr = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf-8'));
     for (const item of arr) {
       const reviewed = isReviewed(item);
-      // 上线门控：onlyReviewed=true 时只保留导师终审条目；化验参考标准
-      //（lab_reference 分类）属客观参考区间数据，非科普演示，始终保留（OCR 解读依赖）。
-      if (onlyReviewed && !reviewed && item.category !== 'lab_reference') continue;
+      // 上线门控：onlyReviewed=true 时只保留导师终审条目（lab_reference 也必须终审；
+      // 其 14 条参考范围已带 reviewed/reviewedBy，避免白名单被塞入未审内容绕过门控）。
+      if (onlyReviewed && !reviewed) continue;
       entries.push({
         id: item.id,
         category: item.category || '',

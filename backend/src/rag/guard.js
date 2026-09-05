@@ -45,6 +45,11 @@ const UNIT_EQUIV = [
   ['cm', '厘米'],
   ['mm', '毫米'],
   ['iu', 'IU'],
+  // 浓度单位独立成类，避免与 mm（毫米）/m（米）串扰：2.5mmol/L 不得溯源到 2.5毫米
+  ['mmol/l', 'mmol/L'],
+  ['u/l', 'U/L'],
+  ['iu/l', 'IU/L'],
+  ['%', '％'],
 ];
 const UNIT_CANON = new Map();
 for (const group of UNIT_EQUIV) {
@@ -55,11 +60,13 @@ function unitClass(unit) {
 }
 
 function consumeUnit(rest) {
-  // 多字符单位优先匹配，避免 "500ug" 只吃到 "u" 被当无单位
+  // 多字符单位优先匹配，避免 "500ug" 只吃到 "u" 被当无单位；
+  // mmol/L / U/L 等含斜杠整体单位必须排在 mm/u 之前，否则 "2.5mmol/L" 只吃到 "mm"
   const units = [
-    'μg', 'u/', 'U/', '×10', 'x10', 'ug', 'mg', 'kg', 'g', 'ml', 'mL', 'cm', 'mm', 'nm', 'ng', 'iu', 'IU',
+    'mmol/L', 'mmol', 'IU/L', 'IU', 'U/L', 'u/', 'U/',
+    'μg', '×10', 'x10', 'ug', 'mg', 'kg', 'g', 'ml', 'mL', 'cm', 'mm', 'nm', 'ng', 'iu',
     '毫克', '毫升', '微克', '千克', '公斤', '克', '厘米', '毫米',
-    '%', '‰', '万', '亿', '岁', '个月', '月', '年', '天', '日', '周', '次', '例', '分', '度', '周期', '疗程',
+    '％', '%', '‰', '万', '亿', '岁', '个月', '月', '年', '天', '日', '周', '次', '例', '分', '度', '周期', '疗程',
   ];
   const s = rest.replace(/^\s+/, ''); // 数字与单位间允许空白（"每天 3 次"）
   for (const u of units) {
@@ -68,10 +75,67 @@ function consumeUnit(rest) {
   return '';
 }
 
+// 数字规范化：全角数字→半角；中文数字+已知单位→阿拉伯数字+单位。
+// 防护栏线：模型若输出 "５００mg"（全角）或 "五百毫克"（中文），原 numRe /\d+/ 抓不到，
+// 编造剂量即绕过溯源。此处先规范化再提取，覆盖这两类盲区。
+// 中文数字解析覆盖一..九与十/百/千 组合（十一、二十、五百、二百五等），万以上从简。
+const CN_DIGIT = { 零: 0, 一: 1, 二: 2, 两: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9 };
+function parseChineseNum(str) {
+  if (!/^[零一二两三四五六七八九十百千万]+$/.test(str)) return null;
+  const unitMap = { 十: 10, 百: 100, 千: 1000 };
+  let total = 0;
+  let section = 0;
+  let digit = 0;
+  let lastUnit = 1;
+  let hasUnit = false;
+  let lastUnitIndex = -1;
+  for (let i = 0; i < str.length; i++) {
+    const ch = str[i];
+    if (ch in CN_DIGIT) {
+      digit = CN_DIGIT[ch];
+    } else if (ch in unitMap) {
+      section += (digit || 1) * unitMap[ch]; // "十" = 10，"十五" = 10 + 5
+      digit = 0;
+      lastUnit = unitMap[ch];
+      hasUnit = true;
+      lastUnitIndex = i;
+    } else if (ch === '万') {
+      total += (section + digit) * 10000;
+      section = 0;
+      digit = 0;
+      lastUnit = 1;
+      hasUnit = true;
+      lastUnitIndex = i;
+    }
+  }
+  if (digit) {
+    const suffix = lastUnitIndex >= 0 ? str.slice(lastUnitIndex + 1) : str;
+    const colloquialTens = hasUnit && lastUnit >= 100 && suffix.length === 1 && !suffix.includes('零');
+    section += colloquialTens ? digit * (lastUnit / 10) : digit;
+  }
+  const result = total + section;
+  return result > 0 ? result : null;
+}
+// 单位片段（与 consumeUnit 表对齐，用于"中文数字+单位"识别）
+const CN_UNIT_RE =
+  '(?:mmol/L|IU/L|U/L|u/|μg|×10|x10|ug|mg|kg|g|ml|mL|cm|mm|nm|ng|iu|IU|毫克|毫升|微克|千克|公斤|克|厘米|毫米|％|%|‰|万|亿|岁|个月|月|年|天|日|周|次|例|分|度|周期|疗程)';
+function normalizeNumbers(s) {
+  // 1) 全角数字 → 半角
+  s = s.replace(/[０-９]/g, (ch) => String(ch.charCodeAt(0) - 0xff10));
+  // 2) 中文数字 + 紧随单位 → 阿拉伯数字 + 单位（仅在这种组合下转换，避免误伤"十一"序号等无单位上下文）
+  s = s.replace(new RegExp('([零一二两三四五六七八九十百千万]+)' + CN_UNIT_RE), (m, cn) => {
+    const n = parseChineseNum(cn);
+    return n == null ? m : n + m.slice(cn.length);
+  });
+  return s;
+}
+
 function extractCriticalNumbersDetailed(text) {
   const critical = [];
+  // 先规范化全角数字与中文数字+单位，避免模型输出变体绕过 /\d+/ 提取
+  const normalized = normalizeNumbers(String(text || ''));
   // 先按行处理，跳过行首列表序号（(?!\d) 避免误吞 "2.5mg" 这类行首小数）
-  const lines = text.split(/\n+/);
+  const lines = normalized.split(/\n+/);
   const stripped = lines
     .map((l) => l.replace(/^\s*[0-9一二三四五六七八九十]{1,3}[、.．)）](?!\d)\s*/, ''))
     .join('\n');
@@ -103,7 +167,7 @@ function extractCriticalNumbers(text) {
 //     属单位错换，必须拒答
 //   · 匹配不消费边界字符："5岁5mg" 两个相邻数字都能各自找到出处
 function checkGroundedNumbers(answer, hits) {
-  const context = hits.map((h) => h.text || '').join('\n');
+  const context = normalizeNumbers(hits.map((h) => h.text || '').join('\n'));
   const critical = extractCriticalNumbersDetailed(answer);
   const ungrounded = [];
 
@@ -123,7 +187,7 @@ function checkGroundedNumbers(answer, hits) {
       const ctxUnit = consumeUnit(trimmed.slice(0, 8));
       if (ctxUnit && unitClass(ctxUnit) === wantClass) {
         const restAfterUnit = trimmed.slice(ctxUnit.length);
-        if (!restAfterUnit || !/[a-zA-Z%‰μgml×x]/.test(restAfterUnit[0])) return true;
+        if (!restAfterUnit || !/[a-zA-Z%％‰μgml×x/]/.test(restAfterUnit[0])) return true;
       }
     }
     return false;

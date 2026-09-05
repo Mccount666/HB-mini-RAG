@@ -150,6 +150,31 @@ test('checkGroundedNumbers 中文单位等价类：中西同单位可溯源，�
   assert.ok(bad2.ungrounded.includes('5'));
 });
 
+test('checkGroundedNumbers 数字规范化：全角/中文数字不能绕过，合法等价写法可溯源', () => {
+  // 回归：旧实现 /\d+/ 抓不到全角数字与中文数字，"６００mg"/"六百毫克" 会直接放行
+  const bad1 = checkGroundedNumbers('剂量 ６００mg [来源1]。', [{ text: '剂量 500mg。' }]);
+  assert.ok(bad1.ungrounded.includes('600'));
+  const bad2 = checkGroundedNumbers('剂量 六百毫克 [来源1]。', [{ text: '剂量 500毫克。' }]);
+  assert.ok(bad2.ungrounded.includes('600'));
+
+  const ok1 = checkGroundedNumbers('剂量 ５００mg [来源1]。', [{ text: '剂量 500毫克。' }]);
+  assert.equal(ok1.ungrounded.length, 0);
+  const ok2 = checkGroundedNumbers('剂量 五百毫克 [来源1]。', [{ text: '剂量 500 mg。' }]);
+  assert.equal(ok2.ungrounded.length, 0);
+  const ok3 = checkGroundedNumbers('剂量 二百五毫克 [来源1]。', [{ text: '剂量 250 mg。' }]);
+  assert.equal(ok3.ungrounded.length, 0);
+});
+
+test('checkGroundedNumbers 浓度/符号单位边界：mmol/L 不撞毫米，全角百分号可溯源', () => {
+  const bad = checkGroundedNumbers('血糖 2.5mmol/L [来源1]。', [{ text: '体重指数 2.5毫米。' }]);
+  assert.ok(bad.ungrounded.includes('2.5'));
+
+  const ok1 = checkGroundedNumbers('血糖 2.5mmol/L [来源1]。', [{ text: '血糖 2.5 mmol/L。' }]);
+  assert.equal(ok1.ungrounded.length, 0);
+  const ok2 = checkGroundedNumbers('缓解率 90％ [来源1]。', [{ text: '缓解率约 90%。' }]);
+  assert.equal(ok2.ungrounded.length, 0);
+});
+
 test('guardAnswer：数字无出处直接拒答（不可重试），无引用可重试，正常回答放行', () => {
   const hits = [{ text: '常见转移部位为肺。' }, { text: '五年生存率与分期相关。' }];
   // 数字无出处
