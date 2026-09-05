@@ -32,10 +32,33 @@ function validateCitations(answer, hitCount) {
 // 返回 [{ num, unit }]：unit 为数字后跟的单位（如 '%'、'mg'、'岁'），无单位时为空串。
 // 带单位记录供 checkGroundedNumbers 做「数字+单位」整体溯源，避免裸数字子串误判
 //（如回答 "500ml" 撞知识库 "500mg"、回答 "5岁" 撞 "5"）。
+
+// 单位等价类：同一单位的中西文写法视为相等。数字带中文单位（毫克/毫升…）时
+// 若不识别，会落入"无单位"宽松规则——KB 写 100mg、回答写"100 毫升"也误判已溯源。
+// 未列入等价类的单位（%、岁、天、×10…）仍按原文（大小写不敏感）比对。
+const UNIT_EQUIV = [
+  ['mg', '毫克'],
+  ['ml', 'ml', '毫升'],
+  ['ug', 'μg', '微克'],
+  ['kg', '千克', '公斤'],
+  ['g', '克'],
+  ['cm', '厘米'],
+  ['mm', '毫米'],
+  ['iu', 'IU'],
+];
+const UNIT_CANON = new Map();
+for (const group of UNIT_EQUIV) {
+  for (const alias of group) UNIT_CANON.set(alias.toLowerCase(), group[0]);
+}
+function unitClass(unit) {
+  return UNIT_CANON.get(unit.toLowerCase()) || unit.toLowerCase();
+}
+
 function consumeUnit(rest) {
   // 多字符单位优先匹配，避免 "500ug" 只吃到 "u" 被当无单位
   const units = [
     'μg', 'u/', 'U/', '×10', 'x10', 'ug', 'mg', 'kg', 'g', 'ml', 'mL', 'cm', 'mm', 'nm', 'ng', 'iu', 'IU',
+    '毫克', '毫升', '微克', '千克', '公斤', '克', '厘米', '毫米',
     '%', '‰', '万', '亿', '岁', '个月', '月', '年', '天', '日', '周', '次', '例', '分', '度', '周期', '疗程',
   ];
   const s = rest.replace(/^\s+/, ''); // 数字与单位间允许空白（"每天 3 次"）
@@ -75,8 +98,9 @@ function extractCriticalNumbers(text) {
 // 关键数字必须能在知识库命中文本中找到出处。
 // 匹配规则（环视词边界，避免正则单位歧义）：
 //   · 数字必须以词边界出现：前面不是数字、后面不是数字（"150 万" 不会撞 "50"，"50mg" 不会撞 "5"）
-//   · 带单位数字：数字后紧跟（允许空格）同一单位（不区分大小写），且单位后首字符不是字母
-//     （"500ug" 不会命中 "500mg"/"500mug"）
+//   · 带单位数字：数字后紧跟（允许空格）等价类相同的单位（mg↔毫克、ml↔mL↔毫升…，大小写不敏感），
+//     且单位后首字符不是字母（"500ug" 不会命中 "500mg"/"500mug"）——回答"100 毫升"撞知识库"100mg"
+//     属单位错换，必须拒答
 //   · 匹配不消费边界字符："5岁5mg" 两个相邻数字都能各自找到出处
 function checkGroundedNumbers(answer, hits) {
   const context = hits.map((h) => h.text || '').join('\n');
@@ -89,14 +113,16 @@ function checkGroundedNumbers(answer, hits) {
     // num 中的小数点必须转义：未转义时 "2.5" 会误匹配 "2×5"（`.` 通配任意字符）。
     const numPattern = c.num.replace(/\./g, '\\.');
     const numRe = new RegExp(`(?<!\\d)${numPattern}(?!\\d)`, 'g');
+    const wantClass = unitClass(c.unit);
     let m;
     while ((m = numRe.exec(context)) !== null) {
       const after = context.slice(m.index + c.num.length); // 环视不消费字符，数字后即目标位置
       if (!c.unit) return true; // 无单位：词边界出现即可
-      // 允许数字与单位之间有一个空格（"5 岁以下"）；单位不区分大小写（"5ml" 可溯源 "5mL"）
-      const s = after.startsWith(' ') ? after.slice(1) : after;
-      if (s.slice(0, c.unit.length).toLowerCase() === c.unit.toLowerCase()) {
-        const restAfterUnit = s.slice(c.unit.length);
+      // 数字与单位间允许空白；KB 侧单位按等价类比对（毫克↔mg 同类放行，毫克↔ml 异类拒答）
+      const trimmed = after.replace(/^\s+/, '');
+      const ctxUnit = consumeUnit(trimmed.slice(0, 8));
+      if (ctxUnit && unitClass(ctxUnit) === wantClass) {
+        const restAfterUnit = trimmed.slice(ctxUnit.length);
         if (!restAfterUnit || !/[a-zA-Z%‰μgml×x]/.test(restAfterUnit[0])) return true;
       }
     }

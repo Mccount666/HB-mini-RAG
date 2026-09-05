@@ -19,6 +19,7 @@
   font-size: 28rpx;
   color: var(--text);
   line-height: 1.8;
+  white-space: pre-wrap; /* 保留回答里的换行/列表结构（与聊天气泡 content-box 一致） */
 }
 .sources {
   margin-top: 40rpx;

@@ -136,6 +136,20 @@ test('checkGroundedNumbers 边界：单位大小写不敏感（5ml 可溯源 5mL
   assert.ok(bad.ungrounded.includes('500'));
 });
 
+test('checkGroundedNumbers 中文单位等价类：中西同单位可溯源，单位错换拒答', () => {
+  // 回归：中文单位（毫克/毫升…）原不识别 → 落入无单位宽松规则，"100 毫升"撞 KB"100mg"误放行
+  const ok1 = checkGroundedNumbers('每日给予 100毫克 [来源1]。', [{ text: '每日 100 mg。' }]);
+  assert.equal(ok1.ungrounded.length, 0);
+  const ok2 = checkGroundedNumbers('需补液 500ml [来源1]。', [{ text: '补液 500 毫升即可。' }]);
+  assert.equal(ok2.ungrounded.length, 0);
+  // 单位错换：回答"毫升"撞知识库"mg"必须拒答
+  const bad1 = checkGroundedNumbers('每日给予 100毫升 [来源1]。', [{ text: '每日 100 mg。' }]);
+  assert.ok(bad1.ungrounded.includes('100'));
+  // 克≠毫克
+  const bad2 = checkGroundedNumbers('约需 5克 [来源1]。', [{ text: '约需 5毫克。' }]);
+  assert.ok(bad2.ungrounded.includes('5'));
+});
+
 test('guardAnswer：数字无出处直接拒答（不可重试），无引用可重试，正常回答放行', () => {
   const hits = [{ text: '常见转移部位为肺。' }, { text: '五年生存率与分期相关。' }];
   // 数字无出处
