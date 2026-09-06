@@ -35,8 +35,9 @@ const CASES = [
         tag: c.tag, name: c.name, q: c.q,
         answer: data.answer, sources: (data.sources || []).map(s => s.refId),
         confidence: data.confidence, retrieved: data.retrieved,
-        // 拒答判定：不含引用标记且含拒答话术（模型也可能在回答末尾诚实补充"部分未收录"，不算拒答）
-        refused: !(data.answer || '').match(/\[来源\d+\]/) && (data.answer || '').includes('暂未收录'),
+        // 拒答判定：无引用标记且含任一兜底话术（机械拒答/学习话术均视为未正面回答）
+        refused: !(data.answer || '').match(/\[来源\d+\]/) &&
+          ((data.answer || '').includes('暂未收录') || (data.answer || '').includes('暂时没能给出确切回答')),
         ms: Date.now() - t0, error: data.error || data.message,
       });
     } catch (e) {
