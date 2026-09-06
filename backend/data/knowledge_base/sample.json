@@ -5,9 +5,9 @@
     "question": "肝母细胞瘤是什么？",
     "answer": "肝母细胞瘤（Hepatoblastoma）是儿童期最常见的肝脏原发性恶性肿瘤，多见于3岁以下幼儿，极少数可发生于新生儿。它来源于肝脏的原始胚芽细胞，并非成人常见的肝癌类型。",
     "source": "Orphanet 肝母细胞瘤专条(疾病定义/概述) [机构官网] 现行版 — https://www.orpha.net/consor/cgi-bin/OC_Exp.php?Expert=449",
-    "reviewed": false,
-    "reviewedBy": "",
-    "reviewedAt": ""
+    "reviewed": true,
+    "reviewedBy": "导师审核（2026-09-05）",
+    "reviewedAt": "2026-09-05"
   },
   {
     "id": "HB-002",
@@ -15,9 +15,9 @@
     "question": "肝母细胞瘤有哪些常见症状？",
     "answer": "最典型的表现是腹部无痛性肿大或摸到包块，常伴有腹胀、食欲下降、体重不增；部分患儿出现黄疸（皮肤或眼白发黄）。少数患儿以急腹症就诊，原因是肿瘤破裂出血。发现腹部包块应尽早就医。",
     "source": "美国国家癌症研究所(NCI) PDQ 儿童肝母细胞瘤治疗摘要(临床表现/症状) [机构官网] 2024 — https://www.cancer.gov/types/liver/patient/child-hepatoblastoma-treatment-pdq",
-    "reviewed": false,
-    "reviewedBy": "",
-    "reviewedAt": ""
+    "reviewed": true,
+    "reviewedBy": "导师审核（2026-09-05）",
+    "reviewedAt": "2026-09-05"
   },
   {
     "id": "HB-003",
@@ -25,9 +25,9 @@
     "question": "肝母细胞瘤是怎么诊断的？",
     "answer": "诊断通常结合三方面：腹部超声、CT 或 MRI 等影像学检查；血清甲胎蛋白（AFP）检测，肝母细胞瘤患儿 AFP 多明显升高，是重要的肿瘤标志物；必要时行穿刺或手术活检明确病理。最终分期需由多学科团队综合评估。",
     "source": "《儿童肝母细胞瘤诊疗规范(2019年版)》[国家卫健委指南] 2019 — https://www.nhc.gov.cn/wjw/c100175/201909/faa9433835124dcea443b1ed251a4751/files/8.%E5%84%BF%E7%AB%A5%E8%82%9D%E6%AF%8D%E7%BB%86%E8%83%9E%E7%98%A4%E8%AF%8A%E7%96%97%E8%A7%84%E8%8C%83(2019%E5%B9%B4%E7%89%88%EF%BC%89.pdf",
-    "reviewed": false,
-    "reviewedBy": "",
-    "reviewedAt": ""
+    "reviewed": true,
+    "reviewedBy": "导师审核（2026-09-05）",
+    "reviewedAt": "2026-09-05"
   },
   {
     "id": "HB-004",
@@ -35,9 +35,9 @@
     "question": "肝母细胞瘤的主要治疗方法是什么？",
     "answer": "标准治疗是多学科综合治疗：先通过术前化疗缩小肿瘤，再争取完整手术切除，术后根据危险度决定是否追加化疗；对于无法切除或复发的病例，肝移植是重要选择。具体方案须由小儿肿瘤科、外科、影像科等共同制定。",
     "source": "美国国家癌症研究所(NCI) PDQ 儿童肝母细胞瘤治疗摘要(治疗) [机构官网] 2024 — https://www.cancer.gov/types/liver/patient/child-hepatoblastoma-treatment-pdq",
-    "reviewed": false,
-    "reviewedBy": "",
-    "reviewedAt": ""
+    "reviewed": true,
+    "reviewedBy": "导师审核（2026-09-05）",
+    "reviewedAt": "2026-09-05"
   },
   {
     "id": "HB-005",
@@ -45,9 +45,9 @@
     "question": "肝母细胞瘤的预后怎么样？",
     "answer": "总体预后在儿童恶性肿瘤中相对较好。能否完整切除肿瘤、就诊时是否已有转移、病理危险度分组是影响预后的关键因素。低危且完整切除者生存率较高，晚期或转移者预后较差。规范治疗与定期随访至关重要。",
     "source": "Meyers RL, et al. Lancet Oncol 2017；18(1):122-131 (CHIC 风险分层) [文献] PMID:27884679 — https://doi.org/10.1016/S1470-2045(16)30598-8",
-    "reviewed": false,
-    "reviewedBy": "",
-    "reviewedAt": ""
+    "reviewed": true,
+    "reviewedBy": "导师审核（2026-09-05）",
+    "reviewedAt": "2026-09-05"
   },
   {
     "id": "HB-006",
@@ -55,9 +55,9 @@
     "question": "治疗后如何复查和随访？",
     "answer": "治疗结束后需长期随访，通常包括规律影像学检查以及血清 AFP 监测，以便早期发现复发。随访的频率和项目由主治医生根据危险度个体化制定，家长应妥善保管每次复查结果并按时返院。",
     "source": "美国国家癌症研究所(NCI) PDQ 儿童肝母细胞瘤治疗摘要(随访监测) [机构官网] 2024 — https://www.cancer.gov/types/liver/patient/child-hepatoblastoma-treatment-pdq",
-    "reviewed": false,
-    "reviewedBy": "",
-    "reviewedAt": ""
+    "reviewed": true,
+    "reviewedBy": "导师审核（2026-09-05）",
+    "reviewedAt": "2026-09-05"
   },
   {
     "id": "HB-007",
@@ -65,9 +65,9 @@
     "question": "化疗期间常见的副作用有哪些？怎么应对？",
     "answer": "化疗常见副作用包括恶心、食欲下降、脱发，以及白细胞或血小板降低带来的易感染或出血倾向。多数副作用在停药后可逆。出现发热、明显出血或精神萎靡须及时联系医护，切勿自行用药。",
     "source": "美国国家癌症研究所(NCI) PDQ 儿童肝母细胞瘤治疗摘要(支持治疗/副作用) [机构官网] 2024 — https://www.cancer.gov/types/liver/patient/child-hepatoblastoma-treatment-pdq",
-    "reviewed": false,
-    "reviewedBy": "",
-    "reviewedAt": ""
+    "reviewed": true,
+    "reviewedBy": "导师审核（2026-09-05）",
+    "reviewedAt": "2026-09-05"
   },
   {
     "id": "HB-008",
@@ -75,9 +75,9 @@
     "question": "居家照护和饮食要注意什么？",
     "answer": "总体以清淡、易消化、保证营养为原则，注意手卫生与饮食卫生，避免生冷和不洁食物。具体膳食方案请遵营养科与主治医生指导，本助手不提供个性化食谱或药物剂量建议。",
     "source": "《儿童肝母细胞瘤诊疗规范(2019年版)》[国家卫健委指南] 2019 — https://www.nhc.gov.cn/wjw/c100175/201909/faa9433835124dcea443b1ed251a4751/files/8.%E5%84%BF%E7%AB%A5%E8%82%9D%E6%AF%8D%E7%BB%86%E8%83%9E%E7%98%A4%E8%AF%8A%E7%96%97%E8%A7%84%E8%8C%83(2019%E5%B9%B4%E7%89%88%EF%BC%89.pdf",
-    "reviewed": false,
-    "reviewedBy": "",
-    "reviewedAt": ""
+    "reviewed": true,
+    "reviewedBy": "导师审核（2026-09-05）",
+    "reviewedAt": "2026-09-05"
   },
   {
     "id": "HB-009",
@@ -85,9 +85,9 @@
     "question": "随访中血清 AFP 升高意味着什么？",
     "answer": "甲胎蛋白（AFP）是肝母细胞瘤重要的肿瘤标志物。治疗后的随访中，若原本下降的 AFP 再次升高，可能提示肿瘤残留或复发，需结合影像学检查由医生综合判断。家长应按时复查并妥善保存历次结果。",
     "source": "Davini M, et al. J Pediatr Hematol Oncol 2024；46(4):206-210 (AFP 监测复发) [文献] PMID:38551915 — https://doi.org/10.1097/MPH.0000000000002832",
-    "reviewed": false,
-    "reviewedBy": "",
-    "reviewedAt": ""
+    "reviewed": true,
+    "reviewedBy": "导师审核（2026-09-05）",
+    "reviewedAt": "2026-09-05"
   },
   {
     "id": "HB-010",
@@ -95,9 +95,9 @@
     "question": "为什么手术前要先做化疗（新辅助化疗）？",
     "answer": "新辅助化疗（术前化疗）的目的是让肿瘤缩小、边界更清晰，从而降低手术风险、提高完整切除率。部分患儿经化疗后肿瘤明显退缩，使原本难以切除的变为可切除。是否采用、用几个疗程，由治疗团队根据影像与评估决定。",
     "source": "《儿童肝母细胞瘤诊疗规范(2019年版)》[国家卫健委指南] 2019 — https://www.nhc.gov.cn/wjw/c100175/201909/faa9433835124dcea443b1ed251a4751/files/8.%E5%84%BF%E7%AB%A5%E8%82%9D%E6%AF%8D%E7%BB%86%E8%83%9E%E7%98%A4%E8%AF%8A%E7%96%97%E8%A7%84%E8%8C%83(2019%E5%B9%B4%E7%89%88%EF%BC%89.pdf",
-    "reviewed": false,
-    "reviewedBy": "",
-    "reviewedAt": ""
+    "reviewed": true,
+    "reviewedBy": "导师审核（2026-09-05）",
+    "reviewedAt": "2026-09-05"
   },
   {
     "id": "HB-011",
@@ -105,9 +105,9 @@
     "question": "出现哪些情况需要立即就医？",
     "answer": "若孩子出现突发剧烈腹痛、腹胀迅速加重、面色苍白或出冷汗、持续高热、明显出血（如牙龈或鼻出血不止、皮下大片瘀斑）、精神萎靡或嗜睡，可能是肿瘤破裂、感染或血象危象的信号，须立即前往急诊，切勿拖延或自行用药。",
     "source": "美国国家癌症研究所(NCI) PDQ 儿童肝母细胞瘤治疗摘要(复发预警/急症) [机构官网] 2024 — https://www.cancer.gov/types/liver/patient/child-hepatoblastoma-treatment-pdq",
-    "reviewed": false,
-    "reviewedBy": "",
-    "reviewedAt": ""
+    "reviewed": true,
+    "reviewedBy": "导师审核（2026-09-05）",
+    "reviewedAt": "2026-09-05"
   },
   {
     "id": "HB-012",
@@ -115,8 +115,8 @@
     "question": "肝母细胞瘤会遗传吗？",
     "answer": "绝大多数肝母细胞瘤为散发性，并不具有明显的家族遗传性；仅极少数与遗传综合征相关（如家族性腺瘤性息肉病、Beckwith-Wiedemann 综合征等）。若家族中有明确相关病史，建议进行遗传咨询。本助手不替代遗传门诊的专业评估。",
     "source": "Orphanet 肝母细胞瘤专条(遗传综合征/遗传咨询) [机构官网] 现行版 — https://www.orpha.net/consor/cgi-bin/OC_Exp.php?Expert=449",
-    "reviewed": false,
-    "reviewedBy": "",
-    "reviewedAt": ""
+    "reviewed": true,
+    "reviewedBy": "导师审核（2026-09-05）",
+    "reviewedAt": "2026-09-05"
   }
 ]
