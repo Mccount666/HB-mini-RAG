@@ -22,7 +22,9 @@ test('onlyReviewed=false 返回全部条目；true 时只保留终审条目（la
   assert.ok(all.length >= 160, `全量应 ≥160 条，实际 ${all.length}`);
 
   const gated = loadKnowledge({ onlyReviewed: true });
-  assert.ok(gated.length > 0 && gated.length < all.length, '门控后应少于全量');
+  assert.ok(gated.length > 0, '门控后应非空');
+  // 门控集必须恰好等于全部终审条目（不多收一条未审、不漏一条已审）
+  assert.equal(gated.length, all.filter((it) => it.reviewed).length, '门控集应等于全量中的终审条目');
 
   // 门控集中任何分类都必须终审；lab_reference 不再有白名单例外
   for (const it of gated) {
