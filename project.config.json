@@ -6,10 +6,18 @@
       { "type": "folder", "value": "web" },
       { "type": "folder", "value": "docs" },
       { "type": "folder", "value": "tools" },
+      { "type": "folder", "value": "知识库备份-2026-09-02" },
+      { "type": "folder", "value": ".mimosa" },
+      { "type": "folder", "value": ".v2c" },
+      { "type": "folder", "value": ".workbuddy" },
       { "type": "file", "value": "preview.html" },
       { "type": "file", "value": "OVERVIEW.md" },
       { "type": "file", "value": "README.md" },
-      { "type": "file", "value": "render.yaml" }
+      { "type": "file", "value": "render.yaml" },
+      { "type": "file", "value": "化验单-测试样张.png" },
+      { "type": "file", "value": "大模型审查交接-2026-09-05.md" },
+      { "type": "file", "value": "整改清单-2026-09-04.md" },
+      { "type": "file", "value": ".gitignore" }
     ],
     "include": []
   },
