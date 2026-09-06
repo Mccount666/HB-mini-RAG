@@ -70,7 +70,16 @@ function consumeUnit(rest) {
   ];
   const s = rest.replace(/^\s+/, ''); // 数字与单位间允许空白（"每天 3 次"）
   for (const u of units) {
-    if (s.startsWith(u)) return u;
+    if (s.startsWith(u)) {
+      // 斜杠复合单位（ng/mL、μg/L、U/ml…）：基单位后紧跟 "/" 时一并消费，
+      // 否则溯源时 "10 ng/mL" 只吃到 "ng"、剩 "/mL" 会被单位后边界检查误拒
+      let end = u.length;
+      if (s[end] === '/') {
+        const m = /^\/[A-Za-z0-9μ×]+/.exec(s.slice(end));
+        if (m) end += m[0].length;
+      }
+      return s.slice(0, end);
+    }
   }
   return '';
 }

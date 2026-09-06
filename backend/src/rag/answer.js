@@ -74,6 +74,25 @@ function learningResult(question, bestScore) {
   };
 }
 
+// ===== 化验参考条目并入（2026-09-05 用户确认开启）=====
+// 家长在文字问答里直接问"AFP 多少算异常/参考范围"时，通用混合检索的 topK 常被
+// 科普条目占满，14 条 lab_reference（已导师终审）排不进来，导致只能拒答或绕开
+// 具体数值。此处在门控已通过的前提下，把得分接近通用最佳的化验条目并入候选。
+// 相对门槛（≥0.8×bestScore）实测可干净区分：化验类问题 LAB 分 0.52~0.66，
+// 无关问题仅 0.07~0.23；出范围问题 hits 为空直接拒答，不受影响。
+const LAB_MERGE_RATIO = 0.8;
+const LAB_MERGE_MAX = 2;
+function mergeLabHits(hits, labTop, bestScore) {
+  const have = new Set(hits.map((h) => h.id));
+  const added = [];
+  for (const h of labTop || []) {
+    if (added.length >= LAB_MERGE_MAX) break;
+    if (have.has(h.id) || h.score < bestScore * LAB_MERGE_RATIO) continue;
+    added.push(h);
+  }
+  return added.length ? [...hits, ...added] : hits;
+}
+
 async function answerQuestion(message, history = []) {
   const cleanMessage = sanitizeMessage(message);
   const cleanHistory = sanitizeHistory(history);
@@ -91,9 +110,18 @@ async function answerQuestion(message, history = []) {
   // 1) 构建检索查询（追问场景拼接上轮问题），混合检索（向量 + BM25）
   const retrievalQuery = buildRetrievalQuery(cleanMessage, cleanHistory);
   const queryEmbedding = await embed(retrievalQuery);
-  const { hits, top, bestScore } = await retrieve(queryEmbedding, {
+  let { hits, top, bestScore } = await retrieve(queryEmbedding, {
     queryText: retrievalQuery,
   });
+  // 门控通过时并入化验参考候选（hits 为空 = 出范围，保持原拒答语义不动）
+  if (hits.length > 0) {
+    const lab = await retrieve(queryEmbedding, {
+      queryText: retrievalQuery,
+      category: 'lab_reference',
+      topK: LAB_MERGE_MAX,
+    });
+    hits = mergeLabHits(hits, lab.top, bestScore);
+  }
 
   // 2) 机械命中 → 直接生成（高频正常路径，不额外花费一次 LLM 判定）
   if (hits.length > 0) {
@@ -146,4 +174,4 @@ async function answerQuestion(message, history = []) {
   };
 }
 
-module.exports = { answerQuestion, FALLBACK, LEARNING_FALLBACK };
+module.exports = { answerQuestion, FALLBACK, LEARNING_FALLBACK, mergeLabHits };

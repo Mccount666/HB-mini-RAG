@@ -175,6 +175,17 @@ test('checkGroundedNumbers 浓度/符号单位边界：mmol/L 不撞毫米，全
   assert.equal(ok2.ungrounded.length, 0);
 });
 
+test('checkGroundedNumbers 斜杠复合单位：ng/mL 逐字引用可溯源（回归：单位只吃到 ng 后 /mL 被误拒）', () => {
+  // 回归：consumeUnit 不消费斜杠后半段时，"10 ng/mL" 提取为 unit='ng'，
+  // 溯源时 KB 侧剩 "/mL" 撞上"单位后不得跟字母"检查 → 家长问参考范围被误拒
+  const hits = [{ text: '成人参考区间通常 < 7–10 ng/mL（各实验室略有差异）。' }];
+  const ok = checkGroundedNumbers('成人参考区间通常 < 7–10 ng/mL [来源1]。', hits);
+  assert.equal(ok.ungrounded.length, 0);
+  // 单位错换仍须拒答：ng/mL 与 μg/L 数值虽等价，但护栏禁止模型自行换算单位
+  const bad = checkGroundedNumbers('通常 < 10 μg/L [来源1]。', hits);
+  assert.ok(bad.ungrounded.includes('10'));
+});
+
 test('guardAnswer：数字无出处直接拒答（不可重试），无引用可重试，正常回答放行', () => {
   const hits = [{ text: '常见转移部位为肺。' }, { text: '五年生存率与分期相关。' }];
   // 数字无出处
@@ -225,4 +236,22 @@ test('saturate 把 BM25 分压到 [0,1) 且强命中显著高于弱命中', () =
   assert.ok(saturate(10) > 0.7);
   assert.ok(saturate(0.5) < 0.25);
   assert.ok(saturate(0) === 0);
+});
+
+// ---- 化验参考条目并入 ----
+const { mergeLabHits } = require('../src/rag/answer');
+test('mergeLabHits 只并入得分接近通用最佳的化验条目（去重、限 2 条、低分不并）', () => {
+  const hits = [{ id: 'HB-285', score: 0.528 }, { id: 'HB-284', score: 0.518 }];
+  const labTop = [
+    { id: 'LAB-AFP', score: 0.521 },
+    { id: 'LAB-TP', score: 0.417 },
+    { id: 'LAB-ALT', score: 0.43 },
+    { id: 'HB-285', score: 0.5 }, // 已在通用命中里，去重
+  ];
+  const merged = mergeLabHits(hits, labTop, 0.528);
+  // 0.521 ≥ 0.528×0.8=0.422 → 并入；0.417 < 0.422 → 不并；0.43 ≥ 0.422 → 并入（凑满 2 条）
+  assert.deepEqual(merged.map((h) => h.id), ['HB-285', 'HB-284', 'LAB-AFP', 'LAB-ALT']);
+  // 无关问题：低分不并，返回原数组
+  const none = mergeLabHits([{ id: 'HB-247', score: 0.415 }], [{ id: 'LAB-AFP', score: 0.1 }], 0.415);
+  assert.deepEqual(none.map((h) => h.id), ['HB-247']);
 });
