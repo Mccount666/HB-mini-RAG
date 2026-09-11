@@ -11,7 +11,6 @@ hepatoblastoma-qa-miniprogram/
 ├── project.config.json / sitemap.json   # project.config.json 含 cloudfunctionRoot
 ├── pages/                               # index 问答 / history 历史 / about 须知
 ├── components/chat-message/             # 带"参考来源"引用的消息气泡
-├── utils/                               # request 统一请求（自托管备用）、auth 登录
 ├── services/chat.js                     # 问答业务：调用云函数 qa（云开发后端）
 ├── backend/                             # Node.js RAG 后端（自托管 / 复用核心）
 │   ├── .env.example                     # 配置大模型 / embedding / 检索阈值 / 护栏
@@ -53,7 +52,7 @@ hepatoblastoma-qa-miniprogram/
 1. 用微信开发者工具导入本项目根目录（已含 `cloudfunctionRoot`，工具会识别云函数）
 2. 把 `project.config.json` 的 `appid` 换成你自己的小程序 AppID
 3. 把 `app.js` 里 `wx.cloud.init` 的 `env` 换成你的**云开发环境 ID**
-> 前端已改为调用云函数 `qa`，不再需要 `utils/request.js` 的 `BASE_URL`。若改自托管后端，把 `services/chat.js` 换回 `utils/request` 的 `POST /api/chat` 即可。
+> 前端统一调用云函数 `qa`，不再保留自托管请求脚手架。若未来改自托管后端，请在 `services/chat.js` 中重新接入 HTTPS API。
 
 ### 2. 接入大模型（默认 DeepSeek）
 ```bash
@@ -111,7 +110,7 @@ curl -X POST http://localhost:3000/api/chat -H 'Content-Type: application/json' 
 ## 控幻觉六道防线（详见 docs/architecture.md）
 1. **混合检索**：向量余弦 + BM25 词法（含医学同义词扩展）加权融合，术语类问题精确命中
 2. **检索优先**：先检索知识库，再决定是否生成
-3. **置信度门控**：融合分低于阈值直接拒答，**根本不调大模型**（本地向量化实测阈值 0.35，用 `node tools/eval.js` 校准）
+3. **置信度门控**：融合分低于阈值直接拒答，**根本不调大模型**（本地向量化默认阈值 0.50，用 `node tools/eval.js` 校准）
 4. **严格提示词**：仅允许依据 `<知识库>` 作答，强制 `[来源N]` 引用，数字必须与原文逐字一致，无内容必拒答
 5. **生成后护栏**：机检回答——无效引用剔除；关键数字（剂量/百分比等）必须能在知识库找到原文，否则整条拒答；无引用时强化重试一次，仍无引用则拒答
 6. **来源可溯**：每条回答回传 `sources`，前端可点开看出处
@@ -140,22 +139,21 @@ node tools/qa-live-test.js      # 实机测试（需 backend/.env 配好 LLM_API
 
 ## 知识库审核工作流（上线前必做）
 
-知识库位于 `backend/data/knowledge_base/`，共三份：
-- `ganya_articles.json` —— 《肝芽守护》科普文章结构化医学知识（**当前为按文章主题编写的占位草稿**，待替换为真实文章导出）
-- `lab_reference.json` —— 化验单常用项目参考区间（**仅供 OCR 解读检索**，待导师核对为本实验室标准）
-- `sample.json` —— 早期演示样本（建议逐步并入 `ganya_articles.json` 后停用）
+知识库位于 `backend/data/knowledge_base/`，当前已收录 167 条并全部完成导师终审：
+- `ganya_articles.json` —— 《肝芽守护》科普文章结构化医学知识
+- `hb_deep_kb.json` —— 肝母细胞瘤扩展科普、治疗、护理、随访知识
+- `web_collected.json` —— 公开来源整理的补充知识
+- `lab_reference.json` —— 化验单常用项目参考区间（仅供 OCR 解读检索）
+- `sample.json` —— 早期样本条目，已纳入终审门控
 
-> ⚠️ **关于《肝芽守护》真实文章**：本仓库的 `ganya_articles.json` 是我按那些科普文章会覆盖的医学主题**编写的结构化草稿**（标注 `source: 《肝芽守护》科普文章（待替换为原文导出）`）。
-> 我无法访问公众号后台原文，所以上线前请按 `knowledge_base/README.md` 把真实文章导出、按相同格式覆盖进去，再由导师审核。
-
-全部条目均为 `reviewed:false` 的**演示数据**，上线前必须由科室高年资医生（导师）终审：
-1. 逐条核对 `backend/data/knowledge_base/REVIEW.md` 的审核清单
+知识库维护流程：
+1. 新增或修改条目后，逐条核对 `backend/data/knowledge_base/REVIEW.md` 的审核清单
 2. 通过后在 JSON 把 `reviewed` 改为 `true`，并填 `reviewedBy` / `reviewedAt`
-3. 全部通过后，在 `.env` 设 `KB_ONLY_REVIEWED=true`（**安全门控**：仅已审核内容进检索库）
-4. 重新 `npm run ingest` → `node tools/sync-cloudfunction.js` → 重新部署云函数
-随时跑 `node tools/kb-status.js` 看审核进度（当前共 44 条待审）。
+3. 保持 `.env` 中 `KB_ONLY_REVIEWED=true`（**安全门控**：仅已审核内容进检索库）
+4. 重新 `npm run ingest` → `node ../tools/sync-cloudfunction.js` → 重新部署云函数
+5. 随时跑 `node tools/kb-status.js` 查看审核状态；当前为 167 条全部已终审，无待审条目。
 
-> ⚠️ 未设 `KB_ONLY_REVIEWED=true` 前，演示数据会进入检索库，仅供内部测试，**不得对家长开放**。
+> ⚠️ 新增未审核条目不得对家长开放；每次知识库变化都必须重建索引并同步云函数。
 
 ## 上线合规提醒
 - 云开发天然 HTTPS、无需备案域名；若自托管需配置 request 合法域名（HTTPS）

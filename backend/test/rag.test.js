@@ -106,6 +106,17 @@ test('checkGroundedNumbers 发现知识库外的数字', () => {
   assert.ok(bad.ungrounded.includes('500'));
 });
 
+test('checkGroundedNumbers 支持 OCR 报告原文与参考标准双来源校验', () => {
+  const contexts = [
+    { text: '化验单原文：AFP 1250.0 ng/mL，ALT 85 U/L。' },
+    { text: '成人常见参考区间约 7–40 U/L。' },
+  ];
+  const ok = checkGroundedNumbers('AFP 1250.0 ng/mL，ALT 85 U/L，高于 7–40 U/L 参考区间 [来源1]。', contexts);
+  assert.equal(ok.ungrounded.length, 0);
+  const bad = checkGroundedNumbers('AFP 1250.0 ng/mL，ALT 85 U/L，高于 50 U/L 参考区间 [来源1]。', contexts);
+  assert.ok(bad.ungrounded.includes('50'));
+});
+
 test('checkGroundedNumbers 边界：命中文本以数字开头时带单位数字可溯源', () => {
   // 回归：旧实现前导边界组为空时 after 偏移多跳 1 字符，"500mg" 被误判无出处
   const hits = [{ text: '500mg 为单次最大剂量。' }];

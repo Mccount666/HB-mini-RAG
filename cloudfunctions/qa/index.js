@@ -55,7 +55,7 @@ async function handleCall(event = {}, context = {}) {
   // ===== 反馈分支（小程序直调）：{ type:'feedback', q, rating:'good'|'bad', comment } =====
   // 与网页版共用 handleFeedback，写入云数据库 feedback 集合
   if (type === 'feedback') {
-    return handleFeedback(event);
+    return handleFeedback(event, callIdentity(event, context));
   }
 
   // ===== OCR 化验单解读分支（两段式：先提取文字 → 前端确认 → 再解读） =====
@@ -125,7 +125,11 @@ async function pushLearnQueue(question, mode = 'text') {
 }
 
 // ===== 网页版反馈入库（写入云开发数据库 feedback 集合，控制台可直接查看） =====
-async function handleFeedback(data = {}) {
+async function handleFeedback(data = {}, identity = '') {
+  const feedbackLimit = parseInt(process.env.FEEDBACK_RATE_LIMIT || '5', 10);
+  if (rateLimited('fb:' + (identity || 'anonymous'), feedbackLimit)) {
+    return { ok: false, error: '提交过于频繁' };
+  }
   const rec = {
     q: String(data.q || '').slice(0, 300),
     rating: data.rating === 'good' ? 'good' : 'bad',
@@ -199,8 +203,8 @@ function secretOk(event) {
 
 // 每 IP 每分钟 POST 限速（实例内存计数；实例回收即清零，属尽力而为的防刷）
 const rateBuckets = new Map(); // ip -> { count, ts }
-function rateLimited(ip) {
-  const limit = parseInt(process.env.HTTP_RATE_LIMIT || '20', 10);
+function rateLimited(ip, limitOverride) {
+  const limit = Number.isFinite(limitOverride) ? limitOverride : parseInt(process.env.HTTP_RATE_LIMIT || '20', 10);
   if (!(limit > 0)) return false;
   const now = Date.now();
   const b = rateBuckets.get(ip);
@@ -273,7 +277,7 @@ async function handleHttp(event) {
   const p = String(event.path || '');
   const isFeedback = p.includes('feedback') || (data && data.rating);
   if (isFeedback) {
-    return httpJson(await handleFeedback(data), 200, cors);
+    return httpJson(await handleFeedback(data, getSourceIp(event)), 200, cors);
   }
   const result = await handleCall(data);
   return httpJson(result, 200, cors);

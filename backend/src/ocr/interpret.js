@@ -1,12 +1,12 @@
 // backend/src/ocr/interpret.js - 化验单解读（严格基于参考标准，控幻觉）
 // 流程：向量化化验单原文 → 在 lab_reference 分类内检索参考区间 → 拼严格 OCR 提示词 → 调大模型
-// 注意：化验单解读的数值来自家长上传的报告本身，因此不做"数字溯源"检查（会对报告数值误报），
-// 只做引用校验：剔除指向不存在条目的 [来源N]。
+// 注意：化验单解读的数值允许来自家长上传的报告原文或命中的参考标准，
+// 输出若补充两者之外的数字，仍按医学数字幻觉处理。
 const { embed } = require('../rag/embedder');
 const { retrieve } = require('../rag/retriever');
 const { chat } = require('../rag/llm');
 const { buildOcrMessages } = require('../rag/prompt');
-const { validateCitations } = require('../rag/guard');
+const { validateCitations, checkGroundedNumbers } = require('../rag/guard');
 const { buildRetrievalQuery } = require('../rag/query');
 const config = require('../config');
 
@@ -32,7 +32,12 @@ async function interpretLabReport(rawText, history = []) {
   const messages = buildOcrMessages(rawText, hits, history);
   const rawInterpretation = await chat(messages);
   // 引用护栏：剔除越界的 [来源N]，防止模型指向不存在的参考条目
-  const { answer: interpretation } = validateCitations(rawInterpretation, hits.length);
+  const { answer: citedInterpretation } = validateCitations(rawInterpretation, hits.length);
+  const numberContext = [{ text: rawText }, ...hits.map((h) => ({ text: h.text }))];
+  const { ungrounded } = checkGroundedNumbers(citedInterpretation, numberContext);
+  const interpretation = ungrounded.length
+    ? '化验单解读结果中出现了无法在报告原文或参考标准中核对的数字。为避免误导，暂不展示自动解读，请带报告咨询主治医生或专科护士。'
+    : citedInterpretation;
 
   const sources = hits.map((h, i) => ({
     id: i + 1,

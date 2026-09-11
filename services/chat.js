@@ -1,5 +1,5 @@
 // services/chat.js - 调用云函数 qa 进行 RAG 问答（云开发后端）
-// 若改为自托管 Express 后端，把本文件内部换成 utils/request 的 POST /api/chat 即可。
+// 若未来改为自托管 Express 后端，在本文件内重新接入 HTTPS API。
 const ask = (message, history = []) => {
   return new Promise((resolve, reject) => {
     if (!message || !message.trim()) {

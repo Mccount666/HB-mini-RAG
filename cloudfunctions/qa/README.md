@@ -20,7 +20,7 @@
    - `EMBEDDING_API_KEY`、`EMBEDDING_BASE_URL`、`EMBEDDING_MODEL`、`EMBEDDING_DIM`
    - `RETRIEVAL_TOP_K`、`RETRIEVAL_THRESHOLD`、`STRICT_RETRIEVAL`
    - （可选）`INDEX_FILE`：若索引不放默认 `data/index.json` 路径，用此覆盖
-4. 小程序端调用（前端 `utils/request.js` 改为云函数模式，或直接在页面用 `wx.cloud.callFunction`）：
+4. 小程序端调用（前端统一经 `services/chat.js` 调用云函数 `qa`）：
    ```js
    const res = await wx.cloud.callFunction({ name: 'qa', data: { message: '术后饮食注意什么？', history: [] } });
    // res.result = { answer, sources, confidence, retrieved }

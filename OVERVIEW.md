@@ -2,7 +2,7 @@
 
 ## 做了什么
 为肝母细胞瘤患儿家长搭建了一个 **RAG（检索增强生成）问答小程序** 的完整工程骨架：
-- **微信小程序前端**：问答页（带"参考来源"引用）、历史记录、使用须知，含统一请求层与微信登录。
+- **微信小程序前端**：问答页（带"参考来源"引用）、历史记录、使用须知，统一调用云函数 `qa`。
 - **Node.js RAG 后端**：向量检索 + 严格提示词 + 置信度门控，最大限度抑制幻觉；大模型与向量库均可插拔。
 - **样本知识库** + 向量化摄入脚本。
 - **架构文档** 与 **README**。
@@ -19,12 +19,12 @@
 `node tools/smoke.js`（mock 大模型端到端冒烟）。
 
 ## 关键配置点（上线前必改）
-- `utils/request.js` 的 `BASE_URL` → 你的后端 HTTPS 域名（需微信后台备案）。
 - `project.config.json` 的 `appid` → 你的小程序 AppID。
-- `backend/.env` → 填入你自接的大模型 / embedding 的 Key 与地址。
-- `backend/data/knowledge_base/sample.json` → 替换为**经儿科肿瘤医生审核**的知识库。
+- `app.js` 的云开发 `env` → 你的云开发环境 ID。
+- `backend/.env` → 填入你自接的大模型 / embedding / OCR 的 Key 与地址。
+- `backend/data/knowledge_base/` → 维护经儿科肿瘤医生审核的知识库，修改后必须重新 ingest 并同步云函数。
 
 ## 下一步
 1. `cd backend && npm install && npm run ingest && npm start`
-2. 微信开发者工具导入根目录，改 appid 与 BASE_URL，预览。
+2. 微信开发者工具导入根目录，改 appid 与云开发环境 ID，预览。
 3. 接公众号 / 视频号做获客；按需迁移到生产级向量库。
