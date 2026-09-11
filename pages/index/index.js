@@ -3,6 +3,24 @@ const chat = require('../../services/chat');
 
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
+const TOPIC_RULES = [
+  { key: 'diagnosis', label: '确诊检查', words: ['确诊', '检查', '影像', 'CT', '核磁', 'MRI', '病理', '活检', '分期', 'PRETEXT'] },
+  { key: 'lab', label: '化验指标', words: ['AFP', '甲胎蛋白', '白细胞', '血小板', '血红蛋白', '胆红素', 'ALT', 'AST', '指标', '化验'] },
+  { key: 'chemo', label: '化疗护理', words: ['化疗', '顺铂', '副作用', '骨髓抑制', '恶心', '呕吐', '掉头发', '伤耳'] },
+  { key: 'surgery', label: '手术移植', words: ['手术', '切除', '切干净', '肝移植', '移植'] },
+  { key: 'followup', label: '随访复查', words: ['复查', '随访', '出院', '复诊', '多久查'] },
+  { key: 'care', label: '居家护理', words: ['饮食', '营养', '护理', '感染', '发烧', '疫苗', '生活'] },
+  { key: 'prognosis', label: '预后风险', words: ['治愈', '预后', '复发', '风险', '遗传', '二胎', '基因'] },
+  { key: 'emergency', label: '危险信号', words: ['马上去医院', '急诊', '肿瘤破裂', '腹痛', '出血', '严重'] },
+];
+
+function inferQuestionTopic(text, type = 'text') {
+  if (type === 'ocr') return { key: 'lab_report', label: '化验单解读' };
+  const q = String(text || '').toLowerCase();
+  const hit = TOPIC_RULES.find((rule) => rule.words.some((w) => q.includes(String(w).toLowerCase())));
+  return hit ? { key: hit.key, label: hit.label } : { key: 'general', label: '疾病科普' };
+}
+
 Page({
   data: {
     messages: [],
@@ -10,6 +28,8 @@ Page({
     sending: false,
     showDisclaimer: true,
     scrollTarget: '',
+    showPrivacy: false,     // 隐私授权弹窗（化验单识别需相册/相机）
+    privacyPending: false,  // 同意后是否继续之前被打断的选图动作
     quickQuestions: [
       '肝母细胞瘤是什么？',
       '常见症状有哪些？',
@@ -27,6 +47,59 @@ Page({
     this.setData({ showDisclaimer: false });
   },
 
+  onNeedPrivacyAuth() {
+    this.setData({ showPrivacy: true, privacyPending: true });
+  },
+
+  openPrivacyContract() {
+    if (wx.openPrivacyContract) {
+      wx.openPrivacyContract({
+        fail: () => wx.showToast({ title: '暂时无法打开隐私协议', icon: 'none' }),
+      });
+    }
+  },
+
+  onAgreePrivacyAuthorization() {
+    const app = getApp();
+    const shouldResume = this.data.privacyPending && !app.globalData.privacyResolve;
+    if (app.globalData.privacyResolve) {
+      app.globalData.privacyResolve({ event: 'agree', buttonId: 'agree-btn' });
+      app.globalData.privacyResolve = null;
+    }
+    this.setData({ showPrivacy: false, privacyPending: false });
+    if (shouldResume) this.onUpload();
+  },
+
+  onRejectPrivacyAuthorization() {
+    const app = getApp();
+    if (app.globalData.privacyResolve) {
+      app.globalData.privacyResolve({ event: 'disagree' });
+      app.globalData.privacyResolve = null;
+    }
+    this.setData({ showPrivacy: false, privacyPending: false });
+    wx.showToast({ title: '同意隐私授权后才能上传化验单', icon: 'none' });
+  },
+
+  ensurePrivacyAuthorized() {
+    return new Promise((resolve) => {
+      if (!wx.getPrivacySetting) {
+        resolve(true);
+        return;
+      }
+      wx.getPrivacySetting({
+        success: (res) => {
+          if (res.needAuthorization) {
+            this.setData({ showPrivacy: true, privacyPending: true });
+            resolve(false);
+          } else {
+            resolve(true);
+          }
+        },
+        fail: () => resolve(true),
+      });
+    });
+  },
+
   onInput(e) {
     this.setData({ inputValue: e.detail.value });
   },
@@ -35,7 +108,7 @@ Page({
     const text = (this.data.inputValue || '').trim();
     if (!text || this.data.sending) return;
 
-    const userMsg = { id: uid(), role: 'user', type: 'text', content: text, sources: [] };
+    const userMsg = { id: uid(), role: 'user', type: 'text', content: text, sources: [], topic: inferQuestionTopic(text) };
     const botMsg = { id: uid(), role: 'assistant', type: 'text', content: '', sources: [], loading: true };
 
     this.setData({
@@ -68,8 +141,10 @@ Page({
   // 拍照 / 相册上传化验单 → 云存储 → 云函数 OCR 两段式：
   // 第一段：只识别提取文字（extract）→ 展示给用户核对/修正；
   // 第二段：用户确认文字后（interpret）再严格解读，最大限度避免 OCR 误判。
-  onUpload() {
+  async onUpload() {
     if (this.data.sending) return;
+    const authorized = await this.ensurePrivacyAuthorized();
+    if (!authorized) return;
     wx.chooseMedia({
       count: 1,
       mediaType: ['image'],
@@ -83,6 +158,7 @@ Page({
           imagePath: file.tempFilePath,
           content: '上传化验单',
           sources: [],
+          topic: inferQuestionTopic('', 'ocr'),
         };
         const botMsg = {
           id: uid(),
@@ -214,13 +290,15 @@ Page({
       const m = this.data.messages[i];
       if (m.role === 'user') {
         q = m.type === 'ocr' ? '[化验单解读]' : m.content || '';
+        var topic = m.topic || inferQuestionTopic(q, m.type);
         break;
       }
     }
 
+    const topicInfo = topic || inferQuestionTopic(q);
     this.setData({ [`messages[${idx}].rating`]: rating });
     chat
-      .sendFeedback({ q, rating })
+      .sendFeedback({ q, rating, topicKey: topicInfo.key, topicLabel: topicInfo.label })
       .catch(() => {
         // 提交失败时回滚，允许用户重试
         this.setData({ [`messages[${idx}].rating`]: '' });
@@ -235,6 +313,7 @@ Page({
       question: userMsg.type === 'ocr' ? '[化验单解读]' : userMsg.content,
       answer: botMsg.content,
       sources: botMsg.sources,
+      topic: userMsg.topic || inferQuestionTopic(userMsg.content, userMsg.type),
       time: Date.now(),
     });
     wx.setStorageSync('chat_history', history.slice(0, 200));

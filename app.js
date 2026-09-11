@@ -3,6 +3,9 @@ App({
   globalData: {
     userInfo: null,
     cloudReady: false,
+    // 隐私授权挂起回调：wx.onNeedPrivacyAuthorization 触发时由基础库传入，
+    // 用户点击「同意」按钮（open-type=agreePrivacyAuthorization）后基础库自动放行
+    privacyResolve: null,
   },
 
   onLaunch() {
@@ -15,5 +18,18 @@ App({
       traceUser: true,
     });
     this.globalData.cloudReady = true;
+
+    // 隐私合规：调用隐私接口（如 wx.chooseMedia 选相册/拍照）且用户未同意时，
+    // 基础库回调这里；存下 resolve 并通知当前页面弹出内置隐私弹窗。
+    if (wx.onNeedPrivacyAuthorization) {
+      wx.onNeedPrivacyAuthorization((resolve) => {
+        this.globalData.privacyResolve = resolve;
+        const pages = getCurrentPages();
+        const page = pages[pages.length - 1];
+        if (page && typeof page.onNeedPrivacyAuth === 'function') {
+          page.onNeedPrivacyAuth();
+        }
+      });
+    }
   },
 });

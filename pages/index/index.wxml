@@ -31,6 +31,7 @@
         imagePath="{{item.imagePath}}"
         rawText="{{item.rawText}}"
         sources="{{item.sources}}"
+        topic="{{item.topic}}"
         loading="{{item.loading}}"
         rating="{{item.rating}}"
         ocrStage="{{item.ocrStage}}"
@@ -43,6 +44,18 @@
 
     <view class="list-bottom-gap"></view>
   </scroll-view>
+
+  <view wx:if="{{showPrivacy}}" class="privacy-mask">
+    <view class="privacy-dialog">
+      <view class="privacy-title">隐私授权提示</view>
+      <view class="privacy-text">上传化验单需要使用相册或相机，并将图片临时上传到云端用于 OCR 文字识别和解读。我们仅用于本次识别，不会公开您的报告内容。</view>
+      <view class="privacy-link" bindtap="openPrivacyContract">查看《用户隐私保护指引》</view>
+      <view class="privacy-actions">
+        <button class="privacy-btn secondary" bindtap="onRejectPrivacyAuthorization">暂不同意</button>
+        <button id="agree-btn" class="privacy-btn primary" open-type="agreePrivacyAuthorization" bindagreeprivacyauthorization="onAgreePrivacyAuthorization">同意并继续</button>
+      </view>
+    </view>
+  </view>
 
   <!-- 底部输入区：白色圆角托板 -->
   <view class="input-area">

@@ -58,6 +58,18 @@
   white-space: pre-wrap;
 }
 
+.topic-pill {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 12rpx;
+  padding: 4rpx 14rpx;
+  border-radius: 999rpx;
+  background: rgba(255,255,255,0.22);
+  color: rgba(255,255,255,0.92);
+  font-size: 20rpx;
+  line-height: 1.4;
+}
+
 /* OCR 缩略图 */
 .ocr-thumb {
   width: 200rpx;

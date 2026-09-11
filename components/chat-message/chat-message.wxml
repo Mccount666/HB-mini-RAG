@@ -16,6 +16,8 @@
       <image class="ocr-img" src="{{imagePath}}" mode="aspectFill" />
     </view>
 
+    <view wx:if="{{role === 'user' && topic && topic.label}}" class="topic-pill">{{topic.label}}</view>
+
     <!-- 加载中 -->
     <view wx:if="{{loading}}" class="loading-box">
       <view class="dot"></view><view class="dot"></view><view class="dot"></view>

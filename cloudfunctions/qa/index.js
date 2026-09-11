@@ -131,6 +131,8 @@ async function handleFeedback(data = {}) {
     rating: data.rating === 'good' ? 'good' : 'bad',
     comment: String(data.comment || '').slice(0, 500),
     mode: data.mode === 'ai' ? 'ai' : 'demo',
+    topicKey: String(data.topicKey || '').slice(0, 40),
+    topicLabel: String(data.topicLabel || '').slice(0, 40),
     ts: new Date().toISOString(),
   };
   try {

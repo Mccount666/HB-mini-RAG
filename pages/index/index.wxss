@@ -126,6 +126,66 @@
   height: 40rpx;
 }
 
+/* 隐私授权弹窗 */
+.privacy-mask {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 99;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48rpx;
+  background: rgba(74, 62, 57, 0.35);
+}
+.privacy-dialog {
+  width: 100%;
+  border-radius: 32rpx;
+  padding: 40rpx 36rpx 32rpx;
+  background: var(--card);
+  box-shadow: 0 16rpx 48rpx rgba(74, 62, 57, 0.16);
+}
+.privacy-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 20rpx;
+}
+.privacy-text {
+  color: var(--text-sub);
+  font-size: 26rpx;
+  line-height: 1.7;
+}
+.privacy-link {
+  display: inline-block;
+  margin-top: 20rpx;
+  color: var(--brand-deep);
+  font-size: 26rpx;
+}
+.privacy-actions {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 32rpx;
+}
+.privacy-btn {
+  flex: 1;
+  height: 76rpx;
+  border-radius: 38rpx;
+  font-size: 28rpx;
+  line-height: 76rpx;
+}
+.privacy-btn::after { border: none; }
+.privacy-btn.secondary {
+  color: var(--text-sub);
+  background: #FBF7F2;
+}
+.privacy-btn.primary {
+  color: #fff;
+  background: var(--brand);
+}
+
 /* --- 底部输入区 --- */
 .input-area {
   display: flex;

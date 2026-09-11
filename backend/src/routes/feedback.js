@@ -27,7 +27,7 @@ function adminAuthorized(req) {
 }
 
 router.post('/feedback', (req, res) => {
-  const { q, rating, comment, mode } = req.body || {};
+  const { q, rating, comment, mode, topicKey, topicLabel } = req.body || {};
   if (!rating || !['good', 'bad'].includes(rating)) {
     return res.status(400).json({ message: 'rating 必须为 good 或 bad' });
   }
@@ -36,13 +36,18 @@ router.post('/feedback', (req, res) => {
     rating,
     comment: String(comment || '').slice(0, 500),
     mode: mode === 'ai' ? 'ai' : 'demo',
+    topicKey: String(topicKey || '').slice(0, 40),
+    topicLabel: String(topicLabel || '').slice(0, 40),
     ts: new Date().toISOString(),
   };
-  memory.push(rec);
+  let persisted = false;
   try {
     fs.appendFileSync(FEEDBACK_FILE, JSON.stringify(rec) + '\n');
-  } catch (e) { /* 只读文件系统时忽略，内存中仍有 */ }
-  res.json({ ok: true, total: memory.length });
+    persisted = true;
+  } catch (e) {
+    memory.push(rec);
+  }
+  res.json({ ok: true, persisted });
 });
 
 router.get('/feedback', (req, res) => {
@@ -53,7 +58,13 @@ router.get('/feedback', (req, res) => {
   try {
     lines = fs.readFileSync(FEEDBACK_FILE, 'utf-8').trim().split('\n').filter(Boolean).map((l) => JSON.parse(l));
   } catch (e) { /* 文件不存在时仅返回内存 */ }
-  res.json({ total: lines.length + memory.length, feedback: [...lines, ...memory] });
+  const feedback = [...lines, ...memory];
+  const topicStats = feedback.reduce((acc, item) => {
+    const label = item.topicLabel || '未分类';
+    acc[label] = (acc[label] || 0) + 1;
+    return acc;
+  }, {});
+  res.json({ total: feedback.length, feedback, topicStats });
 });
 
 module.exports = router;

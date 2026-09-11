@@ -27,6 +27,10 @@ function assert(name, cond, detail) {
   if (!cond) process.exitCode = 1;
 }
 
+function isRefusal(answer) {
+  return String(answer || '').includes('暂未收录') || String(answer || '').includes('暂时没能给出确切回答');
+}
+
 (async () => {
   await new Promise((r) => server.listen(0, '127.0.0.1', r));
   const port = server.address().port;
@@ -35,21 +39,22 @@ function assert(name, cond, detail) {
   const { answerQuestion } = require('../backend/src/rag/answer');
   const { interpretLabReport } = require('../backend/src/ocr/interpret');
 
-  // 1) 出范围问题：门控直接拒答，不调大模型
+  // 1) 出范围问题：应拒答；语义 judge 可能调用一次 LLM 做相关性判定
   llmCalls = 0;
   const r1 = await answerQuestion('今天天气怎么样？', []);
-  assert('出范围问题被拒答', r1.answer.includes('暂未收录'), r1.answer.slice(0, 30) + '…');
-  assert('拒答未调大模型', llmCalls === 0, `LLM 调用 ${llmCalls} 次`);
+  assert('出范围问题被拒答', isRefusal(r1.answer), r1.answer.slice(0, 30) + '…');
+  assert('拒答最多只调判定模型', llmCalls <= 1, `LLM 调用 ${llmCalls} 次`);
 
   // 2) 范围内问题：正常回答，带引用与来源
-  replies.push('化疗期间免疫功能较低，一般不建议接种活疫苗，具体请遵医嘱 [来源1]。');
+  replies.push('家长先看：化疗期间免疫功能较低，一般不建议接种活疫苗，具体请遵医嘱 [来源1]。\n\n进一步了解：接种安排需要结合治疗阶段和免疫状态判断 [来源1]。\n\n就医提醒：请在复诊时让主治医生或预防接种门诊共同评估。');
   const r2 = await answerQuestion('化疗期间可以打疫苗吗？', []);
   assert('范围内问题正常回答', r2.answer.includes('[来源1]'), r2.answer.slice(0, 40) + '…');
+  assert('分层科普结构可用', /家长先看|进一步了解|就医提醒/.test(r2.answer), r2.answer.slice(0, 60) + '…');
   assert('返回来源列表', Array.isArray(r2.sources) && r2.sources.length > 0, `${r2.sources.length} 条来源`);
 
   // 3) 无引用 → 强化重试一次 → 仍无引用则拒答
   llmCalls = 0;
-  replies.push('化疗期间一般不建议打活疫苗。', '化疗期间仍然不建议 [来源1]。');
+  replies.push('化疗期间一般不建议打活疫苗。', '家长先看：化疗期间仍然不建议 [来源1]。');
   const r3 = await answerQuestion('化疗期间可以打疫苗吗？', []);
   assert('无引用触发重试', llmCalls === 2, `LLM 调用 ${llmCalls} 次`);
   assert('重试后回答放行', r3.answer.includes('[来源1]'), r3.answer.slice(0, 40) + '…');
@@ -57,7 +62,7 @@ function assert(name, cond, detail) {
   // 4) 数字无出处：直接拦截拒答（医学安全）
   replies.push('化疗治愈率高达 95%，放心 [来源1]。');
   const r4 = await answerQuestion('治愈率怎么样？', []);
-  assert('无出处数字被拦截', r4.answer.includes('暂未收录'), r4.answer.slice(0, 30) + '…');
+  assert('无出处数字被拦截', isRefusal(r4.answer), r4.answer.slice(0, 30) + '…');
 
   // 5) 追问场景：检索查询拼接上轮问题（不直接可见，验证不报错且能回答）
   replies.push('化疗常见副作用包括骨髓抑制等 [来源1]。');

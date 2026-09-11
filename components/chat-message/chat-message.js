@@ -7,6 +7,7 @@ Component({
     imagePath: { type: String, value: '' },           // 用户上传的化验单缩略图（本地临时路径）
     rawText: { type: String, value: '' },             // 化验单 OCR 识别原文（确认阶段可编辑）
     sources: { type: Array, value: [] },              // [{id, title, excerpt, source}]
+    topic: { type: Object, value: null },             // {key, label} 科普需求主题
     loading: { type: Boolean, value: false },
     rating: { type: String, value: '' },              // 用户评价：'' | 'good' | 'bad'
     ocrStage: { type: String, value: '' },            // '' | 'confirm'(识别文字待确认) | 'done'
@@ -31,10 +32,13 @@ Component({
       this.setData({ showRaw: !this.data.showRaw });
     },
     onSourceTap(e) {
-      const source = e.currentTarget.dataset.source;
+      const source = e.currentTarget.dataset.source || {};
+      const title = source.title || source.refId || '知识库条目';
+      const excerpt = source.excerpt || '暂无摘要';
+      const origin = source.source ? `\n\n出处：${source.source}` : '';
       wx.showModal({
-        title: `参考来源 [${source.id}]`,
-        content: (source.excerpt || source.title || '暂无摘要') + (source.source ? `\n\n出处：${source.source}` : ''),
+        title: `来源卡片 [${source.id || '?'}]`,
+        content: `引用主题：${title}\n\n为什么引用：这条内容是当前回答中关键结论的知识库依据，您可以用它核对回答来源。\n\n原文摘要：${excerpt}${origin}`,
         showCancel: false,
         confirmText: '知道了',
       });

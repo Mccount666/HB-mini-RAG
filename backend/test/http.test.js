@@ -124,8 +124,15 @@ test('POST /api/chat 超长 message 被截断（不报错）', async () => {
   assert.ok(data.answer);
 });
 
-test('POST /api/feedback 正常入库；GET 未带管理令牌返回 401，带令牌可查看', async () => {
-  const post = await api('POST', '/api/feedback', { q: '测试问题', rating: 'good' });
+test('POST /api/feedback 正常入库；GET 未带管理令牌返回 401，带令牌可查看并汇总主题', async () => {
+  const q = `测试问题-${Date.now()}-${Math.random()}`;
+  const topicLabel = `化验指标-${Date.now()}-${Math.random()}`;
+  const post = await api('POST', '/api/feedback', {
+    q,
+    rating: 'good',
+    topicKey: 'lab',
+    topicLabel,
+  });
   assert.equal(post.status, 200);
   assert.equal(post.data.ok, true);
 
@@ -135,6 +142,11 @@ test('POST /api/feedback 正常入库；GET 未带管理令牌返回 401，带�
   process.env.ADMIN_TOKEN = 'test-admin-token';
   const ok = await api('GET', '/api/feedback', null, { 'x-admin-token': 'test-admin-token' });
   assert.equal(ok.status, 200);
-  assert.ok(ok.data.feedback.some((f) => f.q === '测试问题'));
+  const saved = ok.data.feedback.filter((f) => f.q === q);
+  assert.equal(saved.length, 1);
+  assert.equal(saved[0].topicKey, 'lab');
+  assert.equal(saved[0].topicLabel, topicLabel);
+  assert.equal(ok.data.topicStats[topicLabel], 1);
+  assert.equal(ok.data.total, ok.data.feedback.length);
   delete process.env.ADMIN_TOKEN;
 });

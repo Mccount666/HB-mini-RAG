@@ -31,21 +31,30 @@ const CASES = [
         body: JSON.stringify({ message: c.q, history: c.history || [] }),
       });
       const data = await res.json();
+      const answer = data.answer || '';
+      const error = data.error || data.message || (!res.ok ? `HTTP ${res.status}` : '');
       results.push({
         tag: c.tag, name: c.name, q: c.q,
-        answer: data.answer, sources: (data.sources || []).map(s => s.refId),
+        answer, sources: (data.sources || []).map(s => s.refId),
         confidence: data.confidence, retrieved: data.retrieved,
         // 拒答判定：无引用标记且含任一兜底话术（机械拒答/学习话术均视为未正面回答）
-        refused: !(data.answer || '').match(/\[来源\d+\]/) &&
-          ((data.answer || '').includes('暂未收录') || (data.answer || '').includes('暂时没能给出确切回答')),
-        ms: Date.now() - t0, error: data.error || data.message,
+        refused: !answer.match(/\[来源\d+\]/) &&
+          (answer.includes('暂未收录') || answer.includes('暂时没能给出确切回答')),
+        ok: !error && !!answer,
+        ms: Date.now() - t0, error,
       });
     } catch (e) {
-      results.push({ tag: c.tag, name: c.name, q: c.q, error: e.message, ms: Date.now() - t0 });
+      results.push({ tag: c.tag, name: c.name, q: c.q, ok: false, error: e.message, ms: Date.now() - t0 });
     }
     const r = results[results.length - 1];
-    console.log(`[${r.tag}] ${r.name} (${r.ms}ms) 置信度=${r.confidence ?? '-'} 命中=${r.retrieved ?? '-'}条 来源=${(r.sources||[]).join(',') || '无'} ${r.refused ? '→拒答' : '→已回答'}`);
+    const verdict = r.error ? `→错误(${r.error})` : (r.refused ? '→拒答' : '→已回答');
+    console.log(`[${r.tag}] ${r.name} (${r.ms}ms) 置信度=${r.confidence ?? '-'} 命中=${r.retrieved ?? '-'}条 来源=${(r.sources||[]).join(',') || '无'} ${verdict}`);
   }
+  const failed = results.filter((r) => r.error).length;
   require('fs').writeFileSync(process.argv[2] || 'qa-results.json', JSON.stringify(results, null, 2));
   console.log('\n详细结果已写入 ' + (process.argv[2] || 'qa-results.json'));
+  if (failed) {
+    console.error(`线上/本地接口测试存在 ${failed} 个请求错误`);
+    process.exitCode = 1;
+  }
 })();
