@@ -77,3 +77,37 @@ test('feedback 双层限速：内容变体攻击被全局桶拦下，同内容�
     process.env.HTTP_RATE_LIMIT = envBackup.HTTP_RATE_LIMIT;
   }
 });
+
+test('GET /api/learn-queue 管理令牌校验：无令牌/错令牌拒绝，对令牌放行到数据库层', async () => {
+  delete require.cache[QA_ENTRY];
+  const qa = require('../../cloudfunctions/qa/index.js');
+  const envBackup = { ...process.env };
+  try {
+    process.env.ADMIN_TOKEN = 'test-admin-token-0123456789';
+    const get = async (headers) => {
+      const res = await qa.main({
+        httpMethod: 'GET',
+        path: '/api/learn-queue',
+        headers,
+      });
+      return { status: res.statusCode, body: JSON.parse(res.body) };
+    };
+
+    // 未配置令牌头 → 401
+    const noToken = await get({});
+    assert.equal(noToken.status, 401);
+    assert.equal(noToken.body.ok, false);
+
+    // 错误令牌 → 401（不区分缺失与错误，避免给枚举者提示）
+    const badToken = await get({ 'x-admin-token': 'wrong-token' });
+    assert.equal(badToken.status, 401);
+
+    // 正确令牌 → 200；测试环境无 wx-server-sdk，数据库层降级为 ok:false 而非抛错
+    const ok = await get({ 'x-admin-token': 'test-admin-token-0123456789' });
+    assert.equal(ok.status, 200);
+    assert.equal(ok.body.ok, false);
+    assert.match(ok.body.error, /learn_queue/);
+  } finally {
+    process.env.ADMIN_TOKEN = envBackup.ADMIN_TOKEN;
+  }
+});

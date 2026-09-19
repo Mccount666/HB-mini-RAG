@@ -190,6 +190,44 @@
   font-size: 22rpx;
   color: var(--brand-deep);
 }
+/* 复查提醒入口 */
+.remind-btn {
+  margin-left: auto;
+  font-size: 22rpx;
+  color: var(--brand-deep);
+  background: var(--brand-soft);
+  border-radius: 30rpx;
+  padding: 8rpx 20rpx;
+}
+.remind-solo {
+  display: inline-block;
+  margin-left: 16rpx;
+}
+/* 追问推荐 */
+.suggest-area {
+  margin-top: 20rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx dashed var(--brand-soft);
+}
+.suggest-title {
+  font-size: 22rpx;
+  color: var(--text-sub);
+  margin-bottom: 12rpx;
+}
+.suggest-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+.suggest-chip {
+  align-self: flex-start;
+  font-size: 24rpx;
+  color: var(--brand-deep);
+  background: var(--brand-soft);
+  border-radius: 30rpx;
+  padding: 10rpx 24rpx;
+  line-height: 1.4;
+}
 
 /* 加载动画 */
 .loading-box { display: flex; gap: 8rpx; padding: 10rpx; }

@@ -18,6 +18,8 @@
 //   FEEDBACK_RATE_LIMIT: 反馈提交限速，每身份每分钟上限（默认 5），超出返回 { ok:false, error:'提交过于频繁' }
 //   FEEDBACK_RATE_LIMIT_GLOBAL: 反馈全局兜底限速，每实例每分钟总上限（默认 200）。匿名身份按内容哈希分桶，
 //     而内容是调用方可控的（每次加一个字即得新桶），必须有实例级总闸兜住变体洪峰，超出返回 { ok:false, error:'服务繁忙，请稍后再试' }
+//   ADMIN_TOKEN: 学习队列查看端点（GET /api/learn-queue）的管理令牌，请求须带 x-admin-token 头；
+//     与网页版共享密钥分开（管理令牌不进公开网页代码），留空 = 该端点关闭
 const path = require('path');
 const crypto = require('crypto');
 
@@ -175,7 +177,7 @@ async function handleFeedback(data = {}, identity = '') {
 // ===== HTTP 访问服务（云接入）适配层 =====
 const CORS_BASE = {
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, x-hb-secret',
+  'Access-Control-Allow-Headers': 'Content-Type, x-hb-secret, x-admin-token',
 };
 
 // CORS：配置 HTTP_CORS_ORIGINS 白名单后仅回显允许的来源；未配置时全放行（仅限演示期）
@@ -220,6 +222,32 @@ function secretOk(event) {
     return crypto.timingSafeEqual(Buffer.from(got), Buffer.from(secret));
   } catch (e) {
     return false;
+  }
+}
+
+// 管理令牌校验（与 backend/src/routes/feedback.js 同一模式）：管理类端点用，
+// 未配置 ADMIN_TOKEN 即关闭该端点，避免学习队列里的家长提问被匿名拉取
+function adminOk(event) {
+  const token = process.env.ADMIN_TOKEN;
+  if (!token) return false;
+  const got = getHeader(event, 'x-admin-token');
+  if (got.length !== token.length) return false;
+  try {
+    return crypto.timingSafeEqual(Buffer.from(got), Buffer.from(token));
+  } catch (e) {
+    return false;
+  }
+}
+
+// ===== 学习队列查看（维护者网页用）：列出家长问过但知识库未收录的问题，按时间倒序 =====
+async function listLearnQueue() {
+  try {
+    const db = getCloud().database();
+    const res = await db.collection('learn_queue').orderBy('ts', 'desc').limit(200).get();
+    return { ok: true, total: (res.data || []).length, items: res.data || [] };
+  } catch (err) {
+    console.warn('[qa.learn] 读取 learn_queue 失败:', err.message);
+    return { ok: false, error: '学习队列暂不可用（请确认云端已创建 learn_queue 集合）' };
   }
 }
 
@@ -269,6 +297,20 @@ async function handleHttp(event) {
   }
   // 健康检查（浏览器打开网址即可验证服务在线；无敏感信息，不需要密钥）
   if (event.httpMethod === 'GET') {
+    // 学习队列（维护者网页）：管理令牌保护 + 每 IP 限速（防令牌暴力枚举）
+    if (String(event.path || '').includes('learn-queue')) {
+      const ip = getSourceIp(event);
+      if (rateLimited('lr:' + ip)) {
+        return httpJson({ ok: false, error: '请求太频繁，请稍后再试' }, 429, cors);
+      }
+      if (!adminOk(event)) {
+        const message = process.env.ADMIN_TOKEN
+          ? '需要 x-admin-token 管理令牌'
+          : '未配置 ADMIN_TOKEN，查看入口已关闭';
+        return httpJson({ ok: false, error: message }, process.env.ADMIN_TOKEN ? 401 : 403, cors);
+      }
+      return httpJson(await listLearnQueue(), 200, cors);
+    }
     return httpJson({ ok: true, service: 'hb-qa', time: new Date().toISOString() }, 200, cors);
   }
   if (event.httpMethod !== 'POST') {

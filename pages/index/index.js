@@ -21,6 +21,27 @@ function inferQuestionTopic(text, type = 'text') {
   return hit ? { key: hit.key, label: hit.label } : { key: 'general', label: '疾病科普' };
 }
 
+// 追问推荐：按主题从知识库已覆盖的问题里挑（全部在 eval 命中清单内，不会问出拒答）。
+// 同一主题下随机抽 3 条、剔除本次会话已问过的，保证每次有新东西。
+const FOLLOW_UPS = {
+  general: ['肝母细胞瘤是什么病？严重吗？', '主要治疗方法是什么？', '治愈率怎么样？能治好吗？'],
+  diagnosis: ['怎么确诊？要做哪些检查？', 'PRETEXT 分期是什么意思？', '孩子肝上长东西还可能是什么病？'],
+  lab: ['AFP 是什么？为什么一直要查？', '孩子白细胞低、容易感染怎么办？', 'AFP特别低反而不好吗？'],
+  lab_report: ['AFP 是什么？为什么一直要查？', '孩子白细胞低、容易感染怎么办？', '化疗期间吃什么好？营养怎么补？'],
+  chemo: ['化疗有什么副作用？怎么缓解？', '顺铂伤耳朵，有什么保护办法？', '化疗期间可以打疫苗吗？'],
+  surgery: ['手术是怎么做的？能切干净吗？', '为什么手术前要先化疗？', '什么情况下需要做肝移植？'],
+  followup: ['出院后多久复查一次？', '出现哪些情况要马上去医院？', '什么情况下需要做肝移植？'],
+  care: ['化疗期间吃什么好？营养怎么补？', '孩子白细胞低、容易感染怎么办？', '化疗期间可以打疫苗吗？'],
+  prognosis: ['治愈率怎么样？能治好吗？', '会遗传吗？要二胎会有影响吗？', '现在有肝母细胞瘤的靶向药吗？'],
+  emergency: ['出现哪些情况要马上去医院？', '肿瘤破裂还有救吗？', '出院后多久复查一次？'],
+};
+
+function pickSuggestions(topicKey, askedSet) {
+  const pool = (FOLLOW_UPS[topicKey] || FOLLOW_UPS.general).filter((q) => !askedSet.has(q));
+  const rest = pool.sort(() => Math.random() - 0.5).slice(0, 3);
+  return rest;
+}
+
 Page({
   data: {
     messages: [],
@@ -124,7 +145,18 @@ Page({
         .map((m) => ({ role: m.role, content: m.content }));
       const res = await chat.ask(text, history);
 
-      const finalBot = { ...botMsg, content: res.answer, sources: res.sources || [], loading: false };
+      const asked = new Set(
+        this.data.messages.filter((m) => m.role === 'user').map((m) => m.content).concat([text])
+      );
+      const topicKey = (userMsg.topic && userMsg.topic.key) || 'general';
+      const finalBot = {
+        ...botMsg,
+        content: res.answer,
+        sources: res.sources || [],
+        loading: false,
+        suggestions: pickSuggestions(topicKey, asked),
+        canRemind: topicKey === 'followup', // 随访类回答可一键设复查提醒
+      };
       const messages = this.data.messages.map((m) => (m.id === botMsg.id ? finalBot : m));
       this.setData({ messages, sending: false, scrollTarget: `msg-${botMsg.id}` });
       this.saveHistory(userMsg, finalBot);
@@ -222,6 +254,9 @@ Page({
     this.setData({ sending: true, [`messages[${idx}].loading`]: true });
     try {
       const result = await chat.interpretReport(text);
+      const asked = new Set(
+        this.data.messages.filter((m) => m.role === 'user').map((m) => m.content)
+      );
       const finalBot = {
         ...botMsg,
         content: result.interpretation,
@@ -229,6 +264,7 @@ Page({
         sources: result.sources || [],
         ocrStage: 'done',
         loading: false,
+        suggestions: pickSuggestions('lab_report', asked),
       };
       const messages = this.data.messages.map((m) => (m.id === botMsg.id ? finalBot : m));
       this.setData({ messages, sending: false, scrollTarget: `msg-${botMsg.id}` });
@@ -304,6 +340,61 @@ Page({
         this.setData({ [`messages[${idx}].rating`]: '' });
         wx.showToast({ title: '反馈失败，请重试', icon: 'none' });
       });
+  },
+
+  // 追问推荐：点击推荐问题直接提问（与快捷提问同一路径）
+  onSuggestTap(e) {
+    const q = e.detail && e.detail.q;
+    if (!q || this.data.sending) return;
+    this.setData({ inputValue: q });
+    this.onSend();
+  },
+
+  // 复查提醒：选间隔后写入手机系统日历（时间仅供参照，实际以医嘱为准）
+  onRemindTap(e) {
+    const id = e.currentTarget.dataset.id;
+    const idx = this.data.messages.findIndex((m) => m.id === id);
+    if (idx === -1) return;
+    wx.showActionSheet({
+      itemList: ['1 个月后', '3 个月后', '6 个月后'],
+      success: (res) => {
+        const months = [1, 3, 6][res.tapIndex] || 3;
+        this.addCalendarReminder(months);
+      },
+      fail: () => {}, // 用户取消，静默
+    });
+  },
+
+  addCalendarReminder(months) {
+    if (!wx.addPhoneCalendar) {
+      wx.showToast({ title: '当前微信版本不支持日历提醒', icon: 'none' });
+      return;
+    }
+    const base = new Date();
+    const day = new Date(base.getFullYear(), base.getMonth() + months, base.getDate(), 9, 0, 0);
+    wx.addPhoneCalendar({
+      title: '肝芽复查提醒',
+      startTime: Math.floor(day.getTime() / 1000),
+      allDay: false,
+      alarm: true,
+      description: '肝母细胞瘤随访复查提醒（由肝芽守护小程序创建；具体复查时间请以主治医生医嘱为准）',
+      success: () => wx.showToast({ title: '已写入手机日历', icon: 'success' }),
+      fail: (err) => {
+        // 未授权日历权限时引导去设置页开启
+        if (err && err.errMsg && err.errMsg.indexOf('auth') !== -1) {
+          wx.showModal({
+            title: '需要日历权限',
+            content: '请在设置中允许「肝芽守护」写入日历，即可保存复查提醒。',
+            confirmText: '去设置',
+            success: (r) => {
+              if (r.confirm) wx.openSetting({});
+            },
+          });
+        } else {
+          wx.showToast({ title: '写入日历失败，请重试', icon: 'none' });
+        }
+      },
+    });
   },
 
   saveHistory(userMsg, botMsg) {

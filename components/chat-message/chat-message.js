@@ -11,6 +11,8 @@ Component({
     loading: { type: Boolean, value: false },
     rating: { type: String, value: '' },              // 用户评价：'' | 'good' | 'bad'
     ocrStage: { type: String, value: '' },            // '' | 'confirm'(识别文字待确认) | 'done'
+    suggestions: { type: Array, value: [] },          // 追问推荐：回答下方可点的"接着问"
+    canRemind: { type: Boolean, value: false },       // 随访类回答显示"设复查提醒"入口
   },
   data: {
     showRaw: false,
@@ -57,6 +59,16 @@ Component({
     },
     onRetakeOcr() {
       this.triggerEvent('retakeocr');
+    },
+    // 追问推荐：点击直接发起该问题
+    onSuggestTap(e) {
+      const q = (e.currentTarget.dataset.q || '').trim();
+      if (!q) return;
+      this.triggerEvent('suggest', { q });
+    },
+    // 复查提醒：交给页面弹选择（1/3/6 个月后）
+    onRemindTap() {
+      this.triggerEvent('remind');
     },
   },
 });

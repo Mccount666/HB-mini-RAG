@@ -35,10 +35,14 @@
         loading="{{item.loading}}"
         rating="{{item.rating}}"
         ocrStage="{{item.ocrStage}}"
+        suggestions="{{item.suggestions}}"
+        canRemind="{{item.canRemind}}"
         data-id="{{item.id}}"
         bindrate="onRate"
         bindconfirmocr="onConfirmOcr"
         bindretakeocr="onRetakeOcr"
+        bindsuggest="onSuggestTap"
+        bindremind="onRemindTap"
       />
     </block>
 
