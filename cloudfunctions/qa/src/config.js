@@ -49,6 +49,8 @@ module.exports = {
     // 注意：口语化提问（"出院后多久复查一次"）的日常用词同样查不到，覆盖率天然偏低，
     // 无法与"糖尿病饮食"这类近邻问题统计分隔，因此只作为 eval 观测指标；
     // 近邻问题由"严格提示词拒答 + 生成后护栏"两道防线兜底。数值 >0 时启用整题拒答。
+    // 2026-09-19 eval 定标：0.3 会误拒「化疗期间吃什么好？营养怎么补？」（覆盖率不足），
+    // 仅额外拦住 1 道近邻题（糖尿病饮食），代价收益不成比例，维持默认 0。
     minCoverage: parseFloat(process.env.RETRIEVAL_MIN_COVERAGE || '0'),
     strict: (process.env.STRICT_RETRIEVAL || 'true') === 'true',
     // OCR 化验单解读：化验参考条目仅 ~14 条，直接全部作为上下文 grounding，
