@@ -1,0 +1,81 @@
+/* pages/timeline/timeline.wxss */
+.timeline {
+  padding: 24rpx;
+  background-color: var(--bg);
+  min-height: 100vh;
+}
+.empty {
+  text-align: center;
+  color: var(--text-sub);
+  margin-top: 160rpx;
+  font-size: 28rpx;
+}
+.month {
+  margin-bottom: 12rpx;
+}
+.month-tag {
+  display: inline-block;
+  background: var(--brand);
+  color: #fff;
+  font-size: 24rpx;
+  font-weight: 600;
+  border-radius: 24rpx;
+  padding: 8rpx 26rpx;
+  margin: 16rpx 0 20rpx 8rpx;
+}
+.line-box {
+  border-left: 3rpx solid var(--brand-soft);
+  margin-left: 30rpx;
+  padding-left: 8rpx;
+}
+.item {
+  display: flex;
+  align-items: flex-start;
+  padding: 14rpx 0;
+  position: relative;
+}
+.dot {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  background: var(--card);
+  box-shadow: 0 4rpx 12rpx rgba(222, 160, 104, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  margin-left: -42rpx;
+  flex-shrink: 0;
+}
+.body {
+  flex: 1;
+  margin-left: 20rpx;
+  background: var(--card);
+  border-radius: 20rpx;
+  padding: 20rpx 26rpx;
+  box-shadow: 0 4rpx 12rpx rgba(222, 160, 104, 0.05);
+}
+.title {
+  font-size: 27rpx;
+  color: var(--text);
+  font-weight: 600;
+  line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.star {
+  color: var(--brand);
+  margin-left: 8rpx;
+}
+.time {
+  margin-top: 6rpx;
+  font-size: 21rpx;
+  color: #C4B5AC;
+}
+.note {
+  margin-top: 36rpx;
+  text-align: center;
+  font-size: 22rpx;
+  color: var(--text-sub);
+}

@@ -30,6 +30,9 @@ const { answerQuestion } = require('./src/rag/answer');
 const { sanitizeMessage, sanitizeHistory } = require('./src/rag/sanitize');
 const { ocrFromBuffer } = require('./src/ocr/ocr');
 const { interpretLabReport } = require('./src/ocr/interpret');
+const { embed } = require('./src/rag/embedder');
+const { retrieve } = require('./src/rag/retriever');
+const config = require('./src/config');
 
 let cloudInited = false;
 function getCloud() {
@@ -99,7 +102,7 @@ async function handleCall(event = {}, context = {}) {
     // 见 src/rag/answer.js；相关但知识库未收录时返回 learning:true + learnQuestion
     const result = await answerQuestion(sanitizeMessage(message), sanitizeHistory(history));
     if (result.learning && result.learnQuestion) {
-      await pushLearnQueue(result.learnQuestion, 'text');
+      await pushLearnQueue(result.learnQuestion, 'text', callIdentity(event, context));
     }
     return result;
   } catch (err) {
@@ -112,13 +115,16 @@ async function handleCall(event = {}, context = {}) {
 // ===== 知识积累队列：相关但未收录的问题 → 写入 learn_queue 集合 =====
 // 供后端/导师定期查看，按问题补充知识库条目，实现迭代积累。
 // 集合不存在时降级为日志输出（可在云开发控制台创建 learn_queue 集合）。
-async function pushLearnQueue(question, mode = 'text') {
+async function pushLearnQueue(question, mode = 'text', openid = '') {
   const rec = {
     question: String(question || '').slice(0, 500),
     mode, // text=问答追问 | ocr=化验单相关疑问（预留）
-    status: 'pending', // pending → 已收录后可置 done
+    status: 'pending', // pending → matched(知识库已能命中，待确认) → done(已确认收录)
     ts: new Date().toISOString(),
   };
+  // 记录提问者（小程序直调有 OPENID；网页匿名没有）——为"知识库补录后回音到人"留数据
+  const oid = String(openid || '').trim();
+  if (oid && oid !== 'anonymous' && oid !== 'unknown') rec.openid = oid.slice(0, 120);
   try {
     const db = getCloud().database();
     await db.collection('learn_queue').add({ data: rec });
@@ -251,6 +257,34 @@ async function listLearnQueue() {
   }
 }
 
+// ===== 学习队列回音检查（维护者网页触发）：把 pending 问题重新过一遍检索门控 =====
+// 知识库补录并重建索引后跑一次：现在能命中阈值的问题标记为 matched（"有回音了"）。
+// 纯检索判定（本地向量化 + 阈值），不调大模型、零 API 成本、结果确定性。
+async function learnQueueMatch() {
+  const threshold = config.retrieval.threshold;
+  const db = getCloud().database();
+  const res = await db.collection('learn_queue').where({ status: 'pending' }).limit(50).get();
+  const docs = res.data || [];
+  const items = [];
+  for (const doc of docs) {
+    try {
+      const clean = sanitizeMessage(doc.question);
+      if (!clean) continue;
+      const embedding = await embed(clean);
+      const { hits, bestScore } = await retrieve(embedding, { queryText: clean });
+      if (hits.length && bestScore >= threshold) {
+        await db.collection('learn_queue').doc(doc._id).update({
+          data: { status: 'matched', matchedAt: new Date().toISOString(), bestScore },
+        });
+        items.push({ id: doc._id, question: doc.question, bestScore });
+      }
+    } catch (e) {
+      console.warn('[qa.learn-match] 单条匹配失败:', e.message);
+    }
+  }
+  return { ok: true, threshold, scanned: docs.length, matched: items.length, items };
+}
+
 // 每 IP 每分钟 POST 限速（实例内存计数；实例回收即清零，属尽力而为的防刷）
 const rateBuckets = new Map(); // ip -> { count, ts }
 function rateLimited(ip, limitOverride) {
@@ -342,6 +376,18 @@ async function handleHttp(event) {
   const isFeedback = p.includes('feedback') || (data && data.rating);
   if (isFeedback) {
     return httpJson(await handleFeedback(data, getSourceIp(event)), 200, cors);
+  }
+  // 学习队列回音检查（维护者网页触发）：管理令牌保护
+  if (p.includes('learn-match')) {
+    if (!adminOk(event)) {
+      return httpJson({ ok: false, error: '需要 x-admin-token 管理令牌' }, 401, cors);
+    }
+    try {
+      return httpJson(await learnQueueMatch(), 200, cors);
+    } catch (err) {
+      console.warn('[qa.learn-match] 失败:', err.message);
+      return httpJson({ ok: false, error: '回音检查失败（确认 learn_queue 集合与索引文件正常）' }, 200, cors);
+    }
   }
   const result = await handleCall(data);
   return httpJson(result, 200, cors);

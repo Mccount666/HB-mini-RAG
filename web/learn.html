@@ -64,8 +64,10 @@
     <div class="token-row">
       <input id="token" type="password" placeholder="粘贴管理令牌 ADMIN_TOKEN" />
       <button onclick="load()">查看</button>
+      <button class="ghost" onclick="learnMatch()">回音检查</button>
       <button class="ghost" onclick="forget()">清除本机令牌</button>
     </div>
+    <div class="sub" style="margin-top:8px">「回音检查」：知识库补录并重建索引后点一次——把 pending 问题重新过检索门控，现在能答的标记为「有回音」。确认答案质量后可把 status 改成 done。</div>
     <div id="status" class="status"></div>
   </div>
 
@@ -124,6 +126,29 @@
       }
     }
 
+    // 回音检查：知识库补录后把 pending 问题重新过检索门控，能答的标记 matched
+    async function learnMatch() {
+      const token = $token.value.trim();
+      if (!token) { setStatus('请先粘贴管理令牌', true); return; }
+      localStorage.setItem('hb_admin_token', token);
+      setStatus('回音检查中（最多 50 条，纯检索判定，约几秒）…');
+      try {
+        const res = await fetch(window.WEB_CONFIG.API_BASE + '/api/learn-match', {
+          method: 'POST',
+          headers: { 'x-admin-token': token, 'x-hb-secret': window.WEB_CONFIG.HTTP_SHARED_SECRET || '' },
+        });
+        const data = await res.json();
+        if (!res.ok || !data.ok) {
+          setStatus((data && data.error) || ('请求失败：HTTP ' + res.status), true);
+          return;
+        }
+        setStatus(`检查完成：扫了 ${data.scanned} 条待处理问题，其中 ${data.matched} 条现在知识库能答了（已标记「有回音」）`);
+        load(); // 刷新列表展示 matched 状态
+      } catch (err) {
+        setStatus('网络错误：' + err.message, true);
+      }
+    }
+
     function render(items) {
       $listCard.style.display = items.length ? '' : 'none';
       if (!items.length) {
@@ -145,7 +170,10 @@
         const time = document.createElement('span');
         time.textContent = fmtTs(it.ts);
         const st = document.createElement('span');
-        st.textContent = it.status === 'done' ? '✅ 已补录' : '待处理';
+        if (it.status === 'done') st.textContent = '✅ 已补录';
+        else if (it.status === 'matched') st.textContent = '🔊 有回音·知识库可答（待确认）';
+        else st.textContent = '待处理';
+        if (it.status === 'matched') { st.style.color = '#C98A54'; st.style.fontWeight = '600'; }
         const copy = document.createElement('button');
         copy.className = 'copy';
         copy.textContent = '复制问题';

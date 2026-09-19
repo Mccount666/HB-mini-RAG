@@ -26,6 +26,12 @@
   <!-- 列表 -->
   <view wx:if="{{labCount >= 2}}" class="compare-entry" bindtap="onCompare">📊 对比化验单（看指标趋势）</view>
 
+  <view class="tools-row" wx:if="{{hasAny}}">
+    <view class="tool-btn" bindtap="onTimeline">🗓 照护时间线</view>
+    <view class="tool-btn" bindtap="onPrep">📋 复诊准备单</view>
+    <view class="tool-btn" bindtap="onCoverage">🧭 带我问</view>
+  </view>
+
   <view wx:if="{{!hasAny}}" class="empty">暂无历史问答</view>
   <view wx:elif="{{list.length === 0}}" class="empty">没有匹配的记录</view>
 

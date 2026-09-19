@@ -46,6 +46,7 @@
           <text class="quick-arrow">›</text>
         </view>
       </view>
+      <view class="coverage-link" bindtap="onGoCoverage">🧭 不知道该问什么？看看知识覆盖图，我带你问 ›</view>
     </view>
 
     <block wx:for="{{messages}}" wx:key="id">
@@ -63,6 +64,9 @@
         ocrStage="{{item.ocrStage}}"
         suggestions="{{item.suggestions}}"
         canRemind="{{item.canRemind}}"
+        confidence="{{item.confidence}}"
+        refusal="{{item.refusal}}"
+        check="{{item.check}}"
         highlight="{{item.id === highlightId}}"
         data-id="{{item.id}}"
         bindrate="onRate"

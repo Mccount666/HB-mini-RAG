@@ -1,0 +1,36 @@
+<view class="prep">
+  <view wx:if="{{empty}}" class="empty">还没有问答记录，先去问几个问题吧</view>
+
+  <block wx:else>
+    <!-- 一、化验对比 -->
+    <view class="card">
+      <view class="card-title">一、最近两次化验对比<text wx:if="{{hasLab}}" class="card-sub">（{{labA}} → {{labB}}）</text></view>
+      <view wx:if="{{!hasLab}}" class="card-empty">还没有两份可对比的化验单，上传后自动生成。</view>
+      <view wx:else>
+        <view class="lab-row" wx:for="{{labRows}}" wx:key="key">
+          <text class="lab-name">{{item.label}}</text>
+          <text class="lab-val">{{item.aText}} → {{item.bText}}</text>
+          <text class="lab-trend trend-{{item.trend}}">{{item.trendText}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 二、想问医生的问题 -->
+    <view class="card">
+      <view class="card-title">二、我们想请教医生的问题</view>
+      <view wx:if="{{!stars.length}}" class="card-empty">在历史记录里点 ☆ 收藏的问题会出现在这里。</view>
+      <view wx:else>
+        <view class="star-q" wx:for="{{stars}}" wx:key="*this">{{index + 1}}. {{item}}</view>
+      </view>
+    </view>
+
+    <!-- 三、最近关注 -->
+    <view class="card">
+      <view class="card-title">三、最近关注过的话题</view>
+      <view class="star-q" wx:for="{{recents}}" wx:key="*this">· {{item}}</view>
+    </view>
+
+    <view class="note">这份清单由小程序自动整理，仅供复诊沟通参考，具体诊疗以主治医生意见为准。</view>
+    <button class="btn-reset copy-btn" bindtap="onCopy">复制准备单（打印或发给家人）</button>
+  </block>
+</view>

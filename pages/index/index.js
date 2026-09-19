@@ -44,6 +44,16 @@ Page({
     ],
   },
 
+  onShow() {
+    // 覆盖图页点话题 → 带着入门问题回来直接开问
+    const pending = wx.getStorageSync('pending_ask');
+    if (pending) {
+      wx.removeStorageSync('pending_ask');
+      this.setData({ inputValue: pending });
+      this.onSend();
+    }
+  },
+
   onQuickTap(e) {
     this.setData({ inputValue: e.currentTarget.dataset.q });
     this.onSend();
@@ -141,6 +151,9 @@ Page({
         content: res.answer,
         sources: res.sources || [],
         loading: false,
+        confidence: res.confidence,
+        refusal: res.refusal || '',
+        check: res.check || null,
         // 追问推荐：与回答引用的知识库条目联动（引用了什么就优先问相关）
         suggestions: followUps.pickSuggestions(topicKey, citedIds, askedList),
         canRemind: topicKey === 'followup', // 随访类回答可一键设复查提醒
@@ -385,6 +398,10 @@ Page({
   },
 
   // ===== 问答页搜索：匹配"问题 + 回答"，点结果滚动定位并高亮 =====
+  onGoCoverage() {
+    wx.navigateTo({ url: '/pages/coverage/coverage' });
+  },
+
   onOpenSearch() {
     this.setData({
       searchOpen: true,

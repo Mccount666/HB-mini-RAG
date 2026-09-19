@@ -51,6 +51,18 @@ Page({
     wx.navigateTo({ url: '/pages/lab-compare/lab-compare' });
   },
 
+  onTimeline() {
+    wx.navigateTo({ url: '/pages/timeline/timeline' });
+  },
+
+  onPrep() {
+    wx.navigateTo({ url: '/pages/visit-prep/visit-prep' });
+  },
+
+  onCoverage() {
+    wx.navigateTo({ url: '/pages/coverage/coverage' });
+  },
+
   applyFilter(raw) {
     const kw = this.data.keyword.trim().toLowerCase();
     const topic = this.data.activeTopic;

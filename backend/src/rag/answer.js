@@ -32,10 +32,13 @@ function toSources(hits) {
 }
 
 // 生成 + 护栏校验（无引用时带强化指令重试一次）；护栏未通过则拒答
-async function generateGrounded(message, hits, history, bestScore) {
+// judged: 'mechanical'（关键词直接命中）| 'semantic'（LLM 确认相关后作答），透传给前端体检卡
+async function generateGrounded(message, hits, history, bestScore, judged = 'mechanical') {
+  let retried = false;
   let raw = await chat(buildMessages(message, hits, history));
   let g = guardAnswer(raw, hits, config.guard);
   if (!g.ok && g.retry) {
+    retried = true;
     raw = await chat(buildMessages(message, hits, history, { forceCite: true }));
     g = guardAnswer(raw, hits, config.guard);
   }
@@ -51,13 +54,17 @@ async function generateGrounded(message, hits, history, bestScore) {
       confidence: bestScore,
       retrieved: hits.length,
       refused: true,
+      refusal: g.reason === 'ungrounded_numbers' ? 'guard_numbers' : 'guard_citations',
     };
   }
+  const sources = toSources(hits);
   return {
     answer: g.answer,
-    sources: toSources(hits),
+    sources,
     confidence: bestScore,
     retrieved: hits.length,
+    // 回答体检卡：展示"这道回答是怎么保证不胡说"的数据（judged/retried 由调用路径决定）
+    check: { cites: sources.length, numberCheck: 'pass', judged, retried },
   };
 }
 
@@ -69,6 +76,7 @@ function learningResult(question, bestScore) {
     confidence: bestScore,
     retrieved: 0,
     refused: true,
+    refusal: 'learning',
     learning: true,
     learnQuestion: question,
   };
@@ -103,6 +111,7 @@ async function answerQuestion(message, history = []) {
       confidence: 0,
       retrieved: 0,
       refused: true,
+      refusal: 'empty',
       error: 'message 不能为空',
     };
   }
@@ -125,7 +134,7 @@ async function answerQuestion(message, history = []) {
 
   // 2) 机械命中 → 直接生成（高频正常路径，不额外花费一次 LLM 判定）
   if (hits.length > 0) {
-    const res = await generateGrounded(cleanMessage, hits, cleanHistory, bestScore);
+    const res = await generateGrounded(cleanMessage, hits, cleanHistory, bestScore, 'mechanical');
     // 机械命中但生成被护栏/模型拒答：说明知识库对该问题的覆盖仍不足 →
     // 转入学习回路（既不给错答，也把问题记入 learn_queue 供补充）
     if (!res.refused) return res;
@@ -144,6 +153,7 @@ async function answerQuestion(message, history = []) {
       confidence: bestScore,
       retrieved: 0,
       refused: true,
+      refusal: 'judge_fail',
       judge: 'fail',
     };
   }
@@ -152,7 +162,7 @@ async function answerQuestion(message, history = []) {
   if (verdict.related && verdict.answerable) {
     const candidates = top.slice(0, config.retrieval.topK);
     if (candidates.length) {
-      const res = await generateGrounded(cleanMessage, candidates, cleanHistory, bestScore);
+      const res = await generateGrounded(cleanMessage, candidates, cleanHistory, bestScore, 'semantic');
       if (!res.refused) return res;
       return learningResult(cleanMessage, bestScore);
     }
@@ -170,6 +180,7 @@ async function answerQuestion(message, history = []) {
     confidence: bestScore,
     retrieved: 0,
     refused: true,
+    refusal: 'out_of_scope',
     judge: 'unrelated',
   };
 }

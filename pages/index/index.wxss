@@ -121,6 +121,13 @@
   font-weight: 300;
   line-height: 1;
 }
+.coverage-link {
+  margin-top: 28rpx;
+  text-align: center;
+  font-size: 25rpx;
+  color: var(--brand-deep);
+  font-weight: 600;
+}
 
 .list-bottom-gap {
   height: 40rpx;

@@ -1,0 +1,24 @@
+<view class="coverage">
+  <view class="head">
+    <view class="head-title">陪护知识了解进度：{{done}}/{{topics.length}}</view>
+    <view class="head-sub">治疗像一场长跑，了解得越全越从容。点还没问过的话题，我带你从最该问的问题开始。</view>
+  </view>
+
+  <view
+    class="topic {{item.asked ? 'topic-asked' : ''}}"
+    wx:for="{{topics}}"
+    wx:key="key"
+    bindtap="onTopicTap"
+    data-key="{{item.key}}"
+  >
+    <view class="topic-row">
+      <view class="topic-label">{{item.label}}</view>
+      <view class="topic-state">{{item.asked ? '✓ 已了解' : '还没问过'}}</view>
+    </view>
+    <view class="topic-desc">{{item.desc}}</view>
+    <view class="topic-bar">
+      <view class="topic-bar-fill" style="width: {{item.asked ? 100 : 0}}%"></view>
+    </view>
+    <view wx:if="{{!item.asked && item.starter}}" class="topic-starter">建议先问：{{item.starter}} ›</view>
+  </view>
+</view>

@@ -1,0 +1,71 @@
+/* pages/visit-prep/visit-prep.wxss */
+.prep {
+  padding: 24rpx;
+  background-color: var(--bg);
+  min-height: 100vh;
+}
+.empty {
+  text-align: center;
+  color: var(--text-sub);
+  margin-top: 160rpx;
+  font-size: 28rpx;
+}
+.card {
+  background: var(--card);
+  border-radius: 24rpx;
+  padding: 28rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 12rpx rgba(222, 160, 104, 0.05);
+}
+.card-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 18rpx;
+}
+.card-sub {
+  font-size: 22rpx;
+  color: var(--text-sub);
+  font-weight: normal;
+}
+.card-empty {
+  font-size: 24rpx;
+  color: var(--text-sub);
+  line-height: 1.6;
+}
+.lab-row {
+  display: flex;
+  align-items: center;
+  padding: 14rpx 0;
+  border-bottom: 1rpx dashed var(--brand-soft);
+}
+.lab-row:last-child { border-bottom: none; }
+.lab-name { flex: 1.4; font-size: 24rpx; color: var(--text); }
+.lab-val { flex: 1.4; font-size: 24rpx; color: var(--text); font-weight: 600; }
+.lab-trend { flex: 0.9; text-align: right; font-size: 22rpx; color: var(--text-sub); }
+.trend-up { color: #D36C6C; font-weight: 600; }
+.trend-down { color: #6B9AC4; font-weight: 600; }
+.star-q {
+  font-size: 25rpx;
+  color: var(--text);
+  line-height: 1.7;
+  margin-bottom: 10rpx;
+}
+.note {
+  margin: 8rpx 0 28rpx;
+  font-size: 22rpx;
+  color: var(--text-sub);
+  line-height: 1.6;
+  padding: 18rpx 26rpx;
+  background: var(--brand-soft);
+  border-radius: 18rpx;
+}
+.copy-btn {
+  background: var(--brand);
+  color: #ffffff;
+  font-size: 28rpx;
+  font-weight: 600;
+  border-radius: 44rpx;
+  padding: 24rpx 0;
+  text-align: center;
+}

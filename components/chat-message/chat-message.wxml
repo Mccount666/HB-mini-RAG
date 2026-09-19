@@ -53,6 +53,12 @@
         </view>
       </view>
 
+      <!-- 拒答解释卡：说清楚"为什么不敢答" -->
+      <view wx:if="{{refusalText && role === 'assistant'}}" class="refusal-card">
+        <text class="refusal-icon">🛡️</text>
+        <text class="refusal-text">{{refusalText}}</text>
+      </view>
+
       <!-- 引用标签 (书籍图标) -->
       <view wx:if="{{sources.length}}" class="source-area">
         <view class="source-list">
@@ -60,6 +66,14 @@
             <image class="book-ico" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C98A54' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 19.5A2.5 2.5 0 0 1 6.5 17H20'%3E%3C/path%3E%3Cpath d='M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z'%3E%3C/path%3E%3C/svg%3E"/>
             <text>{{item.title}}</text>
           </view>
+        </view>
+      </view>
+
+      <!-- 回答体检卡：这条回答是怎么保证不胡说的 -->
+      <view wx:if="{{check && role === 'assistant' && content}}" class="check-area">
+        <view class="check-toggle" bindtap="toggleCheck">{{showCheck ? '收起回答体检 ▲' : '🛡️ 回答体检 ▼'}}</view>
+        <view wx:if="{{showCheck}}" class="check-body">
+          <view class="check-line" wx:for="{{checkLines}}" wx:key="*this">{{item}}</view>
         </view>
       </view>
 

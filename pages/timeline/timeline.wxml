@@ -1,0 +1,18 @@
+<view class="timeline">
+  <view wx:if="{{!total}}" class="empty">还没有记录，时间线会随问答自动生长</view>
+
+  <view class="month" wx:for="{{groups}}" wx:key="month" wx:for-item="g">
+    <view class="month-tag">{{g.month}}</view>
+    <view class="line-box">
+      <view class="item" wx:for="{{g.items}}" wx:key="id" bindtap="onTap" data-item="{{item}}">
+        <view class="dot">{{item.icon}}</view>
+        <view class="body">
+          <view class="title">{{item.title}}<text wx:if="{{item.star}}" class="star">★</text></view>
+          <view class="time">{{item.timeText}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{total}}" class="note">时间线由问答与化验单记录自动生成，点任意一条可回看完整内容。</view>
+</view>

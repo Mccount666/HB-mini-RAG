@@ -4,6 +4,9 @@
     "pages/history/history",
     "pages/history/detail",
     "pages/lab-compare/lab-compare",
+    "pages/timeline/timeline",
+    "pages/visit-prep/visit-prep",
+    "pages/coverage/coverage",
     "pages/about/about"
   ],
   "window": {

@@ -1,0 +1,72 @@
+/* pages/coverage/coverage.wxss */
+.coverage {
+  padding: 24rpx;
+  background-color: var(--bg);
+  min-height: 100vh;
+}
+.head {
+  padding: 8rpx 8rpx 24rpx;
+}
+.head-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--text);
+}
+.head-sub {
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  color: var(--text-sub);
+  line-height: 1.6;
+}
+.topic {
+  background: var(--card);
+  border-radius: 24rpx;
+  padding: 26rpx 28rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(222, 160, 104, 0.05);
+}
+.topic-asked {
+  opacity: 0.75;
+}
+.topic-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.topic-label {
+  font-size: 29rpx;
+  font-weight: 600;
+  color: var(--text);
+}
+.topic-state {
+  font-size: 23rpx;
+  color: var(--text-sub);
+}
+.topic-asked .topic-state {
+  color: var(--brand-deep);
+  font-weight: 600;
+}
+.topic-desc {
+  margin-top: 8rpx;
+  font-size: 23rpx;
+  color: var(--text-sub);
+  line-height: 1.5;
+}
+.topic-bar {
+  margin-top: 16rpx;
+  height: 12rpx;
+  border-radius: 6rpx;
+  background: #FBF7F2;
+  overflow: hidden;
+}
+.topic-bar-fill {
+  height: 100%;
+  border-radius: 6rpx;
+  background: var(--brand);
+}
+.topic-starter {
+  margin-top: 14rpx;
+  font-size: 24rpx;
+  color: var(--brand-deep);
+  font-weight: 600;
+}

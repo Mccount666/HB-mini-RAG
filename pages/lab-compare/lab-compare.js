@@ -17,6 +17,12 @@ Page({
     labels: [],
     rows: [],
     hasRows: false,
+    // 走势区：N 次记录的同一指标横向条形图
+    trendKeys: [],     // 有 ≥2 次记录的指标 key
+    trendKey: '',      // 当前查看的指标
+    trendLabel: '',
+    trendUnit: '',
+    trendBars: [],     // [{timeText, value, text, pct}]
   },
 
   onLoad() {
@@ -34,6 +40,8 @@ Page({
     const idxB = records.length - 1;
     this.setData({ ready: true, records, labels, idxA, idxB });
     this.compute();
+    this.buildTrendKeys();
+    this.computeTrend();
   },
 
   onPickA(e) {
@@ -59,6 +67,44 @@ Page({
     if (!rows.length) {
       wx.showToast({ title: '两份报告没能识别出常见指标', icon: 'none' });
     }
+  },
+
+  // ===== N 次走势：找出在 ≥2 份报告里都识别到的指标 =====
+  buildTrendKeys() {
+    const { records } = this.data;
+    const counts = new Map();
+    for (const rec of records) {
+      const { items } = labCompare.extractIndicators(rec.rawText);
+      for (const it of items) counts.set(it.key, (counts.get(it.key) || 0) + 1);
+    }
+    const trendKeys = labCompare.INDICATORS.filter((ind) => (counts.get(ind.key) || 0) >= 2).map((ind) => ind.key);
+    this.setData({ trendKeys, trendKey: trendKeys[0] || '' });
+  },
+
+  onTrendKeyTap(e) {
+    this.setData({ trendKey: e.currentTarget.dataset.key });
+    this.computeTrend();
+  },
+
+  computeTrend() {
+    const { records, trendKey } = this.data;
+    if (!trendKey) {
+      this.setData({ trendBars: [], trendLabel: '', trendUnit: '' });
+      return;
+    }
+    const def = labCompare.INDICATORS.find((i) => i.key === trendKey);
+    const bars = [];
+    let max = 0;
+    for (const rec of records) {
+      const { items } = labCompare.extractIndicators(rec.rawText);
+      const hit = items.find((it) => it.key === trendKey);
+      if (hit) {
+        bars.push({ timeText: rec.timeText, value: hit.value, text: hit.text, pct: 0 });
+        if (hit.value > max) max = hit.value;
+      }
+    }
+    for (const b of bars) b.pct = max > 0 ? Math.max(6, Math.round((b.value / max) * 100)) : 0;
+    this.setData({ trendBars: bars, trendLabel: def.label, trendUnit: def.unit });
   },
 
   goHistory() {

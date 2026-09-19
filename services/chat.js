@@ -25,6 +25,8 @@ const ask = (message, history = []) => {
           confidence: result.confidence,
           learning: !!result.learning,          // 相关但未收录 → 已推送学习队列
           learnQuestion: result.learnQuestion || '',
+          refusal: result.refusal || '',        // 拒答原因码（拒答解释卡用）
+          check: result.check || null,          // 回答体检数据（体检卡用）
         });
       },
       fail: (err) => reject(err),

@@ -39,6 +39,28 @@
       </view>
     </view>
 
+    <!-- 走势区：同一指标在全部记录里的变化（AFP 是肝母细胞瘤最核心的疗效信号） -->
+    <view wx:if="{{trendKeys.length}}" class="trend-card">
+      <view class="trend-title">全部记录走势</view>
+      <view class="trend-chips">
+        <view
+          class="chip {{trendKey === item ? 'chip-on' : ''}}"
+          wx:for="{{trendKeys}}"
+          wx:key="*this"
+          bindtap="onTrendKeyTap"
+          data-key="{{item}}"
+        >{{item}}</view>
+      </view>
+      <view class="trend-caption">{{trendLabel}}（{{trendUnit}}）· 共 {{trendBars.length}} 次</view>
+      <view class="trend-row" wx:for="{{trendBars}}" wx:key="timeText">
+        <view class="trend-time">{{item.timeText}}</view>
+        <view class="trend-track">
+          <view class="trend-fill" style="width: {{item.pct}}%"></view>
+        </view>
+        <view class="trend-val">{{item.text}}</view>
+      </view>
+    </view>
+
     <view class="note">指标由程序从化验单原文里自动识别，可能有误差；趋势仅供参考，异常指标请以主治医生的解读为准。</view>
   </block>
 </view>
