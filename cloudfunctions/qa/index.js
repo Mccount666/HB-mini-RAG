@@ -15,6 +15,9 @@
 //   HTTP_SHARED_SECRET : 共享密钥；配置后 POST 必须带 x-hb-secret 头（网页版已带），空 = 不校验
 //   HTTP_RATE_LIMIT    : 每 IP 每分钟 POST 上限（默认 20），超出返回 429
 //   HTTP_CORS_ORIGINS  : 允许跨域的网页版来源（逗号分隔）；未配置 = 全放行（仅限演示期）
+//   FEEDBACK_RATE_LIMIT: 反馈提交限速，每身份每分钟上限（默认 5），超出返回 { ok:false, error:'提交过于频繁' }
+//   FEEDBACK_RATE_LIMIT_GLOBAL: 反馈全局兜底限速，每实例每分钟总上限（默认 200）。匿名身份按内容哈希分桶，
+//     而内容是调用方可控的（每次加一个字即得新桶），必须有实例级总闸兜住变体洪峰，超出返回 { ok:false, error:'服务繁忙，请稍后再试' }
 const path = require('path');
 const crypto = require('crypto');
 
@@ -125,10 +128,29 @@ async function pushLearnQueue(question, mode = 'text') {
 }
 
 // ===== 网页版反馈入库（写入云开发数据库 feedback 集合，控制台可直接查看） =====
+function feedbackRateIdentity(identity = '', data = {}) {
+  const id = String(identity || '').trim();
+  if (id && id !== 'anonymous' && id !== 'unknown') return id.slice(0, 120);
+  const seed = [data.openid, data.userId, data.q, data.comment, data.topicKey, data.topicLabel, data.mode]
+    .map((v) => String(v || '').trim())
+    .filter(Boolean)
+    .join('|');
+  const fallback = seed || `${Date.now()}:${Math.random()}`;
+  const hash = crypto.createHash('sha256').update(fallback).digest('hex').slice(0, 16);
+  return `anon:${hash}`;
+}
+
 async function handleFeedback(data = {}, identity = '') {
   const feedbackLimit = parseInt(process.env.FEEDBACK_RATE_LIMIT || '5', 10);
-  if (rateLimited('fb:' + (identity || 'anonymous'), feedbackLimit)) {
+  // 层 1：按身份/内容分桶——防同一内容刷屏，同时避免匿名访客共桶误限
+  if (rateLimited('fb:' + feedbackRateIdentity(identity, data), feedbackLimit)) {
     return { ok: false, error: '提交过于频繁' };
+  }
+  // 层 2：全局兜底桶（实例级总闸）——匿名分桶的键含攻击者可控的反馈内容，
+  // 仅靠内容哈希可被「每次变体」完全绕过（见审查报告待办 H），必须另设实例级总闸
+  const feedbackGlobalLimit = parseInt(process.env.FEEDBACK_RATE_LIMIT_GLOBAL || '200', 10);
+  if (rateLimited('fb:__global__', feedbackGlobalLimit)) {
+    return { ok: false, error: '服务繁忙，请稍后再试' };
   }
   const rec = {
     q: String(data.q || '').slice(0, 300),

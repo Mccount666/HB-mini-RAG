@@ -31,3 +31,8 @@ project.private.config.json
 backend/.mimosa/
 .v2c/
 .workbuddy/
+.video_agent/
+
+# local test assets / knowledge-base backups (kept out of repo on purpose)
+化验单-测试样张.png
+知识库备份-*/
