@@ -1,0 +1,44 @@
+<view class="compare">
+  <view wx:if="{{!ready}}" class="empty">
+    <view class="empty-title">还没有可对比的化验单</view>
+    <view class="empty-sub">需要两次"化验单解读"记录（识别出原文）才能对比。回到问答页上传化验单试试。</view>
+    <view class="back-btn" bindtap="goHistory">去问答页</view>
+  </view>
+
+  <block wx:else>
+    <view class="pick-card">
+      <view class="pick-row">
+        <text class="pick-label">上一次</text>
+        <picker range="{{labels}}" value="{{idxA}}" bindchange="onPickA">
+          <view class="pick-value">{{labels[idxA]}} ▾</view>
+        </picker>
+      </view>
+      <view class="pick-row">
+        <text class="pick-label">这一次</text>
+        <picker range="{{labels}}" value="{{idxB}}" bindchange="onPickB">
+          <view class="pick-value">{{labels[idxB]}} ▾</view>
+        </picker>
+      </view>
+    </view>
+
+    <view wx:if="{{hasRows}}" class="table-card">
+      <view class="thead">
+        <text class="th th-name">指标</text>
+        <text class="th th-val">上次</text>
+        <text class="th th-val">这次</text>
+        <text class="th th-trend">趋势</text>
+      </view>
+      <view class="row" wx:for="{{rows}}" wx:key="key">
+        <view class="td td-name">
+          <view class="name">{{item.label}}</view>
+          <view class="unit">{{item.unit}}</view>
+        </view>
+        <view class="td td-val">{{item.aText}}</view>
+        <view class="td td-val">{{item.bText}}</view>
+        <view class="td td-trend trend-{{item.trend}}">{{item.trendText}}</view>
+      </view>
+    </view>
+
+    <view class="note">指标由程序从化验单原文里自动识别，可能有误差；趋势仅供参考，异常指标请以主治医生的解读为准。</view>
+  </block>
+</view>

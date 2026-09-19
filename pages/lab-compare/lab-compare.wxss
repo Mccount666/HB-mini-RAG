@@ -1,0 +1,114 @@
+/* pages/lab-compare/lab-compare.wxss */
+.compare {
+  padding: 24rpx;
+  background-color: var(--bg);
+  min-height: 100vh;
+}
+.empty {
+  text-align: center;
+  margin-top: 140rpx;
+}
+.empty-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--text);
+}
+.empty-sub {
+  margin-top: 16rpx;
+  font-size: 26rpx;
+  color: var(--text-sub);
+  line-height: 1.6;
+  padding: 0 60rpx;
+}
+.back-btn {
+  display: inline-block;
+  margin-top: 40rpx;
+  background: var(--brand);
+  color: #fff;
+  font-size: 26rpx;
+  font-weight: 600;
+  border-radius: 40rpx;
+  padding: 20rpx 60rpx;
+}
+.pick-card {
+  background: var(--card);
+  border-radius: 24rpx;
+  padding: 12rpx 28rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 12rpx rgba(222, 160, 104, 0.05);
+}
+.pick-row {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 0;
+}
+.pick-row + .pick-row {
+  border-top: 1rpx dashed var(--brand-soft);
+}
+.pick-label {
+  width: 140rpx;
+  font-size: 26rpx;
+  color: var(--text-sub);
+}
+.pick-value {
+  flex: 1;
+  font-size: 26rpx;
+  color: var(--brand-deep);
+  font-weight: 600;
+}
+.table-card {
+  background: var(--card);
+  border-radius: 24rpx;
+  padding: 8rpx 24rpx 16rpx;
+  box-shadow: 0 4rpx 12rpx rgba(222, 160, 104, 0.05);
+}
+.thead {
+  display: flex;
+  padding: 20rpx 0 12rpx;
+  border-bottom: 2rpx solid var(--brand-soft);
+}
+.th {
+  font-size: 24rpx;
+  color: var(--text-sub);
+  font-weight: 600;
+}
+.th-name { flex: 1.4; }
+.th-val { flex: 1; text-align: center; }
+.th-trend { flex: 1.1; text-align: center; }
+.row {
+  display: flex;
+  align-items: center;
+  padding: 22rpx 0;
+  border-bottom: 1rpx dashed var(--brand-soft);
+}
+.row:last-child {
+  border-bottom: none;
+}
+.td-name { flex: 1.4; padding-right: 12rpx; }
+.name { font-size: 26rpx; color: var(--text); line-height: 1.4; }
+.unit { font-size: 20rpx; color: #C4B5AC; margin-top: 4rpx; }
+.td-val {
+  flex: 1;
+  text-align: center;
+  font-size: 28rpx;
+  color: var(--text);
+  font-weight: 600;
+}
+.td-trend {
+  flex: 1.1;
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--text-sub);
+}
+.trend-up { color: #D36C6C; font-weight: 600; }
+.trend-down { color: #6B9AC4; font-weight: 600; }
+.trend-flat { color: var(--text-sub); }
+.note {
+  margin-top: 24rpx;
+  font-size: 22rpx;
+  color: var(--text-sub);
+  line-height: 1.6;
+  padding: 20rpx 28rpx;
+  background: var(--brand-soft);
+  border-radius: 20rpx;
+}

@@ -24,6 +24,8 @@
   </scroll-view>
 
   <!-- 列表 -->
+  <view wx:if="{{labCount >= 2}}" class="compare-entry" bindtap="onCompare">📊 对比化验单（看指标趋势）</view>
+
   <view wx:if="{{!hasAny}}" class="empty">暂无历史问答</view>
   <view wx:elif="{{list.length === 0}}" class="empty">没有匹配的记录</view>
 
@@ -39,5 +41,8 @@
     </view>
   </view>
 
-  <view wx:if="{{hasAny}}" class="clear" bindtap="onClear">清空历史</view>
+  <view wx:if="{{hasAny}}" class="page-actions">
+    <view class="action-btn" bindtap="onExport">导出历史</view>
+    <view class="action-btn action-danger" bindtap="onClear">清空历史</view>
+  </view>
 </view>

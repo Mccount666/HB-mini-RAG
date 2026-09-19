@@ -3,6 +3,7 @@
     "pages/index/index",
     "pages/history/history",
     "pages/history/detail",
+    "pages/lab-compare/lab-compare",
     "pages/about/about"
   ],
   "window": {

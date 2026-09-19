@@ -29,6 +29,7 @@ Page({
     total: 0,
     list: [],
     hasAny: false,
+    labCount: 0,
   },
 
   onShow() {
@@ -40,8 +41,14 @@ Page({
       ...it,
       timeText: fmtTime(it.time),
     }));
-    this.setData({ total: raw.length, hasAny: raw.length > 0 });
+    // 有两份以上化验单原文时才显示"对比化验单"入口
+    const labCount = raw.filter((it) => it.rawText && String(it.rawText).trim()).length;
+    this.setData({ total: raw.length, hasAny: raw.length > 0, labCount });
     this.applyFilter(raw);
+  },
+
+  onCompare() {
+    wx.navigateTo({ url: '/pages/lab-compare/lab-compare' });
   },
 
   applyFilter(raw) {
@@ -107,6 +114,63 @@ Page({
         this.refresh();
       },
     });
+  },
+
+  // 导出历史：生成 txt 文件 → 调起微信转发（发给家人或"文件传输助手"留档）
+  onExport() {
+    const history = wx.getStorageSync('chat_history') || [];
+    if (!history.length) {
+      wx.showToast({ title: '暂无记录可导出', icon: 'none' });
+      return;
+    }
+    const lines = [`肝芽守护 · 问答历史导出（共 ${history.length} 条）`];
+    // 时间正序导出，读起来像一份病程记录
+    history
+      .slice()
+      .reverse()
+      .forEach((it, i) => {
+        lines.push('');
+        lines.push(`【${i + 1}】${it.star ? '★ ' : ''}${it.question}`);
+        lines.push(`时间：${fmtTime(it.time)}${it.topic && it.topic.label ? ' · ' + it.topic.label : ''}`);
+        lines.push(it.answer || '');
+        if (it.rawText) {
+          lines.push('—— 化验单原文 ——');
+          lines.push(it.rawText);
+        }
+        if (it.sources && it.sources.length) {
+          lines.push(`参考来源：${it.sources.map((s) => s.title).join('；')}`);
+        }
+      });
+    lines.push('');
+    lines.push('本内容来自"肝芽守护"小程序，仅供参考，不能替代主治医生诊断。');
+    const content = lines.join('\n');
+
+    const fallbackCopy = () => {
+      wx.setClipboardData({
+        data: content.slice(0, 100000),
+        success: () => wx.showToast({ title: '已复制全文，可粘贴保存', icon: 'none' }),
+        fail: () => wx.showToast({ title: '导出失败，请重试', icon: 'none' }),
+      });
+    };
+    try {
+      const filePath = `${wx.env.USER_DATA_PATH}/hb-history-${Date.now()}.txt`;
+      wx.getFileSystemManager().writeFileSync(filePath, content, 'utf8');
+      if (wx.shareFileMessage) {
+        wx.shareFileMessage({
+          filePath,
+          fileName: '肝芽问答历史.txt',
+          success: () => {},
+          fail: (err) => {
+            if (err && err.errMsg && err.errMsg.indexOf('cancel') !== -1) return; // 用户取消
+            fallbackCopy();
+          },
+        });
+      } else {
+        fallbackCopy();
+      }
+    } catch (e) {
+      fallbackCopy();
+    }
   },
 
   onClear() {

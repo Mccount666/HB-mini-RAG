@@ -1,5 +1,6 @@
 // pages/index/index.js - 问答主页（纯 Chat：文本问答 + 化验单 OCR 解读）
 const chat = require('../../services/chat');
+const followUps = require('../../services/follow-ups');
 
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
@@ -19,27 +20,6 @@ function inferQuestionTopic(text, type = 'text') {
   const q = String(text || '').toLowerCase();
   const hit = TOPIC_RULES.find((rule) => rule.words.some((w) => q.includes(String(w).toLowerCase())));
   return hit ? { key: hit.key, label: hit.label } : { key: 'general', label: '疾病科普' };
-}
-
-// 追问推荐：按主题从知识库已覆盖的问题里挑（全部在 eval 命中清单内，不会问出拒答）。
-// 同一主题下随机抽 3 条、剔除本次会话已问过的，保证每次有新东西。
-const FOLLOW_UPS = {
-  general: ['肝母细胞瘤是什么病？严重吗？', '主要治疗方法是什么？', '治愈率怎么样？能治好吗？'],
-  diagnosis: ['怎么确诊？要做哪些检查？', 'PRETEXT 分期是什么意思？', '孩子肝上长东西还可能是什么病？'],
-  lab: ['AFP 是什么？为什么一直要查？', '孩子白细胞低、容易感染怎么办？', 'AFP特别低反而不好吗？'],
-  lab_report: ['AFP 是什么？为什么一直要查？', '孩子白细胞低、容易感染怎么办？', '化疗期间吃什么好？营养怎么补？'],
-  chemo: ['化疗有什么副作用？怎么缓解？', '顺铂伤耳朵，有什么保护办法？', '化疗期间可以打疫苗吗？'],
-  surgery: ['手术是怎么做的？能切干净吗？', '为什么手术前要先化疗？', '什么情况下需要做肝移植？'],
-  followup: ['出院后多久复查一次？', '出现哪些情况要马上去医院？', '什么情况下需要做肝移植？'],
-  care: ['化疗期间吃什么好？营养怎么补？', '孩子白细胞低、容易感染怎么办？', '化疗期间可以打疫苗吗？'],
-  prognosis: ['治愈率怎么样？能治好吗？', '会遗传吗？要二胎会有影响吗？', '现在有肝母细胞瘤的靶向药吗？'],
-  emergency: ['出现哪些情况要马上去医院？', '肿瘤破裂还有救吗？', '出院后多久复查一次？'],
-};
-
-function pickSuggestions(topicKey, askedSet) {
-  const pool = (FOLLOW_UPS[topicKey] || FOLLOW_UPS.general).filter((q) => !askedSet.has(q));
-  const rest = pool.sort(() => Math.random() - 0.5).slice(0, 3);
-  return rest;
 }
 
 Page({
@@ -145,16 +125,19 @@ Page({
         .map((m) => ({ role: m.role, content: m.content }));
       const res = await chat.ask(text, history);
 
-      const asked = new Set(
-        this.data.messages.filter((m) => m.role === 'user').map((m) => m.content).concat([text])
-      );
+      const askedList = this.data.messages
+        .filter((m) => m.role === 'user')
+        .map((m) => m.content)
+        .concat([text]);
+      const citedIds = (res.sources || []).map((s) => s.id).filter(Boolean);
       const topicKey = (userMsg.topic && userMsg.topic.key) || 'general';
       const finalBot = {
         ...botMsg,
         content: res.answer,
         sources: res.sources || [],
         loading: false,
-        suggestions: pickSuggestions(topicKey, asked),
+        // 追问推荐：与回答引用的知识库条目联动（引用了什么就优先问相关）
+        suggestions: followUps.pickSuggestions(topicKey, citedIds, askedList),
         canRemind: topicKey === 'followup', // 随访类回答可一键设复查提醒
       };
       const messages = this.data.messages.map((m) => (m.id === botMsg.id ? finalBot : m));
@@ -254,9 +237,8 @@ Page({
     this.setData({ sending: true, [`messages[${idx}].loading`]: true });
     try {
       const result = await chat.interpretReport(text);
-      const asked = new Set(
-        this.data.messages.filter((m) => m.role === 'user').map((m) => m.content)
-      );
+      const askedList = this.data.messages.filter((m) => m.role === 'user').map((m) => m.content);
+      const citedIds = (result.sources || []).map((s) => s.id).filter(Boolean);
       const finalBot = {
         ...botMsg,
         content: result.interpretation,
@@ -264,7 +246,7 @@ Page({
         sources: result.sources || [],
         ocrStage: 'done',
         loading: false,
-        suggestions: pickSuggestions('lab_report', asked),
+        suggestions: followUps.pickSuggestions('lab_report', citedIds, askedList),
       };
       const messages = this.data.messages.map((m) => (m.id === botMsg.id ? finalBot : m));
       this.setData({ messages, sending: false, scrollTarget: `msg-${botMsg.id}` });
