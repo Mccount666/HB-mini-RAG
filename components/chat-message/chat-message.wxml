@@ -9,7 +9,7 @@
     </view>
   </view>
 
-  <view class="bubble {{role === 'user' ? 'bubble-user' : 'bubble-bot'}}">
+  <view class="bubble {{role === 'user' ? 'bubble-user' : 'bubble-bot'}} {{highlight ? 'bubble-hl' : ''}}">
     
     <!-- 图片缩略图 -->
     <view wx:if="{{role === 'user' && type === 'ocr'}}" class="ocr-thumb" bindtap="previewImage" data-url="{{imagePath}}">

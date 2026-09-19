@@ -31,6 +31,11 @@ Page({
     scrollTarget: '',
     showPrivacy: false,     // 隐私授权弹窗（化验单识别需相册/相机）
     privacyPending: false,  // 同意后是否继续之前被打断的选图动作
+    // 问答页搜索：聊长了快速定位上面答过的内容
+    searchOpen: false,
+    searchKeyword: '',
+    searchResults: [],
+    highlightId: '',
     quickQuestions: [
       '肝母细胞瘤是什么？',
       '常见症状有哪些？',
@@ -377,6 +382,60 @@ Page({
         }
       },
     });
+  },
+
+  // ===== 问答页搜索：匹配"问题 + 回答"，点结果滚动定位并高亮 =====
+  onOpenSearch() {
+    this.setData({
+      searchOpen: true,
+      searchResults: this.buildSearchResults(this.data.searchKeyword),
+    });
+  },
+
+  onCloseSearch() {
+    this.setData({ searchOpen: false });
+  },
+
+  onSearchInput(e) {
+    const kw = e.detail.value;
+    this.setData({ searchKeyword: kw, searchResults: this.buildSearchResults(kw) });
+  },
+
+  onSearchResultTap(e) {
+    const id = e.currentTarget.dataset.id;
+    if (!this.data.messages.some((m) => m.id === id)) return;
+    if (this._hlTimer) clearTimeout(this._hlTimer);
+    this.setData({ searchOpen: false, scrollTarget: 'msg-' + id, highlightId: id });
+    // 高亮闪一下后清除标记；顺带清 scrollTarget，保证下次点同一条还能重新滚动
+    this._hlTimer = setTimeout(() => {
+      this.setData({ highlightId: '', scrollTarget: '' });
+    }, 1800);
+  },
+
+  buildSearchResults(kw) {
+    const word = String(kw || '').trim().toLowerCase();
+    if (!word) return [];
+    const msgs = this.data.messages;
+    const results = [];
+    let lastQ = '';
+    for (const m of msgs) {
+      if (m.role === 'user') {
+        lastQ = m.type === 'ocr' ? '[化验单解读]' : String(m.content || '');
+        continue;
+      }
+      if (m.loading || !m.content) continue;
+      const hay = lastQ + '\n' + m.content;
+      const i = hay.toLowerCase().indexOf(word);
+      if (i === -1) continue;
+      const start = Math.max(0, i - 18);
+      const snippet = (start > 0 ? '…' : '') + hay.slice(start, i + 50).replace(/\n/g, ' ');
+      results.push({
+        id: m.id,
+        q: lastQ || '(化验单解读)',
+        snippet: snippet + (i + 50 < hay.length ? '…' : ''),
+      });
+    }
+    return results;
   },
 
   saveHistory(userMsg, botMsg) {

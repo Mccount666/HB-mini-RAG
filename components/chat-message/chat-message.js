@@ -13,6 +13,7 @@ Component({
     ocrStage: { type: String, value: '' },            // '' | 'confirm'(识别文字待确认) | 'done'
     suggestions: { type: Array, value: [] },          // 追问推荐：回答下方可点的"接着问"
     canRemind: { type: Boolean, value: false },       // 随访类回答显示"设复查提醒"入口
+    highlight: { type: Boolean, value: false },       // 搜索定位后短暂高亮
   },
   data: {
     showRaw: false,

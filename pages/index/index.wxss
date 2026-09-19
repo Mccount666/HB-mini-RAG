@@ -186,6 +186,92 @@
   background: var(--brand);
 }
 
+/* --- 问答页搜索 --- */
+.search-fab {
+  position: absolute;
+  top: 24rpx;
+  right: 24rpx;
+  width: 76rpx;
+  height: 76rpx;
+  border-radius: 50%;
+  background: var(--card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34rpx;
+  box-shadow: 0 6rpx 20rpx rgba(222, 160, 104, 0.18);
+  z-index: 9;
+}
+.search-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  background: var(--bg);
+  border-bottom-left-radius: 28rpx;
+  border-bottom-right-radius: 28rpx;
+  box-shadow: 0 8rpx 24rpx rgba(222, 160, 104, 0.14);
+  padding: 24rpx 24rpx 16rpx;
+}
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+.search-input {
+  flex: 1;
+  height: 76rpx;
+  background: var(--card);
+  border-radius: 38rpx;
+  padding: 0 32rpx;
+  font-size: 28rpx;
+  color: var(--text);
+  box-shadow: 0 4rpx 12rpx rgba(222, 160, 104, 0.05);
+}
+.search-ph { color: #C4B5AC; }
+.search-done {
+  font-size: 28rpx;
+  color: var(--brand-deep);
+  font-weight: 600;
+  padding: 8rpx 8rpx;
+}
+.search-results {
+  max-height: 46vh;
+  margin-top: 20rpx;
+}
+.result-item {
+  background: var(--card);
+  border-radius: 20rpx;
+  padding: 22rpx 26rpx;
+  margin-bottom: 16rpx;
+  box-shadow: 0 4rpx 12rpx rgba(222, 160, 104, 0.05);
+}
+.result-q {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.result-s {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: var(--text-sub);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.search-empty {
+  margin: 30rpx 0 20rpx;
+  text-align: center;
+  font-size: 26rpx;
+  color: var(--text-sub);
+}
+
 /* --- 底部输入区 --- */
 .input-area {
   display: flex;

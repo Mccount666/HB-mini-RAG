@@ -4,6 +4,32 @@
   <view class="bg-decor star-a">✦</view>
   <view class="bg-decor star-b">✧</view>
 
+  <!-- 问答搜索入口：聊长了（≥3 组问答）才出现 -->
+  <view wx:if="{{messages.length >= 6 && !searchOpen}}" class="search-fab" bindtap="onOpenSearch">🔍</view>
+
+  <!-- 搜索面板：输入即出结果，点结果定位到对应回答 -->
+  <view wx:if="{{searchOpen}}" class="search-panel">
+    <view class="search-bar">
+      <input
+        class="search-input"
+        focus="{{searchOpen}}"
+        value="{{searchKeyword}}"
+        bindinput="onSearchInput"
+        confirm-type="search"
+        placeholder="搜索上面问过或答过的内容"
+        placeholder-class="search-ph"
+      />
+      <view class="search-done" bindtap="onCloseSearch">完成</view>
+    </view>
+    <scroll-view scroll-y class="search-results" wx:if="{{searchResults.length}}">
+      <view class="result-item" wx:for="{{searchResults}}" wx:key="id" bindtap="onSearchResultTap" data-id="{{item.id}}">
+        <view class="result-q">问：{{item.q}}</view>
+        <view class="result-s">{{item.snippet}}</view>
+      </view>
+    </scroll-view>
+    <view wx:elif="{{searchKeyword}}" class="search-empty">没找到相关内容，换个词试试</view>
+  </view>
+
   <scroll-view class="msg-list" scroll-y scroll-into-view="{{scrollTarget}}" scroll-with-animation enhanced show-scrollbar="{{false}}">
     <!-- 顶部免责提示卡片 -->
     <view class="disclaimer-card">
@@ -37,6 +63,7 @@
         ocrStage="{{item.ocrStage}}"
         suggestions="{{item.suggestions}}"
         canRemind="{{item.canRemind}}"
+        highlight="{{item.id === highlightId}}"
         data-id="{{item.id}}"
         bindrate="onRate"
         bindconfirmocr="onConfirmOcr"
