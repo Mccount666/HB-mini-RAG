@@ -313,9 +313,18 @@ Page({
       question: userMsg.type === 'ocr' ? '[化验单解读]' : userMsg.content,
       answer: botMsg.content,
       sources: botMsg.sources,
+      rawText: botMsg.rawText || '', // 化验单 OCR 原文随记录保存，详情页可回看对照
       topic: userMsg.topic || inferQuestionTopic(userMsg.content, userMsg.type),
       time: Date.now(),
     });
     wx.setStorageSync('chat_history', history.slice(0, 200));
+  },
+
+  // 转发分享：让家人也能打开小程序一起看（分享卡片不含具体问答内容）
+  onShareAppMessage() {
+    return {
+      title: '肝芽守护 · 肝母细胞瘤家长问答',
+      path: '/pages/index/index',
+    };
   },
 });

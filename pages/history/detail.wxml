@@ -1,11 +1,23 @@
 <scroll-view class="detail" scroll-y wx:if="{{item}}">
-  <view class="question">{{item.question}}</view>
+  <view class="question-row">
+    <view class="question">{{item.question}}</view>
+    <view class="star {{item.star ? 'star-on' : ''}}" bindtap="onToggleStar">{{item.star ? '★ 已收藏' : '☆ 收藏'}}</view>
+  </view>
   <view class="time">{{item.timeText}}</view>
   <view class="answer">{{item.answer}}</view>
+
+  <!-- 化验单解读记录：回看 OCR 提取的原文，方便对照解读内容 -->
+  <view wx:if="{{item.rawText}}" class="rawtext">
+    <view class="rawtext-title">化验单原文（OCR 提取）</view>
+    <view class="rawtext-body">{{item.rawText}}</view>
+  </view>
+
   <view wx:if="{{item.sources.length}}" class="sources">
     <view class="sources-title">参考来源</view>
     <view class="source" wx:for="{{item.sources}}" wx:key="id" wx:for-item="s">
       [{{s.id}}] {{s.title}}
     </view>
   </view>
+
+  <button class="btn-reset copy-btn" bindtap="onCopy">复制全文（贴给家人）</button>
 </scroll-view>

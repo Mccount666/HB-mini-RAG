@@ -1,12 +1,43 @@
 <view class="history">
-  <view wx:if="{{list.length === 0}}" class="empty">暂无历史问答</view>
+  <!-- 搜索 -->
+  <view class="search" wx:if="{{hasAny}}">
+    <input
+      class="search-input"
+      placeholder="搜索问过的问题或回答"
+      placeholder-class="search-ph"
+      value="{{keyword}}"
+      confirm-type="search"
+      bindinput="onSearchInput"
+    />
+    <text wx:if="{{keyword}}" class="search-clear" catchtap="onSearchClear">×</text>
+  </view>
+
+  <!-- 主题筛选条 -->
+  <scroll-view class="chips" scroll-x enable-flex wx:if="{{hasAny}}">
+    <view
+      class="chip {{activeTopic === item.key ? 'chip-on' : ''}}"
+      wx:for="{{chips}}"
+      wx:key="key"
+      bindtap="onChipTap"
+      data-key="{{item.key}}"
+    >{{item.label}}</view>
+  </scroll-view>
+
+  <!-- 列表 -->
+  <view wx:if="{{!hasAny}}" class="empty">暂无历史问答</view>
+  <view wx:elif="{{list.length === 0}}" class="empty">没有匹配的记录</view>
+
   <view class="card" wx:for="{{list}}" wx:key="id" bindtap="onTap" data-item="{{item}}">
-    <view class="q">{{item.question}}</view>
+    <view class="q-row">
+      <view class="q">{{item.question}}</view>
+      <view class="star {{item.star ? 'star-on' : ''}}" catchtap="onToggleStar" data-id="{{item.id}}">{{item.star ? '★' : '☆'}}</view>
+    </view>
     <view class="a">{{item.answer}}</view>
     <view class="meta-row">
-      <view class="meta">{{item.timeText}} · {{item.sources.length}} 个来源</view>
+      <view class="meta">{{item.timeText}} · {{item.sources.length}} 个来源<text wx:if="{{item.topic && item.topic.label}}"> · {{item.topic.label}}</text></view>
       <view class="del" catchtap="onDelete" data-id="{{item.id}}">删除</view>
     </view>
   </view>
-  <view wx:if="{{list.length}}" class="clear" bindtap="onClear">清空历史</view>
+
+  <view wx:if="{{hasAny}}" class="clear" bindtap="onClear">清空历史</view>
 </view>
