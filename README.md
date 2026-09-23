@@ -151,3 +151,8 @@ node tools/smoke.js             # 端到端冒烟（需先 npm run ingest）：m
 - 医疗健康类目可能要求机构资质，提前准备（建议用科室机构主体注册）
 - 显著位置展示免责声明（"不能替代医生诊断"）
 - 前端文案**不出现具体医院名称**，符合合规要求
+
+## Contributors
+
+- [Mccount666](https://github.com/Mccount666) — 项目作者
+- [Claude](https://claude.ai) — AI 辅助开发
